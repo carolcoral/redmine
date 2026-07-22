@@ -1,0 +1,6 @@
+{
+  "CNB_WELCOME_CMD": "sh /workspace/.ide/setup.sh",
+  "extensions": [
+    "cnbcool.cnb-welcome"
+  ]
+}

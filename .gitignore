@@ -44,5 +44,8 @@
 /Gemfile.lock
 /Gemfile.local
 
+# CodeBuddy 持久化数据目录（个人数据 + 缓存，不入库）
+/.codebuddy-home/
+
 /node_modules
 yarn-error.log

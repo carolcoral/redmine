@@ -1,0 +1,21 @@
+# CNB Web Trigger 配置 - 手动触发按钮
+#
+# 在仓库页面显示「同步到 GitHub」按钮，
+# 点击后触发 .cnb.yml 中定义的 web_trigger_sync_to_github 流水线。
+
+branch:
+  - buttons:
+      - name: 同步到 GitHub
+        description: 将当前分支代码强制推送到 GitHub 仓库
+        event: web_trigger_sync_to_github
+        permissions:
+          roles:
+            - master
+            - developer
+        inputs:
+          GITHUB_REPO:
+            name: GitHub 仓库
+            type: input
+            description: 格式：用户名/仓库名，如 myuser/myrepo
+            required: true
+            placeholder: 例如：myuser/myrepo
