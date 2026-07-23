@@ -1,0 +1,74 @@
+en:
+  # ========== 通用 ==========
+  label_ai_assistant: "AI Assistant"
+  label_ai_providers: "AI Service Providers"
+  label_ai_provider_new: "New Provider"
+  label_ai_provider_edit: "Edit Provider"
+  label_ai_chat_toggle: "Toggle AI Chat"
+  label_ai_thinking: "Thinking..."
+  label_ai_input_placeholder: "Ask me anything..."
+  label_new_conversation: "New Conversation"
+  label_close: "Close"
+  label_daily_report: "Daily Report"
+  label_weekly_report: "Weekly Report"
+  label_monthly_report: "Monthly Report"
+  label_builtin: "Built-in"
+  label_enabled: "Enabled"
+  label_disabled: "Disabled"
+  label_enable: "Enable"
+  label_disable: "Disable"
+  label_no_data: "No data"
+
+  label_ai_assistant_enabled: "Enable AI Assistant"
+  text_ai_assistant_enabled_hint: "When enabled, logged-in users will see the AI assistant floating icon at the bottom-right corner."
+
+  label_default_provider: "Default AI Provider"
+  label_guard_prompt_enabled: "Enable Read-Only Guard Prompt"
+  label_max_history_messages: "Max History Messages"
+  label_report_timezone: "Report Timezone"
+  label_custom_pet: "Custom Pet Icon"
+  label_custom_pet_image_url: "Custom Icon URL"
+  label_pet_size: "Icon Size (px)"
+  label_preview: "Preview"
+
+  text_custom_pet_image_hint: "Supports PNG/JPG/GIF/APNG/WebP/SVG. Enter an image URL to replace the default 🤖 icon. GIF/APNG animations will auto-play. Leave blank for default."
+  text_pet_size_hint: "Button size in pixels, range 40-120, default 60"
+
+  label_quick_question_1: "What are my tasks today?"
+  label_quick_question_2: "Summarize recent project activity"
+
+  # ========== 字段 ==========
+  field_name: "Name"
+  field_slug: "Slug"
+  field_provider_type: "Provider Type"
+  field_api_url: "API URL"
+  field_api_key: "API Key"
+  field_default_model: "Default Model"
+  field_available_models: "Available Models"
+  field_settings: "Extra Settings"
+  field_status: "Status"
+  field_is_enabled: "Enabled"
+  field_position: "Position"
+
+  # ========== 提示文字 ==========
+  text_slug_format: "Only lowercase letters, digits, hyphens and underscores"
+  text_provider_type_hint: "Use 'custom' for OpenAI-compatible providers"
+  text_api_url_hint: "Full API base URL, e.g. https://api.openai.com/v1"
+  text_available_models_hint: "JSON array of model names"
+  text_settings_hint: "JSON object for extra parameters"
+  text_guard_prompt_hint: "When enabled, AI is restricted to read-only mode when discussing business data"
+  text_max_history_hint: "Number of previous messages to include in context (1-50)"
+  text_report_timezone_hint: "Timezone for report date range calculation"
+  text_ai_welcome: "Hello! I'm your AI assistant. Feel free to ask questions about your projects, tasks, or generate work reports."
+  text_readonly_disclaimer: "Read-only mode: I cannot generate data modification instructions when business data is involved."
+
+  # ========== 错误 ==========
+  error_cannot_delete_builtin_provider: "Cannot delete built-in providers"
+
+  # ========== 权限 ==========
+  permission_manage_ai_providers: "Manage AI Providers"
+  permission_use_ai_chat: "Use AI Chat"
+  permission_generate_ai_reports: "Generate AI Reports"
+
+  # ========== 项目设置 ==========
+  project_module_ai_assistant: "AI Assistant"

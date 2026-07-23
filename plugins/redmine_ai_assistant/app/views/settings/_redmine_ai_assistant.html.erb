@@ -1,0 +1,74 @@
+<p>
+  <%= content_tag(:label, l(:label_ai_assistant_enabled)) %>
+  <%= hidden_field_tag "settings[enabled]", '0' %>
+  <%= check_box_tag "settings[enabled]", '1',
+        settings['enabled'] == '1' %>
+  <em class="info"><%= l(:text_ai_assistant_enabled_hint) %></em>
+</p>
+
+<p>
+  <%= content_tag(:label, l(:label_default_provider)) %>
+  <%= select_tag "settings[default_provider_id]",
+        options_from_collection_for_select(
+          AiAssistant::AiProvider.enabled.ordered,
+          :id, :name,
+          settings['default_provider_id']
+        ),
+        include_blank: true %>
+</p>
+
+<p>
+  <%= content_tag(:label, l(:label_guard_prompt_enabled)) %>
+  <%= hidden_field_tag "settings[guard_prompt_enabled]", '0' %>
+  <%= check_box_tag "settings[guard_prompt_enabled]", '1',
+        settings['guard_prompt_enabled'] == '1' %>
+  <em class="info"><%= l(:text_guard_prompt_hint) %></em>
+</p>
+
+<p>
+  <%= content_tag(:label, l(:label_max_history_messages)) %>
+  <%= number_field_tag "settings[max_history_messages]",
+        settings['max_history_messages'].presence || 20,
+        min: 1, max: 50, step: 1 %>
+  <em class="info"><%= l(:text_max_history_hint) %></em>
+</p>
+
+<p>
+  <%= content_tag(:label, l(:label_report_timezone)) %>
+  <%= select_tag "settings[report_timezone]",
+        time_zone_options_for_select(settings['report_timezone'].presence),
+        include_blank: true %>
+  <em class="info"><%= l(:text_report_timezone_hint) %></em>
+</p>
+
+<fieldset class="box tabular">
+  <legend><%= l(:label_custom_pet) %></legend>
+
+  <p>
+    <%= content_tag(:label, l(:label_custom_pet_image_url)) %>
+    <%= text_field_tag "settings[custom_pet_image_url]",
+          settings['custom_pet_image_url'],
+          size: 60,
+          placeholder: 'https://example.com/pet.gif' %>
+    <em class="info"><%= l(:text_custom_pet_image_hint) %></em>
+  </p>
+
+  <% if settings['custom_pet_image_url'].present? %>
+    <p>
+      <%= content_tag(:label, l(:label_preview)) %>
+      <span class="ai-pet-preview">
+        <img src="<%= settings['custom_pet_image_url'] %>"
+             alt="<%= l(:label_custom_pet) %>"
+             style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea;" />
+      </span>
+    </p>
+  <% end %>
+
+  <p>
+    <%= content_tag(:label, l(:label_pet_size)) %>
+    <%= number_field_tag "settings[pet_size]",
+          settings['pet_size'].presence || '60',
+          min: 40, max: 120, step: 5 %>
+    <em class="info"><%= l(:text_pet_size_hint) %></em>
+  </p>
+</fieldset>

@@ -1,0 +1,55 @@
+# frozen_string_literal: true
+
+# 将插件 lib 目录加入 Ruby 加载路径
+plugin_lib = File.expand_path('lib', __dir__)
+$LOAD_PATH.unshift(plugin_lib) unless $LOAD_PATH.include?(plugin_lib)
+
+require 'ai_assistant'
+require 'ai_assistant/ai_client'
+require 'ai_assistant/guard_prompt'
+require 'ai_assistant/report_generator'
+require 'ai_assistant/hooks'
+
+Redmine::Plugin.register :redmine_ai_assistant do
+  name 'Redmine AI Assistant'
+  author 'xindu.site'
+  description 'AI-powered intelligent assistant with floating chat widget, ' \
+              'work report generation, and multi-provider AI support.'
+  version '1.0.0'
+  url 'https://cnb.cool/xindu.site/redmine'
+  author_url 'https://xindu.site'
+
+  requires_redmine version_or_higher: '7.0.0'
+
+  # ========== 权限 ==========
+  permission :manage_ai_providers, {
+    ai_assistant_providers: [:index, :new, :create, :edit, :update, :destroy, :toggle]
+  }, require: :admin
+
+  permission :use_ai_chat, {
+    ai_assistant_chat: [:send_message, :history]
+  }, require: :loggedin
+
+  permission :generate_ai_reports, {
+    ai_assistant_reports: [:daily, :weekly, :monthly, :generate]
+  }, require: :loggedin
+
+  # ========== 管理菜单 ==========
+  menu :admin_menu,
+       :ai_assistant_providers,
+       { controller: 'ai_assistant/providers', action: 'index' },
+       caption: :label_ai_providers,
+       html: { class: 'icon-ai-assistant' },
+       if: proc { User.current.admin? }
+
+  # ========== 插件设置 ==========
+  settings default: {
+    'enabled' => '0',
+    'default_provider_id' => '',
+    'guard_prompt_enabled' => '1',
+    'max_history_messages' => '20',
+    'report_timezone' => '',
+    'custom_pet_image_url' => '',
+    'pet_size' => '60'
+  }, partial: 'settings/redmine_ai_assistant'
+end

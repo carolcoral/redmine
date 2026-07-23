@@ -1,0 +1,114 @@
+<%
+  custom_image = Setting.plugin_redmine_ai_assistant.try(:[], 'custom_pet_image_url').presence
+  pet_size     = (Setting.plugin_redmine_ai_assistant.try(:[], 'pet_size') || '60').to_i
+%>
+<div id="ai-chat-widget"
+     data-ai-chat-csrf-value="<%= form_authenticity_token %>"
+     aria-hidden="true">
+  <!-- 悬浮宠物按钮 -->
+  <button id="ai-chat-toggle"
+          class="ai-chat-toggle<%= ' ai-chat-toggle--custom' if custom_image %>"
+          aria-label="<%= l(:label_ai_chat_toggle) %>"
+          title="<%= l(:label_ai_chat_toggle) %>"
+          style="<%= "width:#{pet_size}px;height:#{pet_size}px;" if custom_image %>">
+    <% if custom_image %>
+      <span class="ai-pet-image">
+        <img src="<%= custom_image %>"
+             alt="AI"
+             style="width:<%= pet_size %>px;height:<%= pet_size %>px;" />
+      </span>
+      <span class="ai-pet-shadow" style="<%= "width:#{pet_size * 0.65}px;" %>"></span>
+    <% else %>
+      <span class="ai-pet">🤖</span>
+      <span class="ai-pet-shadow"></span>
+    <% end %>
+  </button>
+
+  <!-- 聊天窗口 -->
+  <div id="ai-chat-window" class="ai-chat-window ai-chat-hidden" style="display: none;">
+    <!-- 头部 -->
+    <div class="ai-chat-header">
+      <div class="ai-chat-header-title">
+        <span class="ai-chat-avatar">🤖</span>
+        <span><%= l(:label_ai_assistant) %></span>
+        <span class="ai-chat-status" data-ai-chat-target="status">🟢</span>
+      </div>
+      <div class="ai-chat-header-actions">
+        <button class="ai-chat-action-btn"
+                data-action="newConversation"
+                title="<%= l(:label_new_conversation) %>">➕</button>
+        <button class="ai-chat-action-btn"
+                data-action="toggle"
+                title="<%= l(:label_close) %>">✕</button>
+      </div>
+    </div>
+
+    <!-- 报告快捷操作栏 -->
+    <div class="ai-chat-report-bar">
+      <button class="ai-chat-report-btn"
+              data-action="generateReport"
+              data-report-type="daily">
+        📅 <%= l(:label_daily_report) %>
+      </button>
+      <button class="ai-chat-report-btn"
+              data-action="generateReport"
+              data-report-type="weekly">
+        📊 <%= l(:label_weekly_report) %>
+      </button>
+      <button class="ai-chat-report-btn"
+              data-action="generateReport"
+              data-report-type="monthly">
+        📈 <%= l(:label_monthly_report) %>
+      </button>
+    </div>
+
+    <!-- 消息列表 -->
+    <div id="ai-chat-messages"
+         class="ai-chat-messages"
+         data-ai-chat-target="messages">
+      <div class="ai-chat-welcome">
+        <div class="ai-chat-welcome-icon">🤖</div>
+        <p><%= l(:text_ai_welcome) %></p>
+        <div class="ai-chat-suggestions">
+          <button class="ai-suggestion-btn"
+                  data-action="quickAsk"
+                  data-question="<%= l(:label_quick_question_1) %>">
+            <%= l(:label_quick_question_1) %>
+          </button>
+          <button class="ai-suggestion-btn"
+                  data-action="quickAsk"
+                  data-question="<%= l(:label_quick_question_2) %>">
+            <%= l(:label_quick_question_2) %>
+          </button>
+        </div>
+        <p class="ai-chat-disclaimer">
+          ⚠️ <%= l(:text_readonly_disclaimer) %>
+        </p>
+      </div>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="ai-chat-input-area">
+      <textarea id="ai-chat-input"
+                class="ai-chat-input"
+                placeholder="<%= l(:label_ai_input_placeholder) %>"
+                rows="1"
+                data-ai-chat-target="input"></textarea>
+      <button id="ai-chat-send"
+              class="ai-chat-send-btn"
+              <%= 'disabled' unless AiAssistant::AiProvider.enabled.exists? %>>
+        <span class="ai-send-icon">➤</span>
+      </button>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="ai-chat-statusbar" data-ai-chat-target="statusBar" style="display:none;">
+      <span class="ai-typing-indicator">
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+      </span>
+      <span><%= l(:label_ai_thinking) %></span>
+    </div>
+  </div>
+</div>

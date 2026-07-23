@@ -1,0 +1,69 @@
+<%= error_messages_for 'provider' %>
+
+<div class="box tabular ai-provider-form">
+  <p>
+    <%= f.label :name, l(:field_name), required: true %>
+    <%= f.text_field :name, required: true, size: 40 %>
+  </p>
+
+  <p>
+    <%= f.label :slug, l(:field_slug), required: true %>
+    <%= f.text_field :slug, required: true, size: 30,
+                     disabled: provider.builtin? %>
+    <em class="info"><%= l(:text_slug_format) %></em>
+  </p>
+
+  <p>
+    <%= f.label :provider_type, l(:field_provider_type), required: true %>
+    <%= f.select :provider_type,
+                 AiAssistant::AiProvider::PROVIDER_TYPES.map { |t| [t, t] },
+                 {},
+                 disabled: provider.builtin? %>
+    <em class="info"><%= l(:text_provider_type_hint) %></em>
+  </p>
+
+  <p>
+    <%= f.label :api_url, l(:field_api_url), required: true %>
+    <%= f.text_field :api_url, required: true, size: 60 %>
+    <em class="info"><%= l(:text_api_url_hint) %></em>
+  </p>
+
+  <p>
+    <%= f.label :api_key, l(:field_api_key), required: true %>
+    <%= f.password_field :api_key, required: true, size: 50, autocomplete: 'off',
+                        value: provider.api_key.presence %>
+  </p>
+
+  <p>
+    <%= f.label :default_model, l(:field_default_model), required: true %>
+    <%= f.text_field :default_model, required: true, size: 30 %>
+  </p>
+
+  <p>
+    <%= f.label :available_models, l(:field_available_models) %>
+    <%= f.text_area :available_models, rows: 4, cols: 50,
+                    placeholder: "[\"model-a\", \"model-b\"]" %>
+    <em class="info"><%= l(:text_available_models_hint) %></em>
+  </p>
+
+  <% unless provider.builtin? %>
+    <p>
+      <%= f.label :settings, l(:field_settings) %>
+      <%= f.text_area :settings, rows: 6, cols: 50,
+                      placeholder: '{"temperature": 0.7, "max_tokens": 4096}' %>
+      <em class="info"><%= l(:text_settings_hint) %></em>
+    </p>
+  <% end %>
+
+  <p>
+    <%= f.label :position, l(:field_position) %>
+    <%= f.number_field :position, min: 0 %>
+  </p>
+
+  <% unless provider.builtin? %>
+    <p>
+      <%= f.label :is_enabled, l(:field_is_enabled) %>
+      <%= f.check_box :is_enabled %>
+    </p>
+  <% end %>
+</div>

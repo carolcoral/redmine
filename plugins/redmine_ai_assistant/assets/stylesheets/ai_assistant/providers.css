@@ -1,0 +1,78 @@
+/* Redmine AI Assistant - Provider management form styles */
+
+/* Fix label/input overlap on provider forms */
+.ai-provider-form.box.tabular p,
+#ai-provider-form.box.tabular p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.ai-provider-form.box.tabular p > label,
+#ai-provider-form.box.tabular p > label {
+  flex: 0 0 160px;
+  max-width: 160px;
+  text-align: right;
+  font-weight: bold;
+  line-height: 1.4;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.ai-provider-form.box.tabular p > input,
+.ai-provider-form.box.tabular p > select,
+.ai-provider-form.box.tabular p > textarea,
+#ai-provider-form.box.tabular p > input,
+#ai-provider-form.box.tabular p > select,
+#ai-provider-form.box.tabular p > textarea {
+  flex: 1 1 300px;
+  min-width: 200px;
+  max-width: 100%;
+}
+
+.ai-provider-form.box.tabular p > .info,
+#ai-provider-form.box.tabular p > .info {
+  flex: 1 1 100%;
+  margin-left: 172px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Checkbox row alignment */
+.ai-provider-form.box.tabular p input[type="checkbox"],
+#ai-provider-form.box.tabular p input[type="checkbox"] {
+  flex: 0 0 auto;
+}
+
+/* Submit button spacing */
+.ai-provider-form + .buttons,
+#ai-provider-form + .buttons {
+  margin-top: 16px;
+}
+
+/* Table styles for provider list */
+.ai-provider-table th,
+.ai-provider-table td {
+  vertical-align: middle;
+}
+
+.ai-provider-table .builtin-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-size: 0.85em;
+}
+
+.ai-provider-table .status-enabled {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.ai-provider-table .status-disabled {
+  color: #c62828;
+}

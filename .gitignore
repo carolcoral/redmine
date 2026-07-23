@@ -50,3 +50,4 @@ vendor
 
 /node_modules
 yarn-error.log
+plugins/redmine_ai_assistant/.DS_Store
