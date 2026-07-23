@@ -1,0 +1,64 @@
+<div class="redmine-third-login-settings">
+  <fieldset class="box">
+    <legend><%= l(:label_dingtalk_settings) %></legend>
+    
+    <p>
+      <label for="settings_dingtalk_appid"><%= l(:label_dingtalk_appid) %>:</label>
+      <%= text_field_tag 'settings[dingtalk_appid]', @settings['dingtalk_appid'], size: 50 %>
+      <em class="info"><%= l(:text_dingtalk_appid_info) %></em>
+    </p>
+    
+    <p>
+      <label for="settings_dingtalk_appsecret"><%= l(:label_dingtalk_appsecret) %>:</label>
+      <%= password_field_tag 'settings[dingtalk_appsecret]', @settings['dingtalk_appsecret'], size: 50 %>
+      <em class="info"><%= l(:text_dingtalk_appsecret_info) %></em>
+    </p>
+  </fieldset>
+  
+  <fieldset class="box">
+    <legend><%= l(:label_login_type_settings) %></legend>
+    
+    <p>
+      <label><%= l(:label_enabled_login_types) %>:</label>
+      <% login_types = ['local', 'ldap', 'dingtalk'] %>
+      <% login_types.each do |type| %>
+        <label class="block">
+          <%= check_box_tag 'settings[enabled_login_types][]', type, 
+                (@settings['enabled_login_types'] || []).include?(type),
+                id: "settings_enabled_login_types_#{type}" %>
+          <%= l("label_#{type}_login") %>
+        </label>
+      <% end %>
+    </p>
+    
+    <p class="info">
+      <%= l(:text_enabled_login_types_info) %>
+    </p>
+  </fieldset>
+  
+  <fieldset class="box">
+    <legend><%= l(:label_user_matching_settings) %></legend>
+    
+    <p class="info">
+      <%= l(:text_user_matching_info) %>
+      <br/>
+      <strong><%= l(:label_mobile_field_name) %>:</strong> <%= l(:text_mobile_field_name) %>
+    </p>
+  </fieldset>
+</div>
+
+<style>
+.redmine-third-login-settings fieldset {
+  margin-bottom: 20px;
+}
+
+.redmine-third-login-settings .info {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.redmine-third-login-settings label.block {
+  display: block;
+  margin: 5px 0;
+}
+</style>

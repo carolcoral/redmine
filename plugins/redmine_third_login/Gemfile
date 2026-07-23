@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# 钉钉API调用需要httparty
+gem 'httparty', '~> 0.21.0'
+
+# 二维码生成库（可选，如果使用前端生成则不需要）
+# gem 'rqrcode', '~> 2.0'
+
+# 注意：rubocop相关gem已在Redmine主Gemfile中声明
+# 如需添加其他插件特有的开发依赖，请确保不与主项目冲突

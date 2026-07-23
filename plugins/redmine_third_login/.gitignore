@@ -1,0 +1,38 @@
+# 忽略日志文件
+*.log
+log/
+
+# 忽略临时文件
+tmp/
+*.tmp
+*.temp
+
+# 忽略编辑器配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 忽略Ruby相关
+*.gem
+.bundle/
+vendor/bundle
+
+# 忽略测试覆盖率
+coverage/
+.rspec
+
+# 忽略环境配置
+.env
+.env.local
+config/configuration.yml
+
+# 忽略备份文件
+*.bak
+*.backup
+
+# 忽略操作系统文件
+Thumbs.db
+Desktop.ini

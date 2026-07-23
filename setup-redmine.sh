@@ -76,10 +76,130 @@ print_banner() {
 }
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
+# ║  环境初始化：自动管理 Ruby 版本 (rbenv / rvm)                               ║
+# ║  - 自动初始化 rbenv/rvm 环境                                               ║
+# ║  - 解析 Gemfile 中的 Ruby 版本约束                                         ║
+# ║  - 如当前版本不匹配，自动查找已安装兼容版本                                   ║
+# ║  - 如没有兼容版本，自动通过 rbenv 安装                                       ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+setup_ruby_env() {
+  cd "${REDMINE_HOME}"
+
+  # ── 初始化 rbenv ──
+  if [[ -f "$HOME/.rbenv/bin/rbenv" ]]; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init - zsh 2>/dev/null || rbenv init - bash 2>/dev/null || true)" 2>/dev/null
+  elif command -v rbenv &>/dev/null; then
+    eval "$(rbenv init - bash 2>/dev/null || true)" 2>/dev/null
+  fi
+
+  # ── 初始化 rvm ──
+  if [[ -f "$HOME/.rvm/scripts/rvm" ]]; then
+    source "$HOME/.rvm/scripts/rvm" 2>/dev/null || true
+  fi
+
+  # ── 解析 Gemfile 中的 Ruby 版本约束 ──
+  local gemfile_ruby_line
+  gemfile_ruby_line=$(grep "^ruby\b" Gemfile 2>/dev/null || echo "")
+  if [[ -z "$gemfile_ruby_line" ]]; then
+    log_info "Gemfile 中未指定 Ruby 版本约束，跳过版本检查"
+    return 0
+  fi
+
+  # 提取最低版本号 (支持 '>= 3.2.0' 和 ">= 3.2.0" 两种写法)
+  local min_ver
+  min_ver=$(echo "$gemfile_ruby_line" | sed -n "s/.*>= *\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p" | head -1)
+  if [[ -z "$min_ver" ]]; then
+    log_warn "无法解析 Gemfile Ruby 版本约束，跳过"
+    return 0
+  fi
+
+  log_info "Gemfile 要求: Ruby >= ${min_ver}"
+
+  # ── 版本号转整数比较: X.Y.Z -> X*1000000 + Y*1000 + Z ──
+  _ver_to_int() {
+    local v1 v2 v3
+    IFS='.' read -r v1 v2 v3 <<< "${1:-0.0.0}"
+    echo $(( v1 * 1000000 + v2 * 1000 + v3 ))
+  }
+
+  # ── 检查当前 Ruby 是否满足要求 ──
+  local current_ver
+  current_ver=$(ruby -e 'puts RUBY_VERSION' 2>/dev/null || echo "0.0.0")
+  local min_int current_int
+  min_int=$(_ver_to_int "$min_ver")
+  current_int=$(_ver_to_int "$current_ver")
+
+  if [[ $current_int -ge $min_int ]]; then
+    log_ok "Ruby ${current_ver} 满足版本要求"
+    return 0
+  fi
+
+  log_warn "当前 Ruby ${current_ver} 不满足要求 (>= ${min_ver})，需要切换"
+
+  # ── 通过 rbenv 自动管理 Ruby 版本 ──
+  if command -v rbenv &>/dev/null; then
+    # 查找已安装的兼容版本（优先选最新的）
+    local installed best_ver=""
+    installed=$(rbenv versions --bare 2>/dev/null || true)
+    while IFS= read -r ver; do
+      [[ -z "$ver" ]] && continue
+      local ver_int
+      ver_int=$(_ver_to_int "$ver")
+      if [[ $ver_int -ge $min_int ]]; then
+        if [[ -z "$best_ver" ]]; then
+          best_ver="$ver"
+        else
+          local best_int
+          best_int=$(_ver_to_int "$best_ver")
+          [[ $ver_int -gt $best_int ]] && best_ver="$ver"
+        fi
+      fi
+    done <<< "$installed"
+
+    if [[ -n "$best_ver" ]]; then
+      log_info "使用已安装版本: Ruby ${best_ver}"
+    else
+      # 没有兼容版本，自动安装
+      local install_ver="3.3.6"
+      log_info "未找到兼容版本，正在通过 rbenv 安装 Ruby ${install_ver}..."
+      log_info "（首次安装可能需要几分钟，请耐心等待）"
+      if rbenv install -s "$install_ver" 2>&1; then
+        best_ver="$install_ver"
+        log_ok "Ruby ${install_ver} 安装成功"
+      else
+        log_error "Ruby ${install_ver} 安装失败"
+        log_info "请手动执行: rbenv install ${install_ver}"
+        exit 1
+      fi
+    fi
+
+    rbenv local "$best_ver"
+    echo "$best_ver" > "${REDMINE_HOME}/.ruby-version"
+    # 刷新当前 Ruby
+    current_ver=$(ruby -e 'puts RUBY_VERSION' 2>/dev/null || echo "0.0.0")
+    log_ok "Ruby ${current_ver} 就绪"
+    return 0
+  fi
+
+  # ── 未安装 rbenv ──
+  log_error "当前 Ruby ${current_ver} 不满足要求 (>= ${min_ver})，且未检测到 rbenv/rvm"
+  log_info ""
+  log_info "请安装 Ruby 版本管理工具 (推荐 rbenv):"
+  log_info "  macOS:  brew install rbenv ruby-build"
+  log_info "  然后:   rbenv install ${min_ver}"
+  log_info "  最后:   重新运行本脚本"
+  exit 1
+}
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
 # ║  第 1 步：检查 & 安装系统依赖 (Ruby / SQLite / 编译工具)                    ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 step1_check_system() {
   log_step "1/9: 检查系统依赖"
+
+  # ── 自动管理 Ruby 版本（必须在任何 ruby/bundle 命令之前执行） ──
+  setup_ruby_env
 
   # ── 权限提升策略：root 用户直接执行，否则尝试 sudo ──
   local SUDO=""
@@ -292,9 +412,12 @@ SEOF"
   fi
 
   # ── .ruby-version ──
+  # setup_ruby_env 已自动设置正确的版本，此处仅在不存在时补一个最低版本提示
   if [[ ! -f "${REDMINE_HOME}/.ruby-version" ]]; then
-    echo "3.2.0" > "${REDMINE_HOME}/.ruby-version"
-    log_ok ".ruby-version 已创建"
+    local gemfile_ver
+    gemfile_ver=$(grep "^ruby\b" Gemfile 2>/dev/null | sed -n "s/.*>= *\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p" | head -1)
+    echo "${gemfile_ver:-3.2.0}" > "${REDMINE_HOME}/.ruby-version"
+    log_ok ".ruby-version 已创建 (${gemfile_ver:-3.2.0})"
   fi
 
   # ── CNB 云开发环境：自动添加 Host 白名单 ──

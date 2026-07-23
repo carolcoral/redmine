@@ -1,0 +1,102 @@
+<%# 登录方式选择器 - 使用表格布局匹配Redmine样式 %>
+<% if enabled_types.size > 1 %>
+  <div class="login-type-selector" id="login-type-selector">
+    <table>
+      <tr>
+        <td><label for="login-type-select"><%= l(:label_login_type) %>:</label></td>
+        <td>
+          <select id="login-type-select" name="login_type" class="login-type-select">
+            <% enabled_types.each do |type| %>
+              <option value="<%= type %>">
+                <%= l("label_#{type}_login".to_sym) %>
+              </option>
+            <% end %>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+<% end %>
+
+<%# 钉钉登录容器 %>
+<% if enabled_types.include?('dingtalk') %>
+  <%= content_tag(:div, id: 'dingtalk-login-container', 
+                  class: 'dingtalk-login-container', 
+                  style: 'display: none;') do %>
+    <div class="dingtalk-qr-code-wrapper">
+      <h3><%= l(:label_dingtalk_scan_qr) %></h3>
+      <div id="dingtalk-qr-code" class="dingtalk-qr-code"></div>
+      <div id="dingtalk-login-status" class="dingtalk-login-status"></div>
+    </div>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  // 登录方式标签翻译
+  function loginTypeLabel(type) {
+    switch(type) {
+      case 'local': return '<%= j l(:label_local_login) %>';
+      case 'ldap': return '<%= j l(:label_ldap_login) %>';
+      case 'dingtalk': return '<%= j l(:label_dingtalk_login) %>';
+      default: return type;
+    }
+  }
+  
+  // 初始化登录方式选择器
+  document.addEventListener('DOMContentLoaded', function() {
+    const loginTypeSelect = document.getElementById('login-type-select');
+    if (loginTypeSelect) {
+      // 默认选择第一个选项
+      loginTypeSelect.selectedIndex = 0;
+      handleLoginTypeChange(loginTypeSelect.value);
+      
+      // 绑定事件处理
+      loginTypeSelect.addEventListener('change', function() {
+        handleLoginTypeChange(this.value);
+      });
+    }
+  });
+  
+  // 处理登录方式变更
+  function handleLoginTypeChange(loginType) {
+    const usernameField = document.querySelector('#username');
+    const passwordField = document.querySelector('#password');
+    const ldapField = document.querySelector('#ldap-auth-source');
+    const dingtalkContainer = document.getElementById('dingtalk-login-container');
+    const loginSubmit = document.querySelector('input[type="submit"]');
+    const rememberMe = document.querySelector('#autologin');
+    
+    // 隐藏所有字段
+    if (usernameField) usernameField.closest('p')?.style.display = 'none';
+    if (passwordField) passwordField.closest('p')?.style.display = 'none';
+    if (ldapField) ldapField.closest('p')?.style.display = 'none';
+    if (dingtalkContainer) dingtalkContainer.style.display = 'none';
+    if (loginSubmit) loginSubmit.style.display = 'none';
+    if (rememberMe) rememberMe.closest('p')?.style.display = 'none';
+    
+    // 根据登录类型显示相应字段
+    switch(loginType) {
+      case 'local':
+      case 'ldap':
+        if (usernameField) usernameField.closest('p')?.style.display = 'block';
+        if (passwordField) passwordField.closest('p')?.style.display = 'block';
+        if (loginSubmit) loginSubmit.style.display = 'block';
+        if (rememberMe) rememberMe.closest('p')?.style.display = 'block';
+        
+        if (loginType === 'ldap' && ldapField) {
+          ldapField.closest('p')?.style.display = 'block';
+        }
+        break;
+        
+      case 'dingtalk':
+        if (dingtalkContainer) {
+          dingtalkContainer.style.display = 'block';
+          // 生成二维码
+          if (typeof generateDingtalkQRCode === 'function') {
+            generateDingtalkQRCode();
+          }
+        }
+        break;
+    }
+  }
+</script>

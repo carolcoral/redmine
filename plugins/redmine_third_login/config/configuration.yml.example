@@ -1,0 +1,139 @@
+# Redmine Third Login Plugin Configuration Example
+# 作者: carolcoral
+# 
+# 将此文件复制为 configuration.yml 并根据实际情况配置
+# 
+
+production:
+  # 钉钉开放平台配置
+  dingtalk:
+    # 是否启用钉钉登录
+    enabled: true
+    
+    # 钉钉应用AppID（必填）
+    appid: "your-dingtalk-appid-here"
+    
+    # 钉钉应用AppSecret（必填）
+    appsecret: "your-dingtalk-appsecret-here"
+    
+    # 二维码有效时间（分钟）
+    qr_code_timeout: 5
+    
+    # API请求超时时间（秒）
+    api_timeout: 30
+    
+    # 是否启用详细日志
+    debug: false
+  
+  # 登录方式配置
+  login_types:
+    # 是否启用本地登录
+    local: true
+    
+    # 是否启用LDAP登录（需要Redmine已配置LDAP）
+    ldap: true
+    
+    # 是否启用钉钉登录（需要配置钉钉应用）
+    dingtalk: true
+  
+  # 用户匹配配置
+  user_matching:
+    # 用于匹配的自定义字段名称
+    mobile_field: "手机号"
+    
+    # 是否允许自动创建用户（未来功能）
+    auto_create_user: false
+    
+    # 自动创建用户的默认角色ID
+    default_role_id: 4  # 通常为"报告者"
+  
+  # 安全设置
+  security:
+    # 是否强制HTTPS回调
+    force_https_callback: true
+    
+    # CSRF令牌有效期（分钟）
+    csrf_token_timeout: 10
+    
+    # 允许的回调域名列表
+    allowed_hosts:
+      - "your-redmine-domain.com"
+      - "www.your-redmine-domain.com"
+  
+  # 日志配置
+  logging:
+    # 日志级别: debug, info, warn, error
+    level: "info"
+    
+    # 是否记录API请求和响应
+    log_api_calls: true
+    
+    # 是否记录用户匹配详情
+    log_user_matching: true
+    
+    # 敏感信息掩码（不在日志中显示）
+    mask_sensitive_data: true
+
+development:
+  dingtalk:
+    enabled: true
+    appid: "your-dev-dingtalk-appid"
+    appsecret: "your-dev-dingtalk-appsecret"
+    qr_code_timeout: 10
+    api_timeout: 60
+    debug: true
+  
+  login_types:
+    local: true
+    ldap: true
+    dingtalk: true
+  
+  user_matching:
+    mobile_field: "手机号"
+    auto_create_user: false
+    default_role_id: 4
+  
+  security:
+    force_https_callback: false
+    csrf_token_timeout: 30
+    allowed_hosts:
+      - "localhost"
+      - "localhost:3000"
+      - "127.0.0.1"
+      - "127.0.0.1:3000"
+  
+  logging:
+    level: "debug"
+    log_api_calls: true
+    log_user_matching: true
+    mask_sensitive_data: false
+
+test:
+  dingtalk:
+    enabled: false
+    appid: "test-dingtalk-appid"
+    appsecret: "test-dingtalk-appsecret"
+    qr_code_timeout: 5
+    api_timeout: 30
+    debug: false
+  
+  login_types:
+    local: true
+    ldap: false
+    dingtalk: false
+  
+  user_matching:
+    mobile_field: "手机号"
+    auto_create_user: false
+    default_role_id: 4
+  
+  security:
+    force_https_callback: false
+    csrf_token_timeout: 10
+    allowed_hosts: []
+  
+  logging:
+    level: "error"
+    log_api_calls: false
+    log_user_matching: false
+    mask_sensitive_data: true

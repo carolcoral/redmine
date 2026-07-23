@@ -1,0 +1,64 @@
+<%# frozen_string_literal: true %>
+<% parent_id = parent[:id].to_i %>
+<% issue_ids = Array(issues).map(&:id) %>
+<%
+  children_by_parent = mapping.group_by { |cid, info| info[:parent_id].to_i }
+                              .transform_values { |arr| arr.map { |cid, _| cid.to_i } }
+  field_ids = ([parent_id] + mapping.keys.map(&:to_i) + mapping.values.map { |v| v[:parent_id].to_i if v[:parent_id] }.compact).uniq
+
+  fields_by_id ||= CustomField.where(id: field_ids).index_by(&:id)
+  parent_cf = fields_by_id[parent_id]
+
+  fields_hierarchy = []
+  current = [parent_cf.id]
+  while current.any?
+    next_ids = []
+    fields = current.map { |cid| fields_by_id[cid] }.compact.select do |cf|
+      visible = issues.all? do |issue|
+        begin
+          issue.available_custom_fields.include?(cf) &&
+            RedmineDependingCustomFields::CustomFieldVisibility.visible_to_user?(cf, issue.project, User.current)
+        rescue NoMethodError
+          true
+        end
+      end
+      next_ids += (children_by_parent[cf.id] || []) if visible
+      visible
+    end
+    fields_hierarchy << fields if fields.any?
+    current = next_ids
+  end
+%>
+<li class="folder cf-parent"
+    data-parent-id="<%= parent_cf.id %>"
+    data-issue-ids="<%= issue_ids.join(',') %>"
+    data-template-id="cf-wizard-<%= parent_cf.id %>">
+  <a href="#" class="submenu" data-template-id="cf-wizard-<%= parent_cf.id %>"><%= h(parent_cf.name) %></a>
+</li>
+<template id="cf-wizard-<%= parent_cf.id %>">
+  <form class="cf-wizard-form"
+        data-parent-id="<%= parent_cf.id %>"
+        data-issue-ids="<%= issue_ids.join(',') %>">
+    <% issue_ids.each do |id| %>
+      <input type="hidden" name="ids[]" value="<%= id %>" />
+    <% end %>
+    <input type="hidden" name="issue_ids" value="<%= issue_ids.join(',') %>" />
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+    <div class="cf-cols">
+      <% fields_hierarchy.each_with_index do |field_level, index| %>
+        <div class="cf-col" data-level="<%= index %>">
+          <% field_level.each do |cf| %>
+            <div class="cf-wizard-field">
+              <span title="<%= cf.description.presence %>" class="field-description"><%= h(cf.name) %></span>
+              <%= render_custom_field(cf, issues) %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="cf-actions">
+      <button type="submit" class="icon icon-save"><%= l(:button_save) %></button>
+    </div>
+  </form>
+</template>
+

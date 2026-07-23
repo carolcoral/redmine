@@ -1,0 +1,202 @@
+/*
+ * Redmine Third Login Plugin Styles
+ * 作者: carolcoral
+ */
+
+/* 登录方式选择器样式 - 放在按钮上方 */
+.login-type-selector {
+  margin-bottom: 15px;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.login-type-selector table {
+  width: 100%;
+}
+
+.login-type-selector td {
+  padding: 5px 0;
+}
+
+.login-type-selector label {
+  font-weight: bold;
+  color: #333;
+  padding-right: 10px;
+}
+
+.login-type-select {
+  width: 100%;
+  max-width: 300px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.login-type-select:focus {
+  border-color: #5b9dd9;
+  box-shadow: 0 0 2px rgba(91, 157, 217, 0.8);
+  outline: none;
+}
+
+/* 钉钉登录容器样式 */
+.dingtalk-login-container {
+  margin: 20px 0;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.dingtalk-qr-code-wrapper {
+  display: inline-block;
+  max-width: 300px;
+}
+
+.dingtalk-qr-code-wrapper h3 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 二维码容器样式 */
+.dingtalk-qr-code {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 15px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.dingtalk-qr-code img {
+  width: 100%;
+  height: 100%;
+}
+
+.dingtalk-qr-code canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 登录状态显示样式 */
+.dingtalk-login-status {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.dingtalk-login-status.info {
+  background-color: #d9edf7;
+  border: 1px solid #bce8f1;
+  color: #31708f;
+}
+
+.dingtalk-login-status.error {
+  background-color: #f2dede;
+  border: 1px solid #ebccd1;
+  color: #a94442;
+}
+
+.dingtalk-login-status.success {
+  background-color: #dff0d8;
+  border: 1px solid #d6e9c6;
+  color: #3c763d;
+}
+
+/* 备选登录链接样式 */
+.dingtalk-login-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0089ff;
+  color: white !important;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.dingtalk-login-link:hover {
+  background-color: #0066cc;
+  text-decoration: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .login-type-selector {
+    margin-bottom: 15px;
+    padding: 8px;
+  }
+  
+  .dingtalk-login-container {
+    margin: 15px 0;
+    padding: 15px;
+  }
+  
+  .dingtalk-qr-code {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dingtalk-qr-code {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .login-type-select {
+    width: 100%;
+    margin-top: 5px;
+  }
+}
+
+/* 表单元素过渡动画 */
+#login-form p,
+.dingtalk-login-container {
+  transition: all 0.3s ease-in-out;
+}
+
+/* LDAP字段特定样式 */
+#ldap-auth-source {
+  width: 100%;
+  max-width: 300px;
+}
+
+/* 错误提示样式 */
+.flash.error {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  color: #c62828;
+}
+
+/* 警告提示样式 */
+.flash.warning {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #fff3e0;
+  border: 1px solid #ffcc02;
+  border-radius: 4px;
+  color: #ef6c00;
+}
+
+/* 成功提示样式 */
+.flash.notice {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 4px;
+  color: #2e7d32;
+}

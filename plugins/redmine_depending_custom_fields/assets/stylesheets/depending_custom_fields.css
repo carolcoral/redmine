@@ -1,0 +1,90 @@
+.dependencies-matrix th { text-align: left; }
+/*.depending-child { margin-left: 20px; }*/
+
+.cf-wizard-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ccc;
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: cf-spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes cf-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* context menu wizard panel */
+.cf-wizard {
+  background: #fff;
+  border: 1px solid #bbb;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+  padding: 6px;
+  display: inline-block;
+  min-width: 200px;
+  width: auto;
+  max-width: none;
+  z-index: 10000;
+  margin: 0;
+  font-size: 0.9em; /* match context menu */
+  font-family: inherit;
+}
+
+#cf-wizard-container {
+  position: absolute;
+}
+
+#context-menu.cf-has-wizard ul.cf-wizard {
+  width: auto !important;
+  min-width: unset !important;
+  max-width: none !important;
+}
+
+.context-menu.cf-wizard {
+  list-style: none;
+}
+
+.cf-wizard .cf-cols {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cf-wizard .cf-col {
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-wizard .cf-wizard-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4px;
+}
+
+.cf-wizard .field-description {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.cf-wizard label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.cf-wizard select {
+  min-width: 180px;
+  width: max-content;
+  max-width: 260px;
+  margin-bottom: 4px;
+}
+
+.cf-wizard .cf-actions {
+  flex-basis: 100%;
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
