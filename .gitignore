@@ -37,6 +37,7 @@
 /tmp/sockets/*
 /tmp/test/*
 /tmp/thumbnails/*
+vendor
 /vendor/cache
 *.rbc
 
