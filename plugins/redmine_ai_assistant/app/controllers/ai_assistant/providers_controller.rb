@@ -63,7 +63,7 @@ module AiAssistant
     end
 
     def provider_params
-      params.require(:ai_provider).permit(
+      params.require(:ai_assistant_ai_provider).permit(
         :name, :slug, :provider_type, :api_url, :api_key,
         :default_model, :available_models, :settings, :is_enabled, :position
       )

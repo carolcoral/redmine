@@ -46,20 +46,29 @@
     <!-- 报告快捷操作栏 -->
     <div class="ai-chat-report-bar">
       <button class="ai-chat-report-btn"
-              data-action="generateReport"
+              data-action="pickPeriod"
               data-report-type="daily">
         📅 <%= l(:label_daily_report) %>
       </button>
       <button class="ai-chat-report-btn"
-              data-action="generateReport"
+              data-action="pickPeriod"
               data-report-type="weekly">
         📊 <%= l(:label_weekly_report) %>
       </button>
       <button class="ai-chat-report-btn"
-              data-action="generateReport"
+              data-action="pickPeriod"
               data-report-type="monthly">
         📈 <%= l(:label_monthly_report) %>
       </button>
+    </div>
+
+    <!-- 时间周期选择器（点击报告按钮后显示） -->
+    <div id="ai-chat-period-picker"
+         class="ai-chat-period-picker"
+         style="display:none;">
+      <span class="ai-chat-period-label">选择报告周期：</span>
+      <button class="ai-chat-period-option" data-period-offset="0">今日</button>
+      <button class="ai-chat-period-option" data-period-offset="-1">昨日</button>
     </div>
 
     <!-- 消息列表 -->

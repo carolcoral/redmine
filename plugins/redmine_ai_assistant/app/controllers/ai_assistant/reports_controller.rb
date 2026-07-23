@@ -30,12 +30,14 @@ module AiAssistant
       timezone = Setting.plugin_redmine_ai_assistant.try(:[], 'report_timezone')
       provider_id = params[:provider_id] ||
                     Setting.plugin_redmine_ai_assistant.try(:[], 'default_provider_id')
+      period_offset = params[:period_offset]
 
       generator = ReportGenerator.new(
         User.current,
-        report_type: report_type,
-        timezone:    timezone,
-        provider_id: provider_id
+        report_type:    report_type,
+        timezone:       timezone,
+        provider_id:    provider_id,
+        period_offset:  period_offset
       )
 
       result = generator.generate

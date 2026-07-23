@@ -96,8 +96,8 @@ module AiAssistant
     end
 
     def encryption_key
-      secret = Rails.application.credentials.secret_key_base ||
-               Rails.application.secrets.try(:secret_key_base) ||
+      secret = Rails.application.secret_key_base ||
+               Rails.application.credentials.secret_key_base ||
                'redmine_ai_assistant_fallback_key_do_not_use_in_production'
       Digest::SHA256.digest(secret.to_s)
     end

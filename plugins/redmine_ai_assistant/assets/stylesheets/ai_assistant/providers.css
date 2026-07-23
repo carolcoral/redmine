@@ -1,50 +1,31 @@
 /* Redmine AI Assistant - Provider management form styles */
 
 /* Fix label/input overlap on provider forms */
+/* Use Redmine native .tabular layout (float-based) instead of flex
+   to avoid conflicts with Redmine's .tabular label float positioning */
 .ai-provider-form.box.tabular p,
 #ai-provider-form.box.tabular p {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin: 0;
-  padding: 8px 0;
+  padding-block: 6px;
+  min-block-size: 2em;
 }
 
+/* Ensure label stays in its native position */
 .ai-provider-form.box.tabular p > label,
 #ai-provider-form.box.tabular p > label {
-  flex: 0 0 160px;
-  max-width: 160px;
-  text-align: right;
-  font-weight: bold;
-  line-height: 1.4;
-  word-wrap: break-word;
-  hyphens: auto;
+  float: inline-start;
+  text-align: end;
+  margin-inline-start: -180px;
+  inline-size: 175px;
+  line-height: 24px;
 }
 
-.ai-provider-form.box.tabular p > input,
-.ai-provider-form.box.tabular p > select,
-.ai-provider-form.box.tabular p > textarea,
-#ai-provider-form.box.tabular p > input,
-#ai-provider-form.box.tabular p > select,
-#ai-provider-form.box.tabular p > textarea {
-  flex: 1 1 300px;
-  min-width: 200px;
-  max-width: 100%;
-}
-
+/* Hint/info text alignment under the input */
 .ai-provider-form.box.tabular p > .info,
 #ai-provider-form.box.tabular p > .info {
-  flex: 1 1 100%;
-  margin-left: 172px;
+  display: block;
+  margin-left: 180px;
   font-size: 0.9em;
   color: #666;
-}
-
-/* Checkbox row alignment */
-.ai-provider-form.box.tabular p input[type="checkbox"],
-#ai-provider-form.box.tabular p input[type="checkbox"] {
-  flex: 0 0 auto;
 }
 
 /* Submit button spacing */

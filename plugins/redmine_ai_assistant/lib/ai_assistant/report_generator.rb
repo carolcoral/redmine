@@ -6,32 +6,35 @@ module AiAssistant
     # ========== 常量 ==========
     REPORT_TYPES = %w[daily weekly monthly].freeze
 
-    attr_reader :user, :report_type, :timezone, :provider_id
+    attr_reader :user, :report_type, :timezone, :provider_id, :period_offset
 
-    def initialize(user, report_type:, timezone: nil, provider_id: nil)
-      @user        = user
-      @report_type = report_type.to_s
-      @timezone    = timezone || Setting.user_format_time_zone(user) rescue 'UTC'
-      @provider_id = provider_id
+    # period_offset: 0 = 当前周期, -1 = 上一周期（昨日/上周/上月）
+    def initialize(user, report_type:, timezone: nil, provider_id: nil, period_offset: nil)
+      @user          = user
+      @report_type   = report_type.to_s
+      @timezone      = timezone || Setting.user_format_time_zone(user) rescue 'UTC'
+      @provider_id   = provider_id
+      @period_offset = (period_offset || 0).to_i
 
       raise ArgumentError, "Invalid report type: #{report_type}" unless REPORT_TYPES.include?(@report_type)
     end
 
-    # 收集用户行为数据
+    # 收集用户行为数据（所有 issue 相关数据仅包含指派给当前用户的任务）
     def collect_data
       range = time_range
 
       {
-        user_name:      user.name,
-        report_type:    report_type,
-        period:         "#{range.begin.to_date} ~ #{range.end.to_date}",
-        time_entries:   fetch_time_entries(range),
-        issues_created: fetch_issues_created(range),
-        issues_updated: fetch_issues_updated(range),
-        issues_closed:  fetch_issues_closed(range),
-        comments:       fetch_comments(range),
-        wiki_updates:   fetch_wiki_updates(range),
-        projects:       user_projects
+        user_name:           user.name,
+        report_type:         report_type,
+        period:              "#{range.begin.to_date} ~ #{range.end.to_date}",
+        period_label:        period_label,
+        time_entries:        fetch_time_entries(range),
+        issues_assigned:     fetch_issues_assigned(range),
+        issue_change_history: fetch_issue_change_history(range),
+        issues_closed:       fetch_issues_closed(range),
+        comments:            fetch_comments(range),
+        wiki_updates:        fetch_wiki_updates(range),
+        projects:            user_projects
       }
     end
 
@@ -78,18 +81,29 @@ module AiAssistant
 
     def time_range
       tz_offset = ActiveSupport::TimeZone.new(timezone)&.utc_offset || 0
-      now = Time.current
+      now  = Time.current
+      base = now
+
+      # 根据 period_offset 偏移到目标周期
+      case report_type
+      when 'daily'
+        base = now + period_offset.days
+      when 'weekly'
+        base = now + (period_offset * 7).days
+      when 'monthly'
+        base = now + period_offset.months
+      end
 
       case report_type
       when 'daily'
-        start_time = now.beginning_of_day - tz_offset
-        end_time   = now.end_of_day - tz_offset
+        start_time = base.beginning_of_day - tz_offset
+        end_time   = base.end_of_day - tz_offset
       when 'weekly'
-        start_time = now.beginning_of_week - tz_offset
-        end_time   = now.end_of_week - tz_offset
+        start_time = base.beginning_of_week - tz_offset
+        end_time   = base.end_of_week - tz_offset
       when 'monthly'
-        start_time = now.beginning_of_month - tz_offset
-        end_time   = now.end_of_month - tz_offset
+        start_time = base.beginning_of_month - tz_offset
+        end_time   = base.end_of_month - tz_offset
       end
 
       start_time..end_time
@@ -112,8 +126,9 @@ module AiAssistant
       end
     end
 
-    def fetch_issues_created(range)
-      Issue.where(author_id: user.id)
+    # 查询指派给当前用户的新增任务（筛选 assigned_to_id，而非 author_id）
+    def fetch_issues_assigned(range)
+      Issue.where(assigned_to_id: user.id)
            .where(created_on: range)
            .includes(:project, :tracker, :status, :priority)
            .order(created_on: :desc)
@@ -131,15 +146,93 @@ module AiAssistant
     end
 
     def fetch_issues_updated(range)
+      # 保留旧方法兼容，但主流程改用 fetch_issue_change_history
+      assigned_issue_ids = Issue.where(assigned_to_id: user.id).pluck(:id)
       Journal.where(user_id: user.id)
              .where(created_on: range)
              .where(journalized_type: 'Issue')
+             .where(journalized_id: assigned_issue_ids)
              .includes(:issue)
              .order(created_on: :desc)
              .group_by(&:journalized_id)
              .transform_values { |journals| journals.map { |j| extract_journal_details(j) } }
     rescue StandardError
       {}
+    end
+
+    # 查询指派给用户的 issue 在报告周期内的完整变更历史
+    # 返回按 issue 分组的、按时间排序的 journal 记录，展示任务推进时间线
+    def fetch_issue_change_history(range)
+      assigned_issue_ids = Issue.where(assigned_to_id: user.id).pluck(:id)
+      journals = Journal.where(journalized_type: 'Issue')
+                        .where(journalized_id: assigned_issue_ids)
+                        .where(created_on: range)
+                        .includes(:issue, :user)
+                        .order(created_on: :asc)
+
+      # 按 issue 分组
+      grouped = journals.group_by(&:journalized_id)
+
+      grouped.transform_values do |jls|
+        issue = jls.first.issue
+        {
+          issue_id:    issue&.id,
+          subject:     issue&.subject,
+          project:     issue&.project&.name,
+          tracker:     issue&.tracker&.name,
+          status:      issue&.status&.name,
+          priority:    issue&.priority&.name,
+          created_on:  issue&.created_on&.to_s,
+          timeline:    jls.map { |j| format_journal_entry(j) }
+        }
+      end
+    rescue StandardError
+      {}
+    end
+
+    def format_journal_entry(journal)
+      entry = {
+        time:    journal.created_on.strftime('%Y-%m-%d %H:%M'),
+        user:    journal.user&.name,
+        notes:   journal.notes.presence
+      }
+
+      details = journal.visible_details.map do |d|
+        format_detail(d)
+      end.compact
+
+      entry[:changes] = details if details.any?
+      entry
+    end
+
+    # 格式化 journal detail 为可读文本
+    DETAIL_LABELS = {
+      'status_id'   => '状态',
+      'priority_id' => '优先级',
+      'assigned_to_id' => '指派人',
+      'fixed_version_id' => '版本',
+      'done_ratio'  => '完成度',
+      'start_date'  => '开始日期',
+      'due_date'    => '截止日期',
+      'estimated_hours' => '预估工时',
+      'subject'     => '标题',
+      'description' => '描述',
+      'tracker_id'  => '类型',
+      'project_id'  => '项目',
+      'category_id' => '分类',
+      'parent_id'   => '父任务'
+    }.freeze
+
+    def format_detail(detail)
+      label = DETAIL_LABELS[detail.prop_key] || detail.prop_key
+      old_v = detail.old_value.presence || '(空)'
+      new_v = detail.value.presence || '(空)'
+
+      # 截断长文本
+      old_v = old_v.truncate(50) if old_v.length > 50
+      new_v = new_v.truncate(50) if new_v.length > 50
+
+      "#{label}: #{old_v} → #{new_v}"
     end
 
     def fetch_issues_closed(range)
@@ -241,17 +334,26 @@ module AiAssistant
     def build_user_prompt(data)
       <<~PROMPT
         Please generate a #{report_type} work report for user: #{data[:user_name]}
-        Report period: #{data[:period]}
+        Report period: #{data[:period]} (#{data[:period_label]})
+
+        **IMPORTANT: All issue/task data below is filtered by "assigned to #{data[:user_name]}" only.**
 
         ## Raw Data
 
         ### Time Entries (#{data[:time_entries].length} records)
         #{format_time_entries(data[:time_entries])}
 
-        ### Issues Created (#{data[:issues_created].length} records)
-        #{format_issues(data[:issues_created])}
+        ### Issues Assigned to You This Period (#{data[:issues_assigned].length} records)
+        #{format_issues(data[:issues_assigned])}
 
-        ### Issues Closed (#{data[:issues_closed].length} records)
+        ### Issue Change History Timeline (Cross-Period Tracking)
+        #{format_change_history(data[:issue_change_history])}
+
+        **Note**: The timeline above shows issue changes that occurred during this report period.
+        Some issues may have been created earlier but had updates/changes during this period.
+        Use this timeline to understand the progress and evolution of each task.
+
+        ### Issues Closed by You (#{data[:issues_closed].length} records)
         #{format_issues(data[:issues_closed])}
 
         ### Comments Made (#{data[:comments].length} records)
@@ -260,7 +362,7 @@ module AiAssistant
         ### Projects Involved
         #{data[:projects].join(', ')}
 
-        Generate the report now.
+        Generate the report now with rich details from the change history timeline.
       PROMPT
     end
 
@@ -270,6 +372,48 @@ module AiAssistant
       when 'weekly'  then '周报'
       when 'monthly' then '月报'
       end
+    end
+
+    def period_label
+      case report_type
+      when 'daily'
+        period_offset == 0 ? '今日' : '昨日'
+      when 'weekly'
+        period_offset == 0 ? '本周' : '上周'
+      when 'monthly'
+        period_offset == 0 ? '本月' : '上月'
+      end
+    end
+
+    def format_change_history(history)
+      return '(无变更记录)' if history.blank?
+
+      lines = []
+      history.each do |issue_id, data|
+        next if data.blank? || data[:timeline].blank?
+
+        lines << ""
+        lines << "---"
+        lines << "**[##{data[:issue_id]}] #{data[:subject]}**"
+        lines << "  项目: #{data[:project]} | 类型: #{data[:tracker]} | 当前状态: #{data[:status]} | 优先级: #{data[:priority]}"
+        lines << "  创建于: #{data[:created_on]}"
+
+        data[:timeline].each do |entry|
+          time_str = entry[:time]
+          user_str = entry[:user] || '系统'
+          lines << "  📍 #{time_str} by #{user_str}:"
+          entry[:changes]&.each do |change|
+            lines << "     • #{change}"
+          end
+          if entry[:notes].present?
+            lines << "     💬 #{entry[:notes].truncate(150)}"
+          end
+        end
+      end
+
+      return '(无变更记录)' if lines.empty?
+
+      lines.join("\n")
     end
 
     def format_time_entries(entries)
