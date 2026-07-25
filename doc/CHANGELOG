@@ -6,223 +6,193 @@ https://www.redmine.org/
 
 == 2026-06-30 v7.0.0
 
-=== [Accounts / authentication]
+Redmine 7.0.0 基于 Rails 8 与 Ruby 4.0，包含原生 Webhook、预览能力增强、
+界面体系重构及多项性能 / 安全改进。本次发布涵盖 32 个模块分类、150+ 项变更。
+最新发布说明的结构化版本见仓库根目录 CHANGELOG.md。
 
-* Feature #43808: Change default admin email to admin@dummy.invalid for clarity
-* Feature #44052: Enable sudo mode by default
+=== [Platform / 平台与依赖]
+* Feature #43205: 升级至 Rails 8
+* Feature #43650: 支持 Ruby 4.0
+* Patch #42737: HTML 过滤由 html-pipeline 迁移至 Loofah
+* Patch #43388: 移除 Internet Explorer 兼容 CSS
+* Patch #43845: 移除 Raphael.js 依赖，转向原生 SVG API
 
-=== [Administration]
+=== [Accounts / Authentication / 账号与认证]
+* Feature #43808: 默认管理员邮箱改为 admin@dummy.invalid（更清晰）
+* Feature #44052: 默认启用 Sudo 模式
 
-* Feature #44062: Add an Environment heading to the admin information page
+=== [Administration / 管理]
+* Feature #44062: 管理信息页新增 Environment 分区
 
-=== [Attachments]
+=== [Attachments / 附件与预览]
+* Feature #8959: 支持 Microsoft Office / LibreOffice Writer 文件预览
+* Feature #22483: PDF 附件与仓库条目改为内联预览而非下载
+* Feature #43943: 新增 AVIF 图像支持
+* Defect #44126: 修复 SVG 附件以 XML 源码而非图像预览
+* Defect #44029: 修复预览中宽表格溢出容器边框
+* Defect #44186: 修复超长扩展名文件上传失败
 
-* Defect #44029: Wide tables in attachment preview overflow the container border
-* Defect #44126: SVG attachments are displayed as XML source instead of image previews
-* Defect #44186: Uploading files with excessively long extensions may fail
-* Feature #8959: Preview support for Microsoft Office and LibreOffice Writer files
-* Feature #22483: Show PDF attachments and repo entries instead of downloading them
-* Feature #43943: AVIF images support
+=== [Calendar / 日历]
+* Feature #43728: 今日指示器由黄色背景改为蓝色日期圆点
 
-=== [Calendar]
+=== [Code cleanup / 代码清理]
+* Defect #42408: 修正 JS 函数名拼写 toggleExpendCollapseIcon
+* Patch #43206: 移除废弃的 icon-* 样式类
+* Patch #43276: 以 form.textarea 取代 form.text_area
+* Patch #43289: 修正 News fixture 中 comments_count 取值
+* Patch #43321: 移除废弃方法 ApplicationHelper#render_if_exist
+* Patch #43388: 移除 IE 兼容 CSS hack
+* Patch #43429: 移除 acts_as_watchable 未用方法
+* Patch #43643: Textile 处理对齐 CommonMark（统一使用 Loofah）
+* Patch #43702: 移除未用 CSS 规则
+* Patch #43745: 将内联附件解析逻辑移至 scrubbers
+* Patch #43802: 示例与测试中避免使用非保留域名
+* Patch #44074: 移除 twofa token 查询中冗余 scope
+* Patch #44117: 移除过时的 .hgignore
+* Patch #44169: 上下文菜单控制器重构为命名空间子控制器
+* Patch #44195: .gitignore 新增 __pycache__
 
-* Feature #43728: Change calendar today indicator from yellow background to blue date circle
+=== [Custom fields / 自定义字段]
+* Feature #44129: 日期格式自定义字段支持相对默认值
 
-=== [Code cleanup/refactoring]
+=== [Documentation / 文档]
+* Patch #43800: 在 doc/licenses 下补充第三方组件许可文件
+* Patch #43822: CommonMark 帮助示例采用逻辑 CSS 属性以支持 RTL
+* Patch #43931: 移除 .github/PULL_REQUEST_TEMPLATE.md（已禁用 PR）
 
-* Defect #42408: Typo in Javascript function name 'toggleExpendCollapseIcon': s//Expend/Expand
-* Patch #42737: Replacing html-pipeline with Loofah for HTML Filtering
-* Patch #43206: Remove deprecated icon-* classes from stylesheets
-* Patch #43276: Replace the use of form.text_area with form.textarea
-* Patch #43289: Incorrect comments_count value in News fixture for news_001
-* Patch #43321: Remove deprecated method ApplicationHelper#render_if_exist
-* Patch #43388: Remove CSS hacks for Internet Explorer
-* Patch #43429: Remove unused method addable_watcher_users from acts_as_watchable.rb
-* Patch #43643: Align the Textile processing approach with CommonMark by using Loofah
-* Patch #43702: Remove unused CSS rules
-* Patch #43745: Move parse_hires_images and parse_inline_attachments to scrubbers
-* Patch #43802: Avoid using non-reserved domain names in examples and tests
-* Patch #44074: ignored and unnecessary scope in twofa token lookup
-* Patch #44117: Remove obsolete .hgignore file
-* Patch #44169: Refactor context menus controller to namespaced sub-controllers
-* Patch #44195: Add `__pycache__` directory to .gitignore
+=== [Email notifications / 邮件通知]
+* Feature #2716: 用户可选项：自动将经办人加入观察者
+* Feature #37978: 新增「仅关注对象」邮件通知选项
+* Defect #38513: 修正 MIME-Version 邮件头字段大小写
+* Defect #44173: 密码重置安全通知补充 IP 地址
 
-=== [Custom fields]
+=== [Filters / 过滤器]
+* Defect #38055: 修复自定义字段「不包含」操作符忽略空值问题单
 
-* Feature #44129: Allow relative default values for date format custom fields
+=== [Gantt / 甘特图]
+* Feature #43397: 甘特图代码拆分为视图 + Stimulus 控制器
+* Feature #43678: 改善 RTL 环境下的甘特图表现
 
-=== [Documentation]
+=== [Gems support / 依赖更新]
+* Patch #43323: RuboCop Performance → 1.26 · #43324: Rubyzip → 3.4
+* Patch #43395: roadie-rails → 3.4 · #43396: propshaft → 1.3
+* Patch #43408: Commonmark → 2.5 · #43437: RuboCop → 1.88
+* Patch #43438: RuboCop Rails → 2.34 · #43465: pg → 1.6
+* Patch #43466: sqlite3 → 2.9 · #43472: Mail → 2.9
+* Patch #43594: Commonmarker → 2.8 · #43981: net-ldap → 0.20
+* Patch #44032: Trilogy → 2.12 · #44139: Rouge → 5.0
+* Patch #44200: I18n → 1.15
 
-* Patch #43800: Add local license files under doc/licenses for bundled third-party components
-* Patch #43822: Use logical CSS property in CommonMark help examples for RTL support
-* Patch #43931: Remove .github/PULL_REQUEST_TEMPLATE.md as pull requests are disabled
+=== [Groups / 用户组]
+* Patch #43640: 用户视图支持批量增删组内成员
 
-=== [Email notifications]
+=== [Hook requests / 钩子]
+* Patch #43084: 新增 view_issues_edit_top 钩子以定制问题编辑表单
 
-* Defect #38513: Incorrect case of MIME-Version email header field name
-* Defect #44173: Password reset security notification does not include IP address
-* Feature #2716: User option to automatically add assignee to watchers
-* Feature #37978: Add a mail notification option for watched objects only
+=== [I18n / 国际化]
+* Feature #4507: 姓名字段顺序遵循「用户显示格式」设置
+* Patch #44065: 移除未使用的 i18n key
 
-=== [Filters]
+=== [Importers / 导入]
+* Defect #41434: 修复首行带换行的 CRLF CSV 导入失败
+* Feature #43363: 改进导入视图的错误信息展示
+* Feature #43918: 废弃损坏的 Mantis / Trac 迁移 rake 任务
 
-* Defect #38055: Filter operator "doesn't contain" on custom fields ignores issues with no value
+=== [Issues / 问题]
+* Feature #9432: 问题私密标记支持默认值
+* Feature #31518: 新问题截止日期支持相对今天的偏移
+* Feature #43085: 引用内容时滚动至备注区而非编辑表单顶部
+* Feature #43885: 问题与上一/下一链接样式对齐分页按钮
+* Feature #43895: 新安装默认关闭「以今天作为新问题开始日期」
+* Feature #43969: 子任务 / 关联问题区「添加」链接增加图标
+* Feature #43996: 经办人下拉新增用户 / 组排序设置
+* Feature #44015: 经办人下拉支持「按用户组」展示
 
-=== [Gantt]
+=== [Issues filter / 问题过滤]
+* Feature #43968: IssueQuery 的 estimated_hours / spent_time 过滤支持 0:45h 格式
 
-* Feature #43397: Organize Gantt chart code by separating it into views and Stimulus controllers
-* Feature #43678: Improve Gantt chart behavior in RTL environments
+=== [Issues list / 问题列表]
+* Feature #43615: 问题列表所有时间跟踪列右对齐
 
-=== [Gems support]
+=== [Performance / 性能]
+* Defect #43742: 修复缺失 #wrapper 定位导致的回流开销
+* Defect #43838: 修复大量用户实例下 @login 提及渲染性能问题
+* Feature #43957: 改进工作流更新性能
+* Feature #44194: 缓存用户提及自动补全响应，减少冗余请求
+* Patch #43934: 优化 Issue#visible_journals_with_index 预加载（Gravatar 关闭时跳过 email）
+* Patch #44190: 限制提及初始建议数量以提升性能
 
-* Patch #43323: Update RuboCop Performance to 1.26
-* Patch #43324: Update Rubyzip to 3.4
-* Patch #43395: Update roadie-rails to 3.4
-* Patch #43396: Update propshaft to 1.3
-* Patch #43408: Update Commonmark gem to 2.5
-* Patch #43437: Update RuboCop to 1.88
-* Patch #43438: Update RuboCop Rails to 2.34
-* Patch #43465: Update pg gem to 1.6
-* Patch #43466: Update sqlite3 gem to 2.9
-* Patch #43472: Update Mail gem to 2.9
-* Patch #43594: Update Commonmarker gem to 2.8
-* Patch #43981: Update net-ldap to 0.20
-* Patch #44032: Update Trilogy gem to 2.12
-* Patch #44139: Update Rouge to 5.0
-* Patch #44200: Update I18n gem to 1.15
+=== [Project settings / 项目设置]
+* Feature #44013: 项目「成员」标签页增加用户组链接
 
-=== [Groups]
+=== [Projects / 项目]
+* Feature #37480: 项目成员关系支持 CSV 导出
+* Feature #43818: 所有项目页面（非仅概览）显示关闭项目警告
 
-* Patch #43640: Improve Group Controller – Enable Adding/Removing Multiple Users from Users View
+=== [REST API / 接口]
+* Feature #43569: Wiki 页面 API 响应新增所属项目
+* Feature #43938: 记录 API / Atom 访问密钥最后使用时间
+* Feature #44153: 问题自定义字段 API 响应包含关联项目
+* Defect #44152: 修复非问题自定义字段不返回可见角色
+* Defect #44165: 修复 API Key 认证失败时错误返回 Basic 质询
 
-=== [Hook requests]
+=== [Rails support / Rails]
+* Feature #43205: 升级至 Rails 8
 
-* Patch #43084: Add view_issues_edit_top hook to customize the issue editing form
+=== [Roadmap / 路线图]
+* Feature #39882: 路线图视图高亮选中版本
 
-=== [I18n]
+=== [Ruby support / Ruby]
+* Feature #43650: 支持 Ruby 4.0
 
-* Feature #4507: Make first and last name field order follow Users display format setting
-* Patch #44065: Remove unused i18n keys
+=== [SCM / 版本控制]
+* Defect #43965: 修复变更集视图上/下一条链接顺序与列表不一致
+* Patch #42762: 改进仓库页 Git / Mercurial 修订图
 
-=== [Importers]
+=== [Text formatting / 文本格式化]
+* Feature #42444: 允许在文本格式中使用 CSS text-decoration
+* Feature #43950: 支持将表格粘贴为 CommonMark / Textile 表格
+* Feature #44061: CommonMark 文本域支持 Tab / Shift+Tab 缩进选中行
 
-* Defect #41434: CSV import fails on CRLF files when first row has quoted field with newline
-* Feature #43363: Improve error message display in imports view
-* Feature #43918: Deprecate broken Mantis and Trac migration rake tasks
+=== [Third-party libraries / 第三方库]
+* Patch #44018: Chart.js → 4.5.1 并迁移至 ES Modules
+* Patch #44038: Tabler Icons → v3.43.0
 
-=== [Issues]
+=== [Time tracking / 时间跟踪]
+* Feature #15167: 隐藏耗时报表中未使用的 Options 区
+* Feature #43948: TimeEntryQuery 的 hours 过滤支持 0:45h 格式
 
-* Feature #9432: Default value for the private issue flag
-* Feature #31518: Default due date for new issues with configurable offset from today
-* Feature #43085: Scroll to notes section instead of top of edit form when quoting issue content
-* Feature #43885: Align issue previous/next link styling with pagination buttons
-* Feature #43895: Disable "Use current date as start date for new issues" by default for new installations
-* Feature #43969: Add icons to Add links in Subtasks and Related issues sections of the issue view
-* Feature #43996: Add setting to choose users/groups order in assignee dropdown
-* Feature #44015: "Users by group" display option for assignee drop-down
+=== [UI / 界面]
+* Feature #31353: 顶栏用户相关链接升级为独立用户菜单
+* Feature #34917: 非破坏性解除动作标签统一使用「Remove」
+* Feature #43256: 引入 Open Color 统一 CSS 色板
+* Feature #43279: 简化问题编辑表单 fieldset 边框
+* Feature #43381: 提升文件上传错误信息可见性
+* Feature #43390: 移除 body 上 avatars-on/off 类
+* Feature #43506: 在 HTML 元素声明文本方向，改善 RTL/LTR
+* Feature #43515: 移除 rtl.css，以逻辑属性整合至 application.css
+* Feature #43563: 增加 #content 顶部内边距提升可读性
+* Feature #43575: 清理盒式 UI 元素边框与内边距
+* Feature #43658: 默认 Gravatar 选项新增「Color」
+* Feature #43700: 核心 CSS 以逻辑属性替代物理属性（RTL）
+* Feature #43797: 附件列表以文件类型图标替代回形针
+* Feature #43805: 为更多 MIME 类型更新文件图标
+* Feature #43824: 增加页面两侧间距改善观感
+* Feature #43825: 用户搜索对话框保留勾选选择
+* Feature #43836: 统一问题详情页分隔符间距
+* Feature #43937: 导航栏式页头重构，视觉更轻量
+* Feature #43988: 侧栏选中链接颜色对齐主菜单指示
+* Feature #44071: 上下文菜单宽度自适应避免标签换行
+* Patch #44111: 统一路线图 / 新闻 / 文档索引页布局
+* Defect #25114: 修复主题 #content 相对定位时右键菜单错位
+* Defect #43588: 修复问题视图右列误用 splitcontentleft 类
+* Defect #43876: 修复字号放大时输入框 / 按钮文字被裁切
 
-=== [Issues filter]
+=== [Webhooks / 自动化]
+* Feature #29664: 内置 Webhook 触发器
 
-* Feature #43968: Allow 0:45h time span format input in the estimated_hours and spent_time filter of IssueQuery
-
-=== [Issues list]
-
-* Feature #43615: Right-align all time-tracking columns in Issues list
-
-=== [Performance]
-
-* Defect #43742: Missing #wrapper positioning may increase reflow cost
-* Defect #43838: User mentions using the @login syntax cause performance issues when rendering content on instances with a large number of users.
-* Feature #43957: Improve workflow update performance
-* Feature #44194: Cache user mention autocomplete responses to reduce redundant requests
-* Patch #43934: Optimize `Issue#visible_journals_with_index` preload to skip user email_address when Gravatar is disabled
-* Patch #44190: Improve @mention performance by limiting initial suggestions
-
-=== [Project settings]
-
-* Feature #44013: Add links to groups in the project Settings > Members tab
-
-=== [Projects]
-
-* Feature #37480: CSV export of project memberships
-* Feature #43818: Show warning for closed projects on all project pages not only on Overview
-
-=== [REST API]
-
-* Defect #44152: Custom Fields API does not return visible roles for custom fields other than issue custom fields
-* Defect #44165: Basic authentication challenge is sent for API key authentication failures
-* Feature #43569: Adds project to wiki page API response
-* Feature #43938: Track last usage of API and Atom access keys
-* Feature #44153: Include associated projects in issue custom fields API response
-
-=== [Rails support]
-
-* Feature #43205: Update to Rails 8
-
-=== [Roadmap]
-
-* Feature #39882: Highlight selected version on the Roadmap view
-
-=== [Ruby support]
-
-* Feature #43650: Ruby 4.0 support
-
-=== [SCM]
-
-* Defect #43965: "Previous" and "Next" links in changeset view do not match the changeset list order
-* Patch #42762: Improve Git/Mercurial revision graph on the repository page
-
-=== [Text formatting]
-
-* Feature #42444: Allow use of the CSS text-decoration property in text formatting
-* Feature #43950: Add support for pasting spreadsheet tables as CommonMark/Textile tables in wiki textareas
-* Feature #44061: Support Tab/Shift+Tab indentation of selected textarea lines in CommonMark Markdown
-
-=== [Third-party libraries]
-
-* Patch #43845: Remove the Raphael.js dependency by switching to SVG API
-* Patch #44018: Update Chart.js to 4.5.1 and migrate to ES Modules
-* Patch #44038: Update Tabler Icons to v3.43.0
-
-=== [Time tracking]
-
-* Feature #15167: Hide unused Options section in spent time report
-* Feature #43948: Allow 0:45h time span format input in the hours filter of TimeEntryQuery
-
-=== [UI]
-
-* Defect #25114: Context menu is mispositioned when `#content` is relatively positioned by themes
-* Defect #43588: Right column in issue view uses splitcontentleft CSS class instead of splitcontentright
-* Defect #43876: Text in select, input, and button is clipped due to fixed height when font size is increased
-* Feature #31353: Replace user related links in the top menu bar with a proper user menu.
-* Feature #34917: Use "Remove" instead of "Delete" for non-destructive unlink/removal action labels
-* Feature #43256: Introduce Open Color to unify and standardize CSS colors
-* Feature #43279: Simplify fieldset borders in issue edit form
-* Feature #43381: Improve visibility of error message during file upload
-* Feature #43390: Remove avatars-on / avatars-off classes from body element
-* Feature #43506: Declare text direction on HTML element for better RTL/LTR styling support
-* Feature #43515: Improve RTL layouts by removing rtl.css and integrating its overrides into application.css using CSS logical properties
-* Feature #43563: Increase top padding of div#content to improve visual spacing and readability
-* Feature #43575: Clean up box-like UI elements by adjusting borders and padding
-* Feature #43658: Add "Color" to the list of default gravatar options
-* Feature #43700: Improve RTL layout support by replacing physical CSS properties with logical ones in core CSS files
-* Feature #43797: Show file-type icons instead of paperclip icons in attachment lists
-* Feature #43805: Update file-type icons for additional MIME types
-* Feature #43824: Improve usability and visual appearance by increasing page-side spacing
-* Feature #43825: Preserve checkbox selection in user search dialogs
-* Feature #43836: Unify spacing around section separators on issue details page
-* Feature #43937: Redesign the header with a navigation bar and lighter visual weight
-* Feature #43988: Align sidebar selected link color with the main menu indicator
-* Feature #44071: Make context menu width flexible to avoid wrapping labels
-* Patch #44111: Improve layout consistency of roadmap, news, and documents index pages
-
-=== [Webhooks]
-
-* Feature #29664: Webhook triggers in Redmine
-
-=== [Wiki]
-
-* Feature #43978: Export all Wiki pages as ZIP archive
+=== [Wiki / 维基]
+* Feature #43978: 支持将所有 Wiki 页面导出为 ZIP
 
 == 2026-06-15 v6.1.3
 
