@@ -20,6 +20,8 @@
 require "digest"
 require "fileutils"
 require "zip"
+require "tempfile"
+require 'redmine/storage'
 
 class Attachment < ApplicationRecord
   include Redmine::SafeAttributes
@@ -78,7 +80,11 @@ class Attachment < ApplicationRecord
   )
 
   cattr_accessor :storage_path
-  @@storage_path = Redmine::Configuration['attachments_storage_path'] || File.join(Rails.root, "files")
+  @@storage_path = if Redmine::Configuration['attachments_storage_type'] == 'cloud'
+                     'files' # cloud 模式用做 S3 key 前缀
+                   else
+                     Redmine::Configuration['attachments_storage_path'] || File.join(Rails.root, "files")
+                   end
 
   cattr_accessor :thumbnails_storage_path
   @@thumbnails_storage_path = File.join(Rails.root, "tmp", "thumbnails")
@@ -95,7 +101,82 @@ class Attachment < ApplicationRecord
   after_commit :reuse_existing_file_if_possible, :on => :create
   after_rollback :delete_from_disk, :on => :create
 
-  safe_attributes 'filename', 'content_type', 'description'
+  # ========== Cloud Storage support ==========
+
+  class << self
+    # Whether cloud storage (S3/MinIO) is enabled
+    def cloud_enabled?
+      Redmine::Configuration['attachments_storage_type'] == 'cloud'
+    end
+
+    # The shared cloud storage client instance (lazy init)
+    def cloud_storage
+      @cloud_storage ||= cloud_enabled? ? Redmine::Storage::Cloud.new : nil
+    end
+
+    # Download a cloud file to a local temp file, yield the path, then cleanup
+    def cloud_download_tempfile(key)
+      tmp = Tempfile.new(['redmine_dl', File.extname(key).to_s])
+      tmp.binmode
+      begin
+        if cloud_storage.download_to(key, tmp.path)
+          yield tmp.path if block_given?
+        end
+      ensure
+        tmp.close!
+      end
+      true
+    end
+  end
+
+  private
+
+  # Download cloud file to temp and yield the local path (or just yield diskfile for local)
+  def with_content_tempfile(&block)
+    if self.class.cloud_enabled?
+      self.class.cloud_download_tempfile(diskfile, &block)
+    elsif File.readable?(diskfile)
+      yield diskfile
+    end
+  end
+
+  def _local_write_tempfile(sha)
+    Attachment.create_diskfile(filename, disk_directory) do |f|
+      self.disk_filename = File.basename f.path
+      logger.info("Saving attachment '#{self.diskfile}' (#{@temp_file.size} bytes)") if logger
+      _stream_to_io(f, sha)
+    end
+  end
+
+  def _cloud_write_tempfile(sha)
+    timestamp = DateTime.now.strftime("%y%m%d%H%M%S")
+    ascii, _name = Attachment.generate_diskfilename(filename)
+
+    tmp = Tempfile.new(['redmine_upload', ''])
+    tmp.binmode
+    name = "#{timestamp}_#{ascii}"
+    _stream_to_io(tmp, sha)
+    tmp.rewind
+
+    key = File.join(Attachment.storage_path, disk_directory.to_s, name)
+    self.disk_filename = name
+    logger.info("Saving attachment '#{diskfile}' (#{@temp_file.size} bytes) to cloud") if logger
+    Attachment.cloud_storage.upload(key, tmp, content_type: content_type)
+    tmp.close!
+  end
+
+  def _stream_to_io(io, sha)
+    if @temp_file.respond_to?(:read)
+      buffer = ""
+      while (buffer = @temp_file.read(8192))
+        io.write(buffer)
+        sha.update(buffer)
+      end
+    else
+      io.write(@temp_file)
+      sha.update(@temp_file)
+    end
+  end
 
   # Returns an unsaved copy of the attachment
   def copy(attributes=nil)
@@ -147,20 +228,13 @@ class Attachment < ApplicationRecord
     if @temp_file
       self.disk_directory = target_directory
       sha = Digest::SHA256.new
-      Attachment.create_diskfile(filename, disk_directory) do |f|
-        self.disk_filename = File.basename f.path
-        logger.info("Saving attachment '#{self.diskfile}' (#{@temp_file.size} bytes)") if logger
-        if @temp_file.respond_to?(:read)
-          buffer = ""
-          while (buffer = @temp_file.read(8192))
-            f.write(buffer)
-            sha.update(buffer)
-          end
-        else
-          f.write(@temp_file)
-          sha.update(@temp_file)
-        end
+
+      if Attachment.cloud_enabled?
+        _cloud_write_tempfile(sha)
+      else
+        _local_write_tempfile(sha)
       end
+
       self.digest = sha.hexdigest
     end
     @temp_file = nil
@@ -253,8 +327,10 @@ class Attachment < ApplicationRecord
       target = thumbnail_path(size)
 
       begin
-        # TODO: Stop passing the deprecated is_pdf flag in Redmine 7.0
-        Redmine::Thumbnail.generate(self.diskfile, target, size, is_pdf?)
+        with_content_tempfile do |source_path|
+          # TODO: Stop passing the deprecated is_pdf flag in Redmine 7.0
+          Redmine::Thumbnail.generate(source_path, target, size, is_pdf?)
+        end
       rescue => e
         if logger
           logger.error(
@@ -320,14 +396,16 @@ class Attachment < ApplicationRecord
     return nil unless markdownized_previewable?
 
     target = markdownized_preview_cache_path
-    if Redmine::Markdownizer.convert(diskfile, target)
-      File.read(target, :mode => "rb")
+    with_content_tempfile do |source_path|
+      if Redmine::Markdownizer.convert(source_path, target)
+        File.read(target, :mode => "rb")
+      end
     end
   rescue => e
     if logger
       logger.error(
         "An error occured while generating markdownized preview for #{disk_filename} " \
-          "to #{target}\nException was: #{e.message}"
+          "to #{markdownized_preview_cache_path}\nException was: #{e.message}"
       )
     end
     nil
@@ -343,7 +421,15 @@ class Attachment < ApplicationRecord
 
   # Returns true if the file is readable
   def readable?
-    disk_filename.present? && File.readable?(diskfile)
+    if disk_filename.blank?
+      return false
+    end
+
+    if Attachment.cloud_enabled?
+      Attachment.cloud_storage.exists?(diskfile)
+    else
+      File.readable?(diskfile)
+    end
   end
 
   # Returns the attachment token
@@ -432,13 +518,23 @@ class Attachment < ApplicationRecord
           filename = "#{basename}(#{dup_count})#{extname}"
         end
         zos.put_next_entry(filename)
-        zos << IO.binread(attachment.diskfile)
+        zos << _read_attachment_content(attachment)
         archived_file_names << filename
       end
     end
     buffer.string
   ensure
     buffer&.close
+  end
+
+  # Read attachment content as binary, supporting both local and cloud storage
+  def self._read_attachment_content(attachment)
+    if cloud_enabled?
+      content = cloud_storage.get(attachment.diskfile)
+      content.to_s
+    else
+      IO.binread(attachment.diskfile)
+    end
   end
 
   # Moves an existing attachment to its target directory
@@ -451,14 +547,18 @@ class Attachment < ApplicationRecord
 
     return if src == dest
 
-    unless FileUtils.mkdir_p(File.dirname(dest))
-      logger.error "Could not create directory #{File.dirname(dest)}" if logger
-      return
-    end
+    if Attachment.cloud_enabled?
+      Attachment.cloud_storage.move(src, dest)
+    else
+      unless FileUtils.mkdir_p(File.dirname(dest))
+        logger.error "Could not create directory #{File.dirname(dest)}" if logger
+        return
+      end
 
-    unless FileUtils.mv(src, dest)
-      logger.error "Could not move attachment from #{src} to #{dest}" if logger
-      return
+      unless FileUtils.mv(src, dest)
+        logger.error "Could not move attachment from #{src} to #{dest}" if logger
+        return
+      end
     end
 
     update_column :disk_directory, disk_directory
@@ -484,9 +584,11 @@ class Attachment < ApplicationRecord
   def update_digest_to_sha256!
     if readable?
       sha = Digest::SHA256.new
-      File.open(diskfile, 'rb') do |f|
-        while buffer = f.read(8192)
-          sha.update(buffer)
+      with_content_tempfile do |source_path|
+        File.open(source_path, 'rb') do |f|
+          while buffer = f.read(8192)
+            sha.update(buffer)
+          end
         end
       end
       update_column :digest, sha.hexdigest
@@ -533,6 +635,10 @@ class Attachment < ApplicationRecord
   private
 
   def reuse_existing_file_if_possible
+    # Deduplication is skipped in cloud mode (S3 handles storage efficiency differently).
+    # In local mode, reuse identical files to save disk space.
+    return if Attachment.cloud_enabled?
+
     original_diskfile = diskfile
     original_filename = disk_filename
     reused = with_lock do
@@ -564,10 +670,15 @@ class Attachment < ApplicationRecord
 
   # Physically deletes the file from the file system
   def delete_from_disk!
-    FileUtils.rm_f(diskfile) if disk_filename.present?
-    Dir[thumbnail_path("*")].each do |thumb|
-      File.delete(thumb)
+    if disk_filename.present?
+      if Attachment.cloud_enabled?
+        Attachment.cloud_storage.delete(diskfile)
+      else
+        FileUtils.rm_f(diskfile)
+      end
     end
+    # Thumbnails and markdownized previews are always local cache
+    Dir[thumbnail_path("*")].each { |thumb| File.delete(thumb) }
     FileUtils.rm_f(markdownized_preview_cache_path)
   end
 
@@ -592,11 +703,11 @@ class Attachment < ApplicationRecord
 
   # Singleton class method is public
   class << self
-    # Claims a unique ASCII or hashed filename, yields the open file handle
-    def create_diskfile(filename, directory=nil, &)
-      timestamp = DateTime.now.strftime("%y%m%d%H%M%S")
-      ascii = ''
+    # Generates a sanitized ASCII filename for disk storage.
+    # Returns [ascii, fully_hashed_name_with_extension]
+    def generate_diskfilename(filename)
       max_filename_length = 50
+      ascii = ''
       if %r{^[a-zA-Z0-9_.-]*$}.match?(filename) && filename.length <= max_filename_length
         ascii = filename
       else
@@ -606,6 +717,13 @@ class Attachment < ApplicationRecord
           ascii << $1
         end
       end
+      [ascii, ascii]
+    end
+
+    # Claims a unique ASCII or hashed filename, yields the open file handle
+    def create_diskfile(filename, directory=nil, &)
+      timestamp = DateTime.now.strftime("%y%m%d%H%M%S")
+      ascii, _name = generate_diskfilename(filename)
 
       path = File.join storage_path, directory.to_s
       FileUtils.mkdir_p(path) unless File.directory?(path)

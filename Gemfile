@@ -41,6 +41,9 @@ gem 'rqrcode'
 # HTML sanitization
 gem "sanitize", "~> 7.0"
 
+# Optional gem for cloud storage (S3 / MinIO)
+gem 'fog-aws', '~> 3.33'
+
 # Optional gem for LDAP authentication
 group :ldap do
   gem 'net-ldap', '~> 0.20.0'
