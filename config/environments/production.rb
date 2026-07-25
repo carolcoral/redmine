@@ -39,8 +39,17 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # ===== 集群部署：共享缓存（默认关闭，按需启用）=====
+  # 单节点可直接使用 Rails 默认缓存；多节点集群必须启用共享缓存，
+  # 否则各节点缓存不一致。设置环境变量后取消对应注释即可启用。
+  # Redis 带密码时的 URL 写法：redis://:密码@主机:6379
+  # 启用 Redis（推荐，URL 内嵌密码）：
+  # config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") }
+  # 启用 Redis（密码单独用环境变量）：
+  # config.cache_store = :redis_cache_store,
+  #   { url: ENV.fetch("REDIS_URL"), password: ENV.fetch("REDIS_PASSWORD") }
+  # 启用 Memcached：
+  # config.cache_store = :mem_cache_store, ENV.fetch("MEMCACHE_SERVERS", "localhost:11211").split(",")
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :log
