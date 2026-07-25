@@ -1,0 +1,18 @@
+ruby:
+  reset_cycle
+  group_data = {}
+  group_data['group-field'] = group_field if defined?(group_field) && group_field.present?
+  group_data['group-value'] = group_value if defined?(group_value) && !group_value.nil?
+tr.group.open data=group_data
+  td colspan="#{query.inline_columns.size + 2}"
+    span.expander.icon.icon-expanded[onclick="toggleRowGroup(this);"]
+      = sprite_icon 'angle-down'
+    span.name = group_name
+    - if group_count.present?
+      '
+      span.badge.badge-count.count = group_count
+    '
+    span.totals = group_totals
+    = link_to_function "#{l :button_collapse_all}/#{l :button_expand_all}",
+                       'toggleAllRowGroups(this)',
+                       class: 'toggle-all'

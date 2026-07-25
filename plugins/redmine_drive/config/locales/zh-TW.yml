@@ -1,0 +1,65 @@
+# Traditional chinese strings go here for Rails i18n
+zh-TW:
+  label_drive: Drive
+  label_redmine_drive: Redmine drive
+  label_drive_new_folder: 新增資料夾
+  label_drive_edit_folder: 編輯資料夾
+  label_drive_edit_file: 編輯檔案
+  label_drive_tags: Tags
+  label_drive_upload_files: 上傳檔案
+  label_drive_new_files: 新增檔案
+  label_drive_share: 分享鏈結
+  label_drive_shared: 分享鏈結
+  label_drive_unshare: 停止分享鏈結
+  label_drive_expiration_date: 有效日期
+  label_drive_copy_to_folder: 複製到資料夾
+  label_drive_move_to_folder: 移動到資料夾
+  label_drive_bulk_edit: 批次編輯
+  label_drive_search_by_name: 檔案名稱進行搜尋
+  label_drive_storage_size: 儲存空間
+  label_drive_shared_file: Drive 共享檔案
+  label_drive_shared_files: 共享檔案
+  label_drive_link_shared_files: 連結共享檔案
+  label_drive_file_search: '檔案搜尋：'
+  label_drive_no_uploaded_files: There are no uploaded files.
+  label_drive_go_to_the: Go to the
+  label_drive_shared_files_destroy_warning: 一個或多個檔案已被議題連結
+  label_drive_files_destroy_confirmation: '您確定要刪除這些被選取的檔案嗎？'
+  label_drive_access_by_password: 存取密碼
+
+  label_drive_notice_copying_completed: 複製完畢
+  label_drive_notice_move_completed: 移動完畢
+  label_drive_notice_copying_error: An error occurred while copying
+  label_drive_notice_moving_error: An error occurred while moving
+  label_drive_notice_update_error: Failed to update
+  label_drive_version_today: 今日
+  label_drive_version_yesterday: 昨日
+
+  permission_view_drive_entries: 瀏覽 drive 內容
+  permission_add_drive_entries: 新增 drive 內容
+  permission_edit_drive_entries: 編輯 drive 內容
+  permission_comment_drive_entries: 評論 drive 內容
+
+  label_drive_file_items:
+    one: '%{count} item'
+    other: "%{count} items"
+
+  activerecord:
+    errors:
+      messages:
+        error_file_already_exists: 'A file with the name «%{name}» already exists'
+        error_folder_already_exists: '資料夾 «%{name}» 已經存在'
+
+  label_drive_days_ago: '%{days} 天前'
+  label_drive_version_history: 版本歷史
+  label_drive_rollback: 回滾
+  label_drive_upload_version: 上傳新版本
+  label_drive_version_name: 版本名稱
+
+  label_drive_show_in_top_menu: 頂層選單顯示Drive連結
+
+  notice_successful_rollback: Version was successfully rollbacked
+
+  error_save_failed: 儲存失敗
+  error_update_failed: 更新失敗
+  error_rollback_failed: Version rollback was failed

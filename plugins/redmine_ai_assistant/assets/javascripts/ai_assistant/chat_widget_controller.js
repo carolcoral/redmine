@@ -49,6 +49,7 @@
         statusBar: container.querySelector("[data-ai-chat-target='statusBar']"),
         periodPicker: document.getElementById("ai-chat-period-picker"),
       };
+      this.isFullscreen = false;
 
       this.bindEvents();
       container.setAttribute("aria-hidden", "false");
@@ -118,6 +119,26 @@
 
       const newConvBtn = win?.querySelector("[data-action*='newConversation']");
       if (newConvBtn) newConvBtn.addEventListener("click", () => this.newConversation());
+
+      // 全屏切换按钮
+      const fullscreenBtn = win?.querySelector("[data-action*='fullscreen']");
+      if (fullscreenBtn) fullscreenBtn.addEventListener("click", () => this.toggleFullscreen());
+
+      // 复制按钮 — 事件委托在消息容器上
+      const { messages: messagesEl } = this.elements;
+      if (messagesEl) {
+        messagesEl.addEventListener("click", (e) => {
+          const btn = e.target.closest(".ai-chat-copy-btn");
+          if (btn) this.copyMessageContent(btn);
+        });
+      }
+
+      // ESC 退出全屏
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.isFullscreen) {
+          this.toggleFullscreen();
+        }
+      });
 
       // 报告按钮 — 点击后显示周期选择器
       const reportBtns = win?.querySelectorAll("[data-action*='pickPeriod']");
@@ -330,7 +351,7 @@
       if (welcome) welcome.remove();
 
       this.messagesData.push({ role: role, content: content, isError: isError });
-      this.renderSingleMessage({ role: role, content: content, isError: isError });
+      this.renderSingleMessage({ role: role, content: content, isError: isError }, this.messagesData.length - 1);
       this.saveToStorage();
       this.scrollToBottom();
     }
@@ -347,26 +368,36 @@
         return;
       }
 
-      this.messagesData.forEach((msg) => {
-        this.renderSingleMessage(msg);
+      this.messagesData.forEach((msg, i) => {
+        this.renderSingleMessage(msg, i);
       });
       this.scrollToBottom();
     }
 
-    renderSingleMessage(msg) {
+    renderSingleMessage(msg, index) {
       const { messages } = this.elements;
       const div = document.createElement("div");
       div.className = "ai-chat-message ai-chat-" + msg.role + (msg.isError ? " ai-chat-error" : "");
+      div.dataset.msgIndex = index;
 
       const avatar = msg.role === "user" ? "👤" : "🤖";
       const label  = msg.role === "user" ? "You" : "AI";
       const rendered = msg.isError ? this.escapeHtml(msg.content) : this.renderMarkdown(msg.content);
 
+      // 为 AI 助手消息添加复制按钮
+      let copyBtnHtml = "";
+      if (msg.role === "assistant" && !msg.isError) {
+        copyBtnHtml = '<button class="ai-chat-copy-btn" title="复制内容">📋</button>';
+      }
+
       div.innerHTML =
         '<div class="ai-chat-message-avatar">' + avatar + "</div>" +
         '<div class="ai-chat-message-body">' +
           '<div class="ai-chat-message-label">' + label + "</div>" +
-          '<div class="ai-chat-message-content">' + rendered + "</div>" +
+          '<div class="ai-chat-message-content-wrapper">' +
+            '<div class="ai-chat-message-content">' + rendered + "</div>" +
+            copyBtnHtml +
+          "</div>" +
         "</div>";
 
       messages.appendChild(div);
@@ -542,6 +573,72 @@
       return tag.replace(/\s+on\w+\s*=\s*"[^"]*"/gi, "")
                 .replace(/\s+on\w+\s*=\s*'[^']*'/gi, "")
                 .replace(/javascript\s*:/gi, "");
+    }
+
+    // ========== Fullscreen ==========
+
+    toggleFullscreen() {
+      const { window: win } = this.elements;
+      const btn = win?.querySelector("[data-action*='fullscreen']");
+      this.isFullscreen = !this.isFullscreen;
+
+      if (this.isFullscreen) {
+        win.classList.add("ai-chat-fullscreen");
+        if (btn) btn.textContent = "⤓";
+        if (btn) btn.title = "退出全屏";
+      } else {
+        win.classList.remove("ai-chat-fullscreen");
+        if (btn) btn.textContent = "⤢";
+        if (btn) btn.title = "全屏展示";
+      }
+    }
+
+    // ========== Copy ==========
+
+    copyMessageContent(btn) {
+      const messageEl = btn.closest(".ai-chat-message");
+      if (!messageEl) return;
+
+      const index = parseInt(messageEl.dataset.msgIndex, 10);
+      if (isNaN(index) || !this.messagesData[index]) return;
+
+      const rawContent = this.messagesData[index].content;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(rawContent).then(() => {
+          this.showCopyFeedback(btn);
+        }).catch(() => {
+          this.fallbackCopy(rawContent, btn);
+        });
+      } else {
+        this.fallbackCopy(rawContent, btn);
+      }
+    }
+
+    fallbackCopy(text, btn) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        this.showCopyFeedback(btn);
+      } catch (e) {
+        // ignore
+      }
+      document.body.removeChild(textarea);
+    }
+
+    showCopyFeedback(btn) {
+      const orig = btn.textContent;
+      btn.textContent = "✅";
+      btn.classList.add("ai-chat-copied");
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove("ai-chat-copied");
+      }, 1500);
     }
 
     // ========== Helpers ==========

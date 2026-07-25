@@ -1,0 +1,15 @@
+<%= error_messages_for 'drive_entry' %>
+
+<div class="box tabular">
+  <p><%= f.text_field :name, required: true, style: 'width: 95%;' %></p>
+  <p><%= f.text_area :description, rows: 3 %></p>
+  <p>
+    <%= f.text_field :version_name, label: l(:label_drive_version_name) %>
+  </p>
+</div>
+
+<%= javascript_tag do %>
+  $(function () {
+    $('#drive_entry_name').select();
+  });
+<% end %>

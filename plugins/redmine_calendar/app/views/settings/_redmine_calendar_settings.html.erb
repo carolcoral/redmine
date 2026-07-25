@@ -1,0 +1,21 @@
+<fieldset>
+  <legend><%= l(:label_redmine_calendar_settings) %></legend>
+  
+  <p>
+    <%= content_tag(:label, l(:label_show_issue_menu)) %>
+    <%= check_box_tag 'settings[show_issue_menu]', 1, @settings['show_issue_menu'] != false %>
+    <em class="info"><%= l(:text_show_issue_menu_info) %></em>
+  </p>
+  
+  <p>
+    <%= content_tag(:label, l(:label_enable_drag_drop)) %>
+    <%= check_box_tag 'settings[enable_drag_drop]', 1, @settings['enable_drag_drop'] != false %>
+    <em class="info"><%= l(:text_enable_drag_drop_info) %></em>
+  </p>
+  
+  <p>
+    <%= content_tag(:label, l(:label_enable_double_click)) %>
+    <%= check_box_tag 'settings[enable_double_click]', 1, @settings['enable_double_click'] != false %>
+    <em class="info"><%= l(:text_enable_double_click_info) %></em>
+  </p>
+</fieldset>

@@ -1,0 +1,8 @@
+- if @subprojects.any?
+  h3.icon
+    = svg_icon_tag 'projects', label: :label_subproject_plural, plugin: ''
+
+  ul.subprojects
+    - @subprojects.each do |project|
+      li
+        = link_to project.name, project_path(project), class: project.css_classes

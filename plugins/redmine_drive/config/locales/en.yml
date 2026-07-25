@@ -1,0 +1,65 @@
+# English strings go here for Rails i18n
+en:
+  label_drive: Drive
+  label_redmine_drive: Redmine drive
+  label_drive_new_folder: New folder
+  label_drive_edit_folder: Edit folder
+  label_drive_edit_file: Edit file
+  label_drive_tags: Tags
+  label_drive_upload_files: Upload files
+  label_drive_new_files: New files
+  label_drive_share: Share
+  label_drive_shared: Shared
+  label_drive_unshare: Unshare
+  label_drive_expiration_date: Expiration date
+  label_drive_copy_to_folder: Copy to folder
+  label_drive_move_to_folder: Move to folder
+  label_drive_bulk_edit: Bulk edit
+  label_drive_search_by_name: Search by name
+  label_drive_storage_size: Storage size
+  label_drive_shared_file: Drive shared file
+  label_drive_shared_files: Shared files
+  label_drive_link_shared_files: Link shared files
+  label_drive_file_search: 'Search for file:'
+  label_drive_no_uploaded_files: There are no uploaded files.
+  label_drive_go_to_the: Go to the
+  label_drive_shared_files_destroy_warning: One or more files are linked to issues.
+  label_drive_files_destroy_confirmation: 'Are you sure you want to delete the selected file(s)?'
+  label_drive_access_by_password: Access password
+
+  label_drive_notice_copying_completed: Copying completed
+  label_drive_notice_move_completed: Move completed
+  label_drive_notice_copying_error: An error occurred while copying
+  label_drive_notice_moving_error: An error occurred while moving
+  label_drive_notice_update_error: Failed to update
+  label_drive_version_today: Today
+  label_drive_version_yesterday: Yesterday
+
+  permission_view_drive_entries: View drive entries
+  permission_add_drive_entries: Add drive entries
+  permission_edit_drive_entries: Edit drive entries
+  permission_comment_drive_entries: Comment drive entries
+
+  label_drive_file_items:
+    one: '%{count} item'
+    other: "%{count} items"
+
+  activerecord:
+    errors:
+      messages:
+        error_file_already_exists: 'A file with the name «%{name}» already exists'
+        error_folder_already_exists: 'folder «%{name}» already exists'
+
+  label_drive_days_ago: '%{days} days ago'
+  label_drive_version_history: Version history
+  label_drive_rollback: Rollback
+  label_drive_upload_version: Upload version
+  label_drive_version_name: Version name
+  
+  label_drive_show_in_top_menu: Show Drive in top menu
+  
+  notice_successful_rollback: Version was successfully rollbacked
+
+  error_save_failed: Save failed
+  error_update_failed: Update failed
+  error_rollback_failed: Version rollback was failed

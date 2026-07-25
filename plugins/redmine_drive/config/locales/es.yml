@@ -1,0 +1,44 @@
+# Spanish strings go here for Rails i18n
+es:
+  label_drive: Drive
+  label_redmine_drive: Redmine drive
+  label_drive_new_folder: Nueva carpeta
+  label_drive_edit_folder: Editar carpeta
+  label_drive_edit_file: Editar archivo
+  label_drive_tags: Etiquetas
+  label_drive_upload_files: Subir archivo
+  label_drive_new_files: Nuevos archivos
+  label_drive_share: Compartir
+  label_drive_shared: Compartido
+  label_drive_unshare: Dejar de compartir
+  label_drive_expiration_date: Fecha de caducidad
+  label_drive_copy_to_folder: Copiar a carpeta
+  label_drive_move_to_folder: Mover a carpeta
+  label_drive_bulk_edit: Edición masiva
+  label_drive_search_by_name: Buscar por nombre
+  label_drive_storage_size: Tamaño de almacenamiento
+  label_drive_shared_file: Archivo compartido en Drive
+  label_drive_shared_files: Archivos compartidos
+  label_drive_link_shared_files: Enlace archivos compartidos
+  label_drive_file_search: 'Buscar archivo:'
+  label_drive_no_uploaded_files: No hay archivos subidos.
+  label_drive_go_to_the: Ir a
+  label_drive_shared_files_destroy_warning: Uno o más archivos están relacionados con tareas.
+  label_drive_files_destroy_confirmation: '¿Está seguro de que quiere eliminar el/los archivo/s seleccionado/s?'
+  label_drive_access_by_password: Access password
+
+  label_drive_notice_copying_completed: Copia completada
+  label_drive_notice_move_completed: Traslado completado
+  label_drive_notice_copying_error: Ha ocurrido un error durante la copia
+  label_drive_notice_moving_error: Ha ocurrido un error durante el traslado
+  label_drive_notice_update_error: Falló la actualización
+
+  label_drive_file_items:
+    one: '%{count} item'
+    other: "%{count} items"
+
+  activerecord:
+    errors:
+      messages:
+        error_file_already_exists: 'Ya existe un archivo con el nombre «%{name}»'
+        error_folder_already_exists: 'Ya existe un directorio con el nombre «%{name}»'

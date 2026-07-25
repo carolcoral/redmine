@@ -1,0 +1,411 @@
+<h2><%= l(:label_webhook_settings) %></h2>
+
+<%= form_for @webhook_config, url: update_project_webhook_settings_path(@project), method: :put, html: { class: 'webhook-settings' } do |f| %>
+  <%= error_messages_for @webhook_config %>
+
+  <div class="box tabular">
+    <p>
+      <%= f.check_box :enabled %>
+      <%= f.label :enabled, l(:label_webhook_enabled) %>
+    </p>
+
+    <p>
+      <%= f.label :webhook_url, l(:label_webhook_url) %>
+      <%= f.text_field :webhook_url, :size => 60 %>
+      <em class="info"><%= l(:text_webhook_url_info) %></em>
+    </p>
+
+    <p>
+      <%= f.label :secret_token, l(:label_webhook_secret_token) %>
+      <%= f.text_field :secret_token, :size => 60 %>
+      <em class="info"><%= l(:text_webhook_secret_token_info) %></em>
+    </p>
+  </div>
+
+  <fieldset class="box" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+    <legend><%= l(:label_task_reminder_settings) %></legend>
+    <p class="info"><%= l(:text_task_reminder_info) %></p>
+
+    <div class="box tabular" style="margin-top: 10px;">
+      <%# 检查是否被父项目禁用 %>
+      <% disabled_by_parent = @project.parent && @sub_projects.nil? ? false : (@project.parent && is_task_reminder_disabled_by_parent?(@project)) %>
+
+      <p>
+        <%= f.check_box :task_reminder_enabled, disabled: disabled_by_parent %>
+        <%= f.label :task_reminder_enabled, l(:label_task_reminder_enabled) %>
+        <% if disabled_by_parent %>
+          <span style="color: #d35400; margin-left: 10px; font-size: 12px;">
+            <em>（已被父项目禁用）</em>
+          </span>
+        <% end %>
+      </p>
+
+      <% if @project.children.any? %>
+        <p id="task_reminder_disable_sub_projects_option">
+          <%= f.check_box :task_reminder_disable_sub_projects %>
+          <%= f.label :task_reminder_disable_sub_projects, l(:label_task_reminder_disable_sub_projects) %>
+          <em class="info"><%= l(:text_task_reminder_disable_sub_projects_info) %></em>
+        </p>
+      <% end %>
+
+      <p id="task_reminder_time_options">
+        <label><%= l(:label_task_reminder_time) %></label>
+        <% hours = (0..23).map { |h| [format('%02d', h), h] } %>
+        <% minutes = (0..59).map { |m| [format('%02d', m), m] } %>
+        <%= f.select :task_reminder_hour, options_for_select(hours, @webhook_config.task_reminder_hour.to_i), {}, style: 'width: 90px;' %>
+        :
+        <%= f.select :task_reminder_minute, options_for_select(minutes, @webhook_config.task_reminder_minute.to_i), {}, style: 'width: 90px;' %>
+        <em class="info"><%= l(:text_task_reminder_time_zone, zone: (Setting.respond_to?(:time_zone) ? Setting.time_zone : '')) %></em>
+      </p>
+
+      <p id="task_reminder_status_field_options">
+        <%= f.label :work_status_field_name, l(:label_work_status_field_name) %>
+        <%= f.text_field :work_status_field_name, size: 30 %>
+        <em class="info"><%= l(:text_work_status_field_name_info) %></em>
+      </p>
+
+      <p id="task_reminder_status_value_options">
+        <%= f.label :work_status_on_duty_value, l(:label_work_status_on_duty_value) %>
+        <%= f.text_field :work_status_on_duty_value, size: 30 %>
+        <em class="info"><%= l(:text_work_status_on_duty_value_info) %></em>
+      </p>
+
+      <div id="task_reminder_roles_options">
+        <p style="margin: 0 0 5px 0;">
+          <label><%= l(:label_task_reminder_roles) %></label>
+        </p>
+        <div style="margin-bottom: 5px;">
+          <button type="button" onclick="toggleAllRoles(true)" class="button-small"><%= l(:button_select_all) %></button>
+          <button type="button" onclick="toggleAllRoles(false)" class="button-small"><%= l(:button_select_none) %></button>
+          <span style="margin-left: 10px; color: #666; font-size: 0.9em;">
+            <em><%= l(:text_task_reminder_roles_info) %></em>
+          </span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 10px; max-height: 200px; overflow-y: auto; border: 1px solid #eee; box-sizing: border-box; margin: 0; min-width: 0;">
+          <% @all_roles.each do |role| %>
+            <label style="display: flex; align-items: center; padding: 5px; box-sizing: border-box; overflow: hidden; min-width: 0;">
+              <%= check_box_tag "webhook_config[task_reminder_roles][]",
+                  role.id,
+                  @webhook_config.task_reminder_roles&.include?(role.id),
+                  :id => "task_reminder_role_#{role.id}",
+                  :name => "webhook_config[task_reminder_roles][]" %>
+              <span style="margin-left: 5px; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;"><%= role.name %></span>
+            </label>
+          <% end %>
+        </div>
+        <!-- 隐藏字段，确保即使没有勾选任何角色也能提交空数组 -->
+        <%= hidden_field_tag "webhook_config[task_reminder_roles][]", "", :id => "task_reminder_roles_empty_hidden" %>
+      </div>
+    </div>
+
+    <div class="box" style="margin-top: 10px; border: 1px solid #eee; padding: 10px;">
+      <h3 style="margin-top: 0;"><%= l(:label_task_reminder_template) %></h3>
+      <p class="info"><%= l(:text_task_reminder_template_info) %></p>
+      <%= f.text_area :task_reminder_template,
+          rows: 6,
+          cols: 80,
+          placeholder: l(:placeholder_task_reminder_template),
+          style: 'width: 100%; box-sizing: border-box;' %>
+      <div style="margin-top: 10px; padding: 10px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 3px;">
+        <p style="margin: 0 0 6px 0; font-weight: bold;"><%= l(:label_task_reminder_available_placeholders) %></p>
+        <p style="margin: 0; color: #666; font-family: monospace; font-size: 12px;">
+          <code>${project}</code> <code>${date}</code> <code>${users}</code>
+        </p>
+        <p style="margin: 8px 0 0 0; color: #888; font-size: 11px;">
+          <em>说明：${project} 为当前项目的根项目名称</em>
+        </p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend><%= l(:label_status_templates) %></legend>
+    <div style="margin-bottom: 15px;">
+      <p class="info"><%= l(:text_status_templates_info) %></p>
+      
+      <details style="margin-top: 10px; border: 1px solid #ddd; padding: 10px;">
+        <summary style="cursor: pointer; color: #0055aa; font-weight: bold;">📋 点击查看所有可用占位符及说明</summary>
+        <div style="margin-top: 15px; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+            <thead>
+              <tr style="background-color: #f5f5f5;">
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">占位符</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">示例值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${user}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">操作用户名（执行状态变更的用户）</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">张三</td>
+              </tr>
+              <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${task}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">任务标题</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">修复登录页面bug</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${status}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">当前任务状态</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">进行中、已解决、已关闭</td>
+              </tr>
+              <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${project}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">项目名称</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">网站开发项目</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${url}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">任务详情页完整访问URL</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;"><code>http://redmine.example.com/issues/123</code></td>
+              </tr>
+              <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${notes}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">备注信息（状态变更时填写的备注）</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">已修复登录验证问题</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${priority}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">任务优先级</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">紧急、高、正常、低</td>
+              </tr>
+              <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${tracker}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">跟踪标签类型</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">Bug、功能、支持</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace;"><code>${assigned_to}</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">任务指派人名称（如果未指派显示"未指派"）</td>
+                <td style="border: 1px solid #ddd; padding: 8px; color: #666;">李四</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 15px; padding: 10px; background-color: #e8f4f8; border-left: 4px solid #2196F3;">
+            <p style="margin: 0; font-weight: bold;">💡 使用示例：</p>
+            <pre style="margin: 10px 0 0 0; padding: 10px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; font-size: 0.9em; overflow-x: auto;"><code>${user} 将任务 "${task}" 的状态更新为 ${status}
+指派人：${assigned_to}
+项目：${project}
+详情：${url}</code></pre>
+          </div>
+        </div>
+      </details>
+    </div>
+    
+    <div class="box" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+      <h3 style="margin-top: 0;"><%= l(:label_enabled_statuses) %></h3>
+      <p class="info"><%= l(:text_enabled_statuses_info) %></p>
+      <div style="margin-bottom: 10px;">
+        <button type="button" onclick="toggleAllStatuses(true)" class="button-small">全选</button>
+        <button type="button" onclick="toggleAllStatuses(false)" class="button-small">全不选</button>
+        <span style="margin-left: 10px; color: #666; font-size: 0.9em;">必须至少勾选一个状态</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 10px;">
+        <% @issue_statuses.each do |status| %>
+          <label style="display: flex; align-items: center;">
+            <%= check_box_tag "webhook_config[enabled_statuses][]",
+                status.name,
+                @webhook_config.enabled_statuses&.include?(status.name),
+                :id => "enabled_status_#{status.id}",
+                :name => "webhook_config[enabled_statuses][]" %>
+            <span style="margin-left: 5px;"><%= status.name %></span>
+          </label>
+        <% end %>
+      </div>
+      
+      <!-- 隐藏字段，确保即使没有勾选任何状态也能提交空数组 -->
+      <%= hidden_field_tag "webhook_config[enabled_statuses][]", "", :id => "enabled_status_empty" %>
+    </div>
+    
+    <!-- 子项目同步模块 -->
+    <div class="box" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+      <h3 style="margin-top: 0;"><%= l(:label_sync_sub_projects) %></h3>
+      <p class="info"><%= l(:text_sync_sub_projects_info) %></p>
+      
+      <% if @sub_projects.any? %>
+        <div style="margin-bottom: 10px;">
+          <button type="button" onclick="toggleAllSubProjects(true)" class="button-small"><%= l(:button_select_all) %></button>
+          <button type="button" onclick="toggleAllSubProjects(false)" class="button-small"><%= l(:button_select_none) %></button>
+          <span style="margin-left: 10px; color: #666; font-size: 0.9em;"><%= l(:text_sub_projects_hint) %></span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; padding: 10px; max-height: 200px; overflow-y: auto; border: 1px solid #eee;">
+          <% @sub_projects.each do |project| %>
+            <label style="display: flex; align-items: center; padding: 5px;">
+              <%= check_box_tag "sub_project_ids[]",
+                  project.id,
+                  project.has_webhook_config,
+                  :id => "sub_project_#{project.id}",
+                  :name => "sub_project_ids[]" %>
+              <span style="margin-left: 5px; font-size: 0.9em;"><%= project.name %></span>
+            </label>
+          <% end %>
+        </div>
+      <% else %>
+        <p style="color: #666; font-style: italic; margin: 10px 0;"><%= l(:text_no_sub_projects) %></p>
+      <% end %>
+    </div>
+    
+    <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-left: 4px solid #ffc107; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <p style="margin: 0; font-weight: bold; color: #856404; font-size: 14px; display: flex; align-items: center;">
+        <span style="margin-right: 8px; font-size: 18px;">🔔</span>
+        💡 智能@提醒功能
+      </p>
+      <div style="margin: 8px 0 0 0; padding: 8px; background-color: rgba(255,255,255,0.5); border-radius: 3px;">
+        <p style="margin: 0 0 8px 0; color: #856404; font-size: 13px; font-weight: bold;">🎯 功能说明：</p>
+        <p style="margin: 0 0 6px 0; color: #856404; font-size: 13px;">
+          • <strong>必须</strong>在模板中使用 <code style="background: #fff; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #ddd;">${assigned_to}</code> 变量才会触发@提醒
+        </p>
+        <p style="margin: 0 0 6px 0; color: #856404; font-size: 13px;">
+          • 系统会自动从自定义字段中获取指派人手机号
+        </p>
+        <p style="margin: 0 0 6px 0; color: #856404; font-size: 13px;">
+          • 有手机号：钉钉<strong style="color: #d35400;">强提醒</strong> ⚡ | 无手机号：仅显示@昵称
+        </p>
+        <p style="margin: 0; color: #856404; font-size: 13px;">
+          • Markdown格式：@信息直接嵌入消息内容 | 纯文本格式：使用at参数
+        </p>
+      </div>
+    </div>
+    
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width: 150px;"><%= l(:label_issue_status) %></th>
+          <th><%= l(:label_notification_template) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @issue_statuses.each do |status| %>
+          <tr>
+            <td>
+              <label for="enabled_status_<%= status.id %>" style="cursor: pointer;">
+                <%= status.name %>
+              </label>
+            </td>
+            <td>
+              <%= text_area_tag "webhook_config[status_templates][#{status.name}]",
+                  @webhook_config.status_template(status.name) || default_template(status),
+                  :rows => 3,
+                  :cols => 80,
+                  :placeholder => l(:placeholder_notification_template),
+                  :class => 'template-input',
+                  :style => 'width: 100%; box-sizing: border-box;' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </fieldset>
+
+  <p style="margin-top: 20px;">
+    <%= f.submit l(:button_save), :class => 'button-positive' %>
+  </p>
+<% end %>
+
+<script>
+  function toggleAllStatuses(checked) {
+    var checkboxes = document.querySelectorAll('input[name="webhook_config[enabled_statuses][]"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = checked;
+    }
+  }
+  
+  function toggleAllSubProjects(checked) {
+    var checkboxes = document.querySelectorAll('input[name="sub_project_ids[]"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = checked;
+    }
+  }
+
+  function toggleAllRoles(checked) {
+    var checkboxes = document.querySelectorAll('input[name="webhook_config[task_reminder_roles][]"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = checked;
+    }
+  }
+</script>
+
+<style>
+  .info {
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 10px;
+  }
+  table.list input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+</style>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'webhook', :plugin => 'redmine_webhook' %>
+  
+  <%# 修复菜单高亮 - 使用更可靠的方式 %>
+  <%= javascript_tag do %>
+    (function() {
+      'use strict';
+      
+      function highlightWebhookMenu() {
+        // 等待Redmine菜单初始化完成
+        setTimeout(function() {
+          var mainMenu = document.getElementById('main-menu');
+          if (!mainMenu) {
+            console.warn('[Webhook] Main menu not found');
+            return;
+          }
+          
+          // 查找webhook菜单链接
+          var webhookLink = mainMenu.querySelector('a.webhook');
+          if (!webhookLink) {
+            console.warn('[Webhook] Webhook menu link not found');
+            return;
+          }
+          
+          console.log('[Webhook] Found webhook menu link:', webhookLink);
+          
+          // 移除所有现有的selected类
+          mainMenu.querySelectorAll('li.selected').forEach(function(li) {
+            li.classList.remove('selected');
+          });
+          mainMenu.querySelectorAll('a.selected').forEach(function(a) {
+            a.classList.remove('selected');
+          });
+          
+          // 为webhook链接添加selected类
+          webhookLink.classList.add('selected');
+          console.log('[Webhook] Added selected class to webhook link');
+          
+          // 为父级li添加selected类
+          var parentLi = webhookLink.closest('li');
+          if (parentLi) {
+            parentLi.classList.add('selected');
+            console.log('[Webhook] Added selected class to parent li');
+          }
+          
+          // 如果webhook在dropdown中，也高亮父级菜单项
+          var dropdownParent = webhookLink.closest('li.has-children');
+          if (dropdownParent) {
+            dropdownParent.classList.add('selected');
+            console.log('[Webhook] Added selected class to dropdown parent');
+          }
+        }, 100); // 延时100ms确保Redmine菜单初始化完成
+      }
+      
+      // 页面加载完成后执行
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', highlightWebhookMenu);
+      } else {
+        highlightWebhookMenu();
+      }
+      
+      // 监听Turbo/Turbolinks事件（如果Redmine使用）
+      if (typeof Turbo !== 'undefined') {
+        document.addEventListener('turbo:load', highlightWebhookMenu);
+      } else if (typeof Turbolinks !== 'undefined') {
+        document.addEventListener('turbolinks:load', highlightWebhookMenu);
+      }
+    })();
+  <% end %>
+<% end %>

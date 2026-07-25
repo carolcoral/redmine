@@ -1,0 +1,13 @@
+table.list
+  - AdditionalsInfo.new.system_infos.each do |type, system_info|
+    tr class="#{type}"
+      td.name
+        = "#{system_info[:label].presence || type}:"
+      td.name
+        - case system_info[:value]
+          - when true
+            = sprite_icon 'checked'
+          - when false
+            = sprite_icon 'warning'
+          - else
+            = system_info[:value]

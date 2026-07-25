@@ -1,0 +1,13 @@
+- name: view
+  svg: eye
+- name: tag
+  svg: tag
+- name: vote
+  svg: thumb-up
+- name: question
+  svg: message-question
+- name: accept
+  svg: circle-check
+- name: discard
+  svg: circle-check
+  style: filled

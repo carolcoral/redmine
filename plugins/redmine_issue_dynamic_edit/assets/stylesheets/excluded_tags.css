@@ -1,0 +1,4 @@
+#excluded_tags_container{ display:flex; flex-wrap:wrap; gap:6px; }
+.excluded-tag{ background:#e1e1e1; padding:0px 6px; border-radius:6px; display:inline-flex; align-items:center; gap:6px; }
+.excluded-tag .remove-tag{ border:none; background:transparent; color:#900; cursor:pointer; font-weight:bold; padding:0 4px; }
+.add-tag-input{ border:1px solid #ccc; padding:4px 6px; border-radius:4px; min-width:120px; }

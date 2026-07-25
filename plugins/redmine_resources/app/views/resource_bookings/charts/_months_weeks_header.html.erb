@@ -1,0 +1,64 @@
+<% ###### Months and Weeks headers if @rb_chart.zoom == 2 ######
+  ### |   Dec   |         Jan                             |     Feb         |
+  ### | 28 - 31 | 1 -7 | 8 - 14 | 15 - 21 | 22 - 28 | 29  - 4 | 5 - 11 | ..
+###### remake for monthly and weekly headers %>
+
+<% ###### Months headers ###### %>
+<%
+  left = 0
+  height = header_height
+  start_month = @rb_chart.date_from
+  one_day_in_pixels = zoom / 7
+  date_to = @rb_chart.date_to
+
+%>
+
+<% while start_month <= date_to %>
+  <%
+    next_month = start_month.end_of_month + 1
+    width = (next_month - start_month).to_i * one_day_in_pixels - 1
+    month_name = I18n.l(start_month, format: '%b')
+
+    style = "left: #{left}px;"
+    style += "width: #{width}px;"
+    style += "height: #{height}px;"
+  %>
+  <%= content_tag(:div, style: style, class: 'gantt_hdr') do %>
+    <%= content_tag(:small, month_name) %>
+  <% end %>
+  <%
+    left = left + width + 1
+    start_month = next_month
+  %>
+<% end %>
+
+
+<% ###### Weeks headers ###### %>
+<%
+  left = 0
+  top = 19
+  week_start = @rb_chart.date_from
+  height = g_height + header_height - 1
+%>
+
+<% while week_start <= date_to %>
+  <%
+    week_end = [week_start.end_of_week, date_to].min
+    width = (week_end - week_start + 1).to_i * one_day_in_pixels - 1
+    week_name = "#{week_start.day} - #{week_end.day}"
+
+    style = "left: #{left}px;"
+    style += "top:#{top}px;"
+    style += "width: #{width}px;"
+    style += "height: #{height}px;"
+    clss = 'gantt_hdr bookings-column'
+  %>
+
+  <%= content_tag(:div, style: style, class: clss) do %>
+    <%= content_tag(:small, week_name) %>
+  <% end %>
+  <%
+    left = left + width + 1
+    week_start = week_end.end_of_week + 1
+  %>
+<% end %>

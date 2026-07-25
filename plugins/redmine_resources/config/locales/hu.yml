@@ -1,0 +1,99 @@
+hu:
+  label_resources: Erőforrások
+  label_resource_booking_plural: Erőforrás-foglalások
+  label_resources_ghost_bookings: Szellemfoglalások
+  label_resource_planning: Erőforrás tervezés
+  label_resources_new_booking: Új foglalás
+  label_resources_edit_booking: Foglalás szerkesztése
+  label_resources_leave_comment: Hagyj megjegyzést
+  label_resources_scheduled: Ütemezett
+  label_resources_total_scheduled: Összes tervezett
+  label_resources_scheduled_for: számára
+  label_resources_workday_length: Munkaidő hossza
+  label_resources_load: Terhelés
+  label_resources_full_load: Teljes terhelés
+  label_resources_overload: Túlterheltség
+  label_resources_underload: Alulterheltség
+  label_resources_f_hour_short: "%{value}óra"
+  label_resources_dates: Időpontok
+  label_resources_assigned_to_user: Felhasználóhoz rendelve
+  label_resources_not_assigned_to_user: Nincs felhasználóhoz rendelve
+  label_resources_closed_issues: Lezárt jegyek
+  label_resources_setting_taken_from: Ez a beállítás a következőkből származik
+  label_resources_line_title: A sor címe
+  label_resources_issue_subject: A jegy tárgya
+  label_resources_hours_per_day: Napi óraszám
+  label_resources_total_hours: Összes óraszám
+  label_my_resource_bookings: Az erőforrás foglalásaim
+  label_resources_unbooked_time: Le nem foglalt idő
+  label_resources_capacity: Teljesítmény
+  label_resources_allocated: Felosztott
+  label_resources_spent: Elhasznált
+  label_resources_weekends: Hétvégék
+  label_resources_project_names: Projekt nevek
+  label_resources_show_more: További információk...
+
+  label_resource_booking_added: Erőforrás-foglalás hozzáadva
+  label_resource_booking_updated: Erőforrás-foglalás frissítve
+  label_resource_booking_for_issue_added: 'A %{id} jegyhez tartozó erőforrás-foglalást %{author} adta hozzá.'
+  label_resource_booking_for_project_added: 'A %{id} projektre vonatkozó erőforrás-foglalást %{author} adta hozzá.'
+  label_resource_booking_for_issue_updated: 'A %{id} jegyhez tartozó erőforrás-foglalást %{author} frissítette.'
+  label_resource_booking_for_project_updated: 'A %{id} projekthez tartozó erőforrás-foglalást %{author} frissítette.'
+
+  project_module_resources: Erőforrások
+  permission_view_resources: Erőforrások megtekintése
+  permission_add_booking: Foglalás hozzáadása
+  permission_edit_booking: Foglalás szerkesztése
+
+  field_end_date: Befejezés időpontja
+  field_booking_type: Foglalás
+  field_start_hour: Kezdés órája
+  field_end_hour: Befejezés órája
+  field_hours_per_day: Óra/Nap
+  field_hours_per_day_abbreviation: óra/nap
+
+  notice_could_not_delete: Nem lehetett törölni
+  error_save_failed: A mentés sikertelen.
+
+  label_resources_x_day_off:
+    one: "%{count} szünnap"
+    other: "%{count} szünnapok"
+
+  activerecord:
+    errors:
+      messages:
+        greater_than_or_equal_to_start_date: nagyobbnak vagy egyenlőnek kell lennie a kezdeti időponthoz képest.
+        less_than_or_equal_to_issue_due_date: 'kisebb vagy egyenlő kell legyen, mint a kibocsátás esedékességének időpontja (%{due_date})'
+        total_time_exceeds_estimated_time: A probléma összes hozzárendelésének teljes ideje meghaladja a becsült időt.
+
+  label_resource_updated: Erőforrás frissítve
+  label_resources_chart_type: Táblázat fajtája
+  label_resources_week_start: A hét kezdete
+  label_resources_group_by: Csoport szerint
+  label_resources_planned: Tervezett
+
+  label_resources_allocation_chart: Havi nézet
+  label_resources_allocation_table: Heti nézet
+  label_resources_issues_chart: Issues chart
+  label_resources_utilization_report: Utilization report
+  label_resources_edit_issue_dates: Edit issue dates
+
+  label_resources_workload_type: Workload
+  label_resources_workload_in_hours: Hours
+  label_resources_workload_in_percent: Percent
+  label_resources_user_workload: "%{workload} of %{workday_length} h/d"
+  label_resources_days_count: "for %{days} days"
+  label_resources_dayoffs_count: "(%{count} day off)"
+
+  # PRO labels
+  label_resources_allocation_table_pro: Heti nézet (PRO)
+  label_resources_issues_chart_pro: Issues chart (PRO)
+  label_resources_issue_subject_pro: A jegy témája (PRO)
+  label_resources_hours_per_day_pro: Napi óraszám (PRO)
+  label_version_plural_pro: Változatok (PRO)
+  label_resources_ghost_bookings_pro: Szellemfoglalások (PRO)
+
+  label_resources_unassigned_issues_link: Unassigned issues (%{count})
+  label_resources_dayoff: Day off
+  label_resources_off: 'Off'
+  label_resources_versions: Versions...

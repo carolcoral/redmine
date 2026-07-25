@@ -1,0 +1,18 @@
+<p class="resource_option" id="workload">
+  <%= label_tag :workload_type, l(:label_resources_workload_type) %>
+  <%= select_tag :workload_type, custom_options_for_select(workload_type_options, @query.workload_type) %>
+</p>
+<p class="resource_option">
+  <%= label_tag :line_title_type, l(:label_resources_line_title) %>
+  <%= select_tag :line_title_type, custom_options_for_select(line_title_type_options, @query.line_title_type) %>
+</p>
+<p><label><%= l(:button_show) %></label>
+  <%= hidden_field_tag 'query[show_versions]', '0' %>
+  <%= hidden_field_tag 'query[show_issues]', '0' %>
+  <%= hidden_field_tag 'query[show_ghost_bookings]', '0' %>
+  <%= hidden_field_tag 'query[draw_selected_columns]', '0' %>
+  <label class="inline"><%= check_box_tag "query[show_versions]", "1", @query.show_versions %> <%= l(:label_version_plural) %></label>
+  <label class="inline"><%= check_box_tag "query[show_issues]", "1", @query.show_issues %> <%= l(:label_issue_plural) %></label>
+  <label class="inline"><%= check_box_tag "query[show_ghost_bookings]", "1", @query.show_ghost_bookings %> <%= l(:label_resources_ghost_bookings) %></label>
+  <label class="inline"><%= check_box_tag "query[draw_selected_columns]", "1", @query.draw_selected_columns, :data => { :enables => 'span.query-columns select, span.query-columns input'} %> <%= l(:description_selected_columns) %></label>
+</p>

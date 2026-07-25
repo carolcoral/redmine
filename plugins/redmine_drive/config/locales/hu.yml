@@ -1,0 +1,58 @@
+# Hungarian translations for redmine_drive
+# by Lilla Basilides basilides.h.lilla@gmail.com)
+# Hungarian strings go here for Rails i18n
+hu:
+  label_drive: Meghajtó
+  label_redmine_drive: Redmine meghajtó
+  label_drive_new_folder: Új mappa
+  label_drive_edit_folder: Mappa szerkesztése
+  label_drive_edit_file: Fájl szerkesztése
+  label_drive_tags: Címkék
+  label_drive_upload_files: Fájlok feltöltése
+  label_drive_new_files: Új fájlok
+  label_drive_share: Megosztás
+  label_drive_shared: Megosztott
+  label_drive_unshare: Megosztás feloldása
+  label_drive_expiration_date: Lejárat időpontja
+  label_drive_copy_to_folder: Másolás mappába
+  label_drive_move_to_folder: Mozgassa a mappába
+  label_drive_bulk_edit: Tömeges szerkesztés
+  label_drive_search_by_name: Keresés név alapján
+  label_drive_storage_size: Tároló mérete
+  label_drive_shared_file: Drive shared file
+  label_drive_shared_files: Megosztott fájlok
+  label_drive_link_shared_files: Megosztott fájlok hivatkozása
+  label_drive_file_search: 'Fájl keresés:'
+  label_drive_no_uploaded_files: Nincsenek feltöltött fájlok.
+  label_drive_go_to_the: Menjen a
+  label_drive_shared_files_destroy_warning: Egy vagy több fájl kapcsolódik a jegyhez.
+  label_drive_files_destroy_confirmation: 'Biztos, hogy törölni szeretné a kiválasztott fájl(ok)at?'
+
+  label_drive_notice_copying_completed: Másolás befejezve
+  label_drive_notice_move_completed: A mozgatás befejeződött
+  label_drive_notice_copying_error: Hiba történt másolás során.
+  label_drive_notice_moving_error: Hiba történt a mozgatás során.
+  label_drive_notice_update_error: Sikertelen frissítés
+
+  label_drive_file_items:
+    one: '%{count} tétel'
+    other: "%{count} tétel"
+
+  activerecord:
+    errors:
+      messages:
+        error_file_already_exists: 'A "%{name}" nevű fájl már létezik.'
+
+  label_drive_days_ago: '%{days} nappal ezelőtt'
+  label_drive_version_history: Verziótörténet
+  label_drive_rollback: Visszaállítás
+  label_drive_upload_version: Feltöltött verzió
+  label_drive_version_name: A verzió neve
+
+  label_drive_show_in_top_menu: Show Drive in top menu
+
+  notice_successful_rollback: A verzió visszaállítása sikeresen megtörtént
+
+  error_save_failed: A mentés sikertelen
+  error_update_failed: A frissítés sikertelen
+  error_rollback_failed: A verzió visszaállítása sikertelen volt

@@ -1,0 +1,24 @@
+linters:
+  LineLength:
+    max: 140
+  RuboCop:
+    ignored_cops:
+      - Layout/ArgumentAlignment
+      - Layout/ArrayAlignment
+      - Layout/EmptyLineAfterGuardClause
+      - Layout/HashAlignment
+      - Layout/IndentationWidth
+      - Layout/MultilineArrayBraceLayout
+      - Layout/MultilineAssignmentLayout
+      - Layout/MultilineHashBraceLayout
+      - Layout/MultilineOperationIndentation
+      - Layout/TrailingEmptyLines
+      - Lint/Void
+      - Metrics/BlockNesting
+      - Rails/OutputSafety
+      - Style/FrozenStringLiteralComment
+      - Style/IdenticalConditionalBranches
+      - Style/IfUnlessModifier
+      - Style/Next
+      - Style/RedundantLineContinuation
+      - Style/WhileUntilModifier

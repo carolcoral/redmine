@@ -1,0 +1,99 @@
+pt-BR:
+  label_resources: Recursos
+  label_resource_booking_plural: Agendamentos de recursos
+  label_resources_ghost_bookings: Reservas fantasmas
+  label_resource_planning: Planejamento de recursos
+  label_resources_new_booking: Novo agendamento
+  label_resources_edit_booking: Editar agendamento
+  label_resources_leave_comment: Deixar um comentário
+  label_resources_scheduled: Agendado
+  label_resources_total_scheduled: Total programado
+  label_resources_scheduled_for: para
+  label_resources_workday_length: Duração do dia de trabalho
+  label_resources_load: Carregado
+  label_resources_full_load: Carga máxima
+  label_resources_overload: Sobrecarga
+  label_resources_underload: Carga insuficiente
+  label_resources_f_hour_short: "%{value}h"
+  label_resources_dates: Datas
+  label_resources_assigned_to_user: Atribuído ao usuário
+  label_resources_not_assigned_to_user: Não atribuído ao usuário
+  label_resources_closed_issues: Tarefa(s) fechada(s)
+  label_resources_setting_taken_from: Estas configurações foram tiradas de
+  label_resources_line_title: Título da linha
+  label_resources_issue_subject: Assunto da tarefa
+  label_resources_hours_per_day: Horas por dia
+  label_resources_total_hours: Total de horas
+  label_my_resource_bookings: Meus agendamentos de recursos
+  label_resources_unbooked_time: Tempo não reservado
+  label_resources_capacity: Capacidade
+  label_resources_allocated: Alocado
+  label_resources_spent: Gasto
+  label_resources_weekends: Finais de semana
+  label_resources_project_names: Nomes de projetos
+  label_resources_show_more: Mostrar mais...
+
+  label_resource_booking_added: Agendamento de recurso adicionada
+  label_resource_booking_updated: Agendamento de recurso atualizada
+  label_resource_booking_for_issue_added: 'Agendamento de recurso para a tarefa %{id} foi feito por %{author}.'
+  label_resource_booking_for_project_added: 'Agendamento de recurso para o projeto %{id} foi feito por %{author}.'
+  label_resource_booking_for_issue_updated: 'Agendamento de recurso para a tarefa %{id} foi atualizado por %{author}.'
+  label_resource_booking_for_project_updated: 'Agendamento de recurso para o projeto %{id} foi atualizado por %{author}.'
+
+  project_module_resources: Recursos
+  permission_view_resources: Ver recursos
+  permission_add_booking: Adicionar agendamento
+  permission_edit_booking: Editar agendamento
+
+  field_end_date: Data final
+  field_booking_type: Agendamento
+  field_start_hour: Horário de inicio
+  field_end_hour: Horário de encerramento
+  field_hours_per_day: Horas/Dias
+  field_hours_per_day_abbreviation: h/d
+
+  notice_could_not_delete: Não foi possível deletar
+  error_save_failed: Erro no salvamento.
+
+  label_resources_x_day_off:
+    one: "%{count} dia de folga"
+    other: "%{count} dias de folga"
+
+  activerecord:
+    errors:
+      messages:
+        greater_than_or_equal_to_start_date: Deve ser maior ou igual a data inicial
+        less_than_or_equal_to_issue_due_date: 'Deve ser menor ou igual a data de encerramento da tarefa (%{due_date})'
+        total_time_exceeds_estimated_time: O tempo total de todas as atribuições para a tarefa excede o tempo estimado
+
+  label_resource_updated: Recurso atualizado
+  label_resources_chart_type: Tipo de gráfico
+  label_resources_week_start: Início da semana
+  label_resources_group_by: Agrupado por
+  label_resources_planned: Planejado
+
+  label_resources_allocation_chart: Visão mensal
+  label_resources_allocation_table: Visão semanal
+  label_resources_issues_chart: Issues chart
+  label_resources_utilization_report: Utilization report
+  label_resources_edit_issue_dates: Edit issue dates
+
+  label_resources_workload_type: Workload
+  label_resources_workload_in_hours: Hours
+  label_resources_workload_in_percent: Percent
+  label_resources_user_workload: "%{workload} of %{workday_length} h/d"
+  label_resources_days_count: "for %{days} days"
+  label_resources_dayoffs_count: "(%{count} day off)"
+
+  # PRO labels
+  label_resources_allocation_table_pro: Visão semanal (PRO)
+  label_resources_issues_chart_pro: Issues chart (PRO)
+  label_resources_issue_subject_pro: Assunto da tarefa (PRO)
+  label_resources_hours_per_day_pro: Horas por dia (PRO)
+  label_version_plural_pro: Versões (PRO)
+  label_resources_ghost_bookings_pro: Agendamentos fantasmas (PRO)
+
+  label_resources_unassigned_issues_link: Unassigned issues (%{count})
+  label_resources_dayoff: Day off
+  label_resources_off: 'Off'
+  label_resources_versions: Versions...

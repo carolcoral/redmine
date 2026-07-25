@@ -1,0 +1,99 @@
+de:
+  label_resources: Ressourcen
+  label_resource_booking_plural: Ressourcenbuchungen
+  label_resources_ghost_bookings: Geisterbuchungen
+  label_resource_planning: Ressourcenplanung
+  label_resources_new_booking: Neue Buchung
+  label_resources_edit_booking: Buchung bearbeiten
+  label_resources_leave_comment: Kommentar hinterlassen
+  label_resources_scheduled: Geplant
+  label_resources_total_scheduled: Insgesamt geplant
+  label_resources_scheduled_for: für
+  label_resources_workday_length: Länge des Arbeitstages
+  label_resources_load: Auslastung
+  label_resources_full_load: Voll ausgelastet
+  label_resources_overload: Überlast
+  label_resources_underload: Unterlast
+  label_resources_f_hour_short: "%{value}h"
+  label_resources_dates: Termine
+  label_resources_assigned_to_user: Benutzer zugewiesen
+  label_resources_not_assigned_to_user: Nicht dem Benutzer zugewiesen
+  label_resources_closed_issues: Geschlossene Tickets
+  label_resources_setting_taken_from: Diese Einstellung entnommen aus
+  label_resources_line_title: Zeilentitel
+  label_resources_issue_subject: Titel des Tickets
+  label_resources_hours_per_day: Stunden pro Tag
+  label_resources_total_hours: Gesamtstunden
+  label_my_resource_bookings: Meine Ressourcenbuchungen
+  label_resources_unbooked_time: Ungebuchte Zeit
+  label_resources_capacity: Kapazität
+  label_resources_allocated: Zugeteilt
+  label_resources_spent: verbraucht
+  label_resources_weekends: Wochenenden
+  label_resources_project_names: Projektnamen
+  label_resources_show_more: Zeig mehr...
+
+  label_resource_booking_added: Ressourcenbuchung hinzugefügt
+  label_resource_booking_updated: Ressourcenbuchung aktualisiert
+  label_resource_booking_for_issue_added: 'Ressourcenbuchung für Ticket %{id} wurde von %{author} hinzugefügt.'
+  label_resource_booking_for_project_added: 'Ressourcenbuchung für Projekt %{id} wurde von %{author} hinzugefügt.'
+  label_resource_booking_for_issue_updated: 'Ressourcenbuchung für Ticket %{id} wurde von %{author} aktualisiert.'
+  label_resource_booking_for_project_updated: 'Ressourcenbuchung für Projekt %{id} wurde von %{author} aktualisiert.'
+
+  project_module_resources: Ressourcen
+  permission_view_resources: Ressourcen anzeigen
+  permission_add_booking: Buchung hinzufügen
+  permission_edit_booking: Buchung bearbeiten
+
+  field_end_date: Endtermin
+  field_booking_type: Buchung
+  field_start_hour: Startstunde
+  field_end_hour: Endstunde
+  field_hours_per_day: Stunden/Tag
+  field_hours_per_day_abbreviation: h/d
+
+  notice_could_not_delete: Konnte nicht gelöscht werden
+  error_save_failed: Speichern fehlgeschlagen.
+
+  label_resources_x_day_off:
+    one: "%{count} Tag frei"
+    other: "%{count} Tage frei"
+
+  activerecord:
+    errors:
+      messages:
+        greater_than_or_equal_to_start_date: muss größer oder gleich dem Startdatum sein
+        less_than_or_equal_to_issue_due_date: 'muss kleiner oder gleich dem Fälligkeitsdatum des Tickets sein (%{due_date})'
+        total_time_exceeds_estimated_time: Die Gesamtzeit aller Zuweisungen zum Ticket überschreitet die geschätzte Zeit
+
+  label_resource_updated: Ressource aktualisiert
+  label_resources_chart_type: Diagramm Typ
+  label_resources_week_start: Wochenstart
+  label_resources_group_by: Gruppieren nach
+  label_resources_planned: Geplant
+
+  label_resources_allocation_chart: Monatsansicht
+  label_resources_allocation_table: Wochenansicht
+  label_resources_issues_chart: Issues chart
+  label_resources_utilization_report: Utilization report
+  label_resources_edit_issue_dates: Edit issue dates
+
+  label_resources_workload_type: Workload
+  label_resources_workload_in_hours: Hours
+  label_resources_workload_in_percent: Percent
+  label_resources_user_workload: "%{workload} of %{workday_length} h/d"
+  label_resources_days_count: "for %{days} days"
+  label_resources_dayoffs_count: "(%{count} day off)"
+
+  # PRO labels
+  label_resources_allocation_table_pro: Wochenansicht (PRO)
+  label_resources_issues_chart_pro: Issues chart (PRO)
+  label_resources_issue_subject_pro: Betreff des Tickets (PRO)
+  label_resources_hours_per_day_pro: Stunden pro Tag (PRO)
+  label_version_plural_pro: Versionen (PRO)
+  label_resources_ghost_bookings_pro: Geisterbuchungen (PRO)
+
+  label_resources_unassigned_issues_link: Unassigned issues (%{count})
+  label_resources_dayoff: Day off
+  label_resources_off: Nein
+  label_resources_versions: Versions...

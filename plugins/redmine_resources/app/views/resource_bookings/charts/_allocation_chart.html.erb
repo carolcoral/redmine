@@ -1,0 +1,127 @@
+<%
+  zoom = @rb_chart.column_width
+
+  subject_width = RedmineResources::Charts::AllocationChart::SUBJECT_WIDTH
+  header_height = RedmineResources::Charts::AllocationChart::HEADER_HEIGHT
+  headers_height = RedmineResources::Charts::AllocationChart::HEADERS_HEIGHT
+
+  # Width of the entire chart
+  g_width = @rb_chart.g_width.to_i
+  @rb_chart.render
+  g_height = [@rb_chart.height, 206].max
+  t_height = g_height + headers_height
+
+  selected_columns = @query.columns
+%>
+
+<table class="resource-planning-chart " style="width:100%; border:0; border-collapse: collapse;">
+  <tr>
+    <td style="width: <%= subject_width %>px; padding:0px;" class="gantt_subjects_column">
+      <%
+        style = 'position:relative;'
+        style += "height: #{t_height + 24}px;"
+        style += "width: #{subject_width + 1}px;"
+      %>
+      <%= content_tag(:div, style: style, class: 'gantt_subjects_container') do %>
+        <%
+          style = 'right: 0;'
+          style += "width: #{subject_width}px;"
+          style += "height: #{headers_height}px;"
+          style += 'background: #eee;'
+          style += 'display: flex;'
+        %>
+        <%= content_tag(:div, '', style: style, class: 'gantt_hdr') do %>
+          <%= link_to_function("#{l(:button_collapse_all)}/#{l(:button_expand_all)}", 'toggleAllUserResourceBookingsGroups()', class: 'toggle-all') %>
+        <% end %>
+        <%
+          style = 'right: 0;'
+          style += "width: #{subject_width}px;"
+          style += "height: #{t_height}px;"
+          style += 'border-left: 1px solid #c0c0c0;'
+          style += 'overflow: hidden;'
+          style += 'pointer-events: none;'
+        %>
+        <%= content_tag(:div, '', style: style, class: 'gantt_hdr subject_column') %>
+        <%
+          style = 'right: 0;'
+          style += 'position:relative;'
+          style += "top: #{headers_height + 1}px;"
+        %>
+        <%= content_tag(:div, class: 'resource-subjects', style: style) do %>
+          <%= @rb_chart.subjects.html_safe %>
+        <% end %>
+      <% end %>
+    </td>
+
+    <td style="padding: 0px;">
+      <div style="position: relative; height: <%= t_height + 24 %>px; overflow-x: auto; overflow-y: hidden;" id="gantt_area">
+        <%
+          style = "width: #{g_width - 1}px;"
+          style += "height: #{headers_height}px;"
+          style += 'background: #eee;'
+        %>
+        <%= content_tag(:div, '&nbsp;'.html_safe, style: style, class: 'gantt_hdr') %>
+
+        <% ###### Columns headers ###### %>
+        <% case @rb_chart.zoom %>
+        <% when 1 %>
+          <%= render partial: 'resource_bookings/charts/years_months_header', locals: { zoom: zoom, header_height: header_height, g_height: g_height, headers_height: headers_height } %>
+        <% when 2 %>
+          <%= render partial: 'resource_bookings/charts/months_weeks_header', locals: { zoom: zoom, header_height: header_height, g_height: g_height, headers_height: headers_height } %>
+        <% else %>
+          <%= render partial: 'resource_bookings/charts/weeks_days_header', locals: { zoom: zoom, header_height: header_height, g_height: g_height, headers_height: headers_height } %>
+        <% end%>
+
+        <%= content_tag(:div, class: 'resource-lines', style: "position:absolute; top: #{headers_height + 1}px; width: #{g_width - 1}px;") do %>
+          <%= @rb_chart.lines.html_safe %>
+        <% end %>
+
+        <% ###### Today red line (excluded from cache) ###### %>
+        <% if User.current.today >= @rb_chart.date_from and User.current.today <= @rb_chart.date_to %>
+          <%
+            today_left = (((User.current.today - @rb_chart.date_from + 1) * @rb_chart.day_width_for_today_line).floor() - 1).to_i
+            style = ""
+            style += "position: absolute;"
+            style += "height: #{g_height}px;"
+            style += "top: #{headers_height + 1}px;"
+            style += "left: #{today_left}px;"
+            style += "width:10px;"
+            style += "border-left: 1px dashed red;"
+            style += "z-index: 1;"
+          %>
+          <%= content_tag(:div, '&nbsp;'.html_safe, :style => style, :id => 'today_line', class: 'service-column') %>
+        <% end %>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<table style="width:100%">
+  <tr>
+    <td style="text-align:left;">
+      <%= link_to "\xc2\xab " + l(:label_previous), { params: request.query_parameters.merge(@rb_chart.params_previous) }, accesskey: accesskey(:previous) %>
+    </td>
+    <td style="text-align:right;">
+      <%= link_to l(:label_next) + " \xc2\xbb", { params: request.query_parameters.merge(@rb_chart.params_next) }, accesskey: accesskey(:next) %>
+    </td>
+  </tr>
+</table>
+
+<%= javascript_tag do %>
+  $(function () {
+    addEditableBarsOnClickListener();
+
+    var columnWidth = <%= @rb_chart.column_width %>;
+    var zoom = <%= @rb_chart.zoom %>;
+    initializeDraggableBars(columnWidth, zoom);
+    initializeResizableBars(columnWidth, zoom);
+    initializeAddBookingButtons(columnWidth, zoom);
+    initializeBarSplitLines(columnWidth);
+    drawSelectedColumns();
+    initializeResizableSubjectsColumn();
+  });
+
+  $(window).resize(function() {
+    initializeResizableSubjectsColumn();
+  });
+<% end %>

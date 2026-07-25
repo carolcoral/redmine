@@ -1,0 +1,174 @@
+# encoding: utf-8
+# Simplified Chinese strings go here for Rails i18n
+# Author: Salivaxiu@163.com
+# Based on file: en.yml
+zh:
+  label_questions: '帮助与支持'
+  label_questions_search: '搜索特定的提问或回答或帖子...'
+  label_questions_new: 新问答
+  label_questions_message: 消息
+  label_questions_added_time: "在 %{value} 之前增加"
+  label_questions_related_questions: 相关的消息
+  label_questions_latest_messages: 最后的消息
+  label_questions_views: '显示 %{count} 次'
+  label_questions_votes: '投票 %{count} 次'
+  label_questions_answers: '回答 %{count} 次'
+  label_questions_tags: 标签
+  label_questions_tagged_by: '%{count} 个主题包含标签 %{tag}'
+  label_questions_sidebar_message: 侧边栏信息
+  label_questions_notice: 通知
+  label_questions_most_voted: 大多数投票
+
+  button_questions_vote: 投票
+  button_questions_unvote: 取消投票
+  button_questions_like: 喜欢
+  button_questions_unlike: 不喜欢
+
+  field_questions_tags: 标签
+
+  label_questions_add_comment: 添加评论
+  label_question_comment_successful_added: 评论成功添加
+  label_question_successful_update: Question 问题成功更新
+  label_answer_successful_update: 回答更新成功
+  label_answer_successful_added: 回答添加成功
+  lebel_questions_new_comment: 新的评论
+
+  button_questions_to_issue: 转换为问题
+  button_questions_issue_to_question: 转换为提问
+  label_questions_actions: 行动
+  label_questions_accept: 接受
+
+  label_questions_section_type_questions: 提问
+  label_questions_section_type_solutions: 解决方案
+  label_questions_section_type_ideas: 想法
+
+  label_questions_section: 板块
+  label_questions_sections_plural: 板块
+  label_questions_section_new: 新板块
+  label_questions_section_type: 板块类型
+  label_questions_topic: 主题
+  label_questions_featured: 精选
+  label_questions_locked: 锁定
+
+  project_module_questions: 提问
+  i18n:
+    transliterate:
+      rule:
+        і: 'i'
+        ґ: 'g'
+        ё: 'yo'
+        №: '#'
+        є: 'e'
+        ї: 'yi'
+        а: 'a'
+        б: 'b'
+        в: 'v'
+        г: 'g'
+        д: 'd'
+        е: 'e'
+        ж: 'zh'
+        з: 'z'
+        и: 'i'
+        й: 'y'
+        к: 'k'
+        л: 'l'
+        м: 'm'
+        н: 'n'
+        о: 'o'
+        п: 'p'
+        р: 'r'
+        с: 's'
+        т: 't'
+        у: 'u'
+        ф: 'f'
+        х: 'h'
+        ц: 'ts'
+        ч: 'ch'
+        ш: 'sh'
+        щ: 'sch'
+        ъ: ''
+        ы: 'y'
+        ь: ''
+        э: 'e'
+        ю: 'yu'
+        я: 'ya'
+        "Ґ": "G"
+        "Ё": "YO"
+        "Є": "E"
+        "Ї": "YI"
+        "І": "I"
+        "А": "A"
+        "Б": "B"
+        "В": "V"
+        "Г": "G"
+        "Д": "D"
+        "Е": "E"
+        "Ж": "ZH"
+        "З": "Z"
+        "И": "I"
+        "Й": "Y"
+        "К": "K"
+        "Л": "L"
+        "М": "M"
+        "Н": "N"
+        "О": "O"
+        "П": "P"
+        "Р": "R"
+        "С": "S"
+        "Т": "T"
+        "У": "U"
+        "Ф": "F"
+        "Х": "H"
+        "Ц": "TS"
+        "Ч": "CH"
+        "Ш": "SH"
+        "Щ": "SCH"
+        "Ъ": "'"
+        "Ы": "Y"
+        "Ь": ""
+        "Э": "E"
+        "Ю": "YU"
+        "Я": "YA"
+  label_questions_comment: 评论
+  label_questions_your_answer: 你的回答
+  label_questions_answer_plural: 回答
+  label_questions_x_votes:
+        one:   "投票"
+        other: "票"
+  label_questions_wasthishelpful: 这有帮助吗?
+
+  label_question_plural: 提问
+  label_questions_related_solutions: 相关解决方案
+  label_questions_section_edit: 编辑板块
+  label_soluition_plural: 解决方案
+  label_questions_add_tag: '+ 加标签'
+  label_questions_vote_added: 投票已添加
+  label_questions_vote_removed: 投票已删除
+  label_questions_vote_own: 投自己的提问
+  label_questions_show_popular: 在板块显示热门文章
+  label_questions_most_popular: 最受欢迎
+  label_questions_status_plural: 提示状态
+  label_questions_status_closed: 已关闭
+  label_questions_status_new: 新状态
+  label_questions_newest: 最新
+  label_questions_active: 有效
+  label_questions_voted: 已投票
+  label_questions_unanswered: 未回答
+
+  permission_view_questions: 查看问题
+  permission_create_tags: 创建新标签
+  permission_edit_vote_messages: 投票提问
+  permission_add_answers: 添加回答
+  permission_delete_answers: 删除回答
+  permission_edit_question_comments: 编辑评论
+  permission_edit_own_question_comments: 编辑自己的评论
+  permission_comment_question: 添加评论
+  permission_add_questions: 添加提问
+  permission_edit_questions: 编辑提问
+  permission_edit_own_questions: 编辑自己的提问
+  permission_delete_questions: 删除提问
+  permission_vote_questions: 投票提问
+  permission_accept_answers: 接受回答
+  permission_manage_sections: 管理板块
+  label_questions_discard: 舍弃
+  permission_edit_own_answers: 编辑自己的回答

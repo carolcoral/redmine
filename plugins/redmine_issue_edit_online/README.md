@@ -1,0 +1,117 @@
+# Redmine Issue Edit Online
+
+Redmine插件，支持在问题详情页面动态编辑问题和自定义字段属性，无需刷新页面（类似JIRA的在线编辑功能）。
+
+## 🎯 核心功能
+
+- ✅ 动态编辑所有问题属性（标题、描述、状态、优先级等）
+- ✅ 支持自定义字段的动态编辑
+- ✅ 集成CKEditor和jsToolBar编辑器，支持富文本格式
+- ✅ 智能表单，自动适配复选框、单选框、文件上传等特殊字段类型
+- ✅ 编辑历史自动刷新，无需手动刷新页面
+- ✅ 更新冲突检测，避免多人同时编辑造成数据丢失
+- ✅ 响应式设计，支持桌面端和移动端访问
+- ✅ 权限控制，严格遵守Redmine权限体系
+
+## 📦 安装步骤
+
+```bash
+# 1. 进入Redmine插件目录
+cd {REDMINE_ROOT}/plugins
+
+# 2. 复制插件文件夹（确保文件夹名为 redmine_issue_edit_online）
+cp -r /path/to/redmine_issue_edit_online ./
+
+# 3. 设置文件权限（重要！）
+chmod -R 755 redmine_issue_edit_online/
+
+# 4. 预编译资源（Rails 7 必需）
+bundle exec rake redmine:plugins:assets RAILS_ENV=production
+
+# 5. 重启Redmine服务
+touch {REDMINE_ROOT}/tmp/restart.txt  # 如果使用 Passenger
+# 或 systemctl restart redmine  # 根据你的配置
+```
+
+### Redmine 6.1.1 + Rails 7 特别说明
+
+如果你使用的是 **Redmine 6.1.1** 和 **Rails 7**，请参考专门的部署指南：
+
+📖 [REDMINE_6_1_1_GUIDE.md](./REDMINE_6_1_1_GUIDE.md)
+
+该指南包含：
+- Rails 7 兼容性改进
+- 性能优化建议
+- 常见问题解决方案
+- 监控和调试技巧
+
+**安装要求：**
+- Redmine 4.0 或更高版本（已测试 Redmine 6.1.1）
+- Ruby 2.5+（推荐 3.0+）
+- Rails 5.2+（已测试 Rails 7.x）
+
+**环境兼容性：**
+- ✅ Redmine 4.x, 5.x, 6.x
+- ✅ Rails 5.2, 6.x, 7.x
+- ✅ Ruby 2.5, 2.7, 3.0, 3.1, 3.2
+- ✅ MySQL, PostgreSQL, SQLite
+- ✅ 所有现代浏览器（Chrome, Firefox, Safari, Edge）
+
+## ⚙️ 配置说明
+
+访问 **管理 → 插件 → Redmine Issue Edit Online** 进行配置：
+
+| 配置项 | 说明 | 可选值 | 默认值 |
+|--------|------|--------|--------|
+| 强制使用HTTPS | AJAX请求强制使用HTTPS | true/false | false |
+| 编辑图标显示方式 | single（悬停单个字段）或 block（悬停整个详情块） | single/block | single |
+| 字段值触发事件 | 点击字段值打开编辑器的事件类型 | none/click/dblclick | click |
+| 编辑图标触发事件 | 点击编辑图标打开编辑器的事件类型 | none/click/dblclick | click |
+| 可编辑区域 | 定义触发编辑的区域 | value/all | value |
+| 排除字段ID | 禁止编辑的字段ID列表（逗号分隔） | 字符串 | 空 |
+| 检测更新冲突 | 防止覆盖其他用户的更改 | true/false | true |
+
+## 📝 支持的字段类型
+
+### 标准字段
+- 单行文本输入框（标题、日期等）
+- 多行文本域（描述、备注等）
+- 下拉选择框（状态、优先级、指派人等）
+- 复选框组
+- 单选按钮组
+- 文件上传
+
+### 自定义字段
+- 文本、多行文本
+- 列表、多选列表
+- 日期、布尔值
+- 文件、链接
+- 所有其他自定义字段类型
+
+## 🚀 使用方法
+
+1. 打开问题详情页面
+2. 将鼠标悬停在可编辑字段上
+3. 点击字段旁的✏️编辑图标或直接点击字段值
+4. 在弹出的编辑器中修改内容
+5. 点击✓保存更改或✗取消编辑
+
+**快捷键**：按`Esc`键可快速关闭编辑器
+
+## 📊 版本信息
+
+**当前版本**: 1.0.0
+
+### v1.0.0 (2025-02-11)
+- 🎉 完全兼容 Redmine 6.1.1 + Rails 7
+- 🎉 完全兼容 Redmine 4.x, 5.x, 6.x
+- ✅ 修复描述字段编辑保存问题 - 正确获取CKEditor内容并保存
+- ✅ 修复历史记录自动刷新问题 - 编辑后自动刷新#history容器内容
+- ✅ 修复无历史记录时编辑不显示历史模块问题 - 添加内容存在性检查
+- ✅ 优化编辑器初始化逻辑 - 使用setTimeout确保DOM就绪后初始化
+- ✅ 增强表单元素选择器兼容性 - 多重选择器适配不同Redmine版本
+- ✅ 改进CKEditor 4/5兼容性 - 检测CKEDITOR是否存在并正确配置
+- ✅ 优化移动端体验 - 添加移动端媒体查询，优化小屏幕显示
+- ✅ 新增description动态编辑功能（issue无description时可添加）- 自动创建description容器
+- ✅ 增强 Rails 7 兼容性 - 更新 Ruby 语法和异常处理
+- ✅ 添加详细日志和调试功能 - 便于排查问题

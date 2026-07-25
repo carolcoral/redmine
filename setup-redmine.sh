@@ -23,9 +23,9 @@ RAILS_ENV="${RAILS_ENV:-development}"     # development / production
 REDMINE_PORT="${REDMINE_PORT:-3000}"      # 监听端口
 REDMINE_BIND="${REDMINE_BIND:-0.0.0.0}"   # 绑定地址
 REDMINE_LANG="${REDMINE_LANG:-zh}"        # 默认数据语言: zh / en / fr / ja ...
-SKIP_DB_SETUP="${SKIP_DB_SETUP:-0}"       # 跳过数据库设置（已有数据库时设为 1）
+RESET_DB="${RESET_DB:-0}"                 # 是否清空数据库重建 (0=保留数据, 1=清空重建)
 AUTO_CONFIRM="${AUTO_CONFIRM:-0}"         # 0=交互式确认, 1=自动执行
-QUIET_MODE="${QUIET_MODE:-0}"             # 0=正常输出, 1=静默模式
+QUIET_MODE="${QUIET_MODE:-1}"             # 0=详细输出, 1=静默模式（仅关键信息）
 
 # ── 辅助函数 ─────────────────────────────────────────────────────────────────
 log_info()  { echo -e "${BLUE}[INFO]${NC}  $*"; }
@@ -56,6 +56,44 @@ run_cmd() {
     "$@" || { log_error "失败: ${desc}"; return 1; }
   fi
   log_ok "${desc} 完成"
+}
+
+# ── 数据库状态检测（通过 ActiveRecord 连接检测）───────────────────────────
+# 返回值: "schema roles" 两个布尔值，如 "true true" / "true false" / "false false"
+_db_status() {
+  cd "${REDMINE_HOME}"
+  RAILS_ENV="${RAILS_ENV}" bundle exec ruby -e '
+    begin
+      require "bundler/setup"
+      require "active_record"
+      require "erb"
+      require "yaml"
+      cfg = YAML.safe_load(ERB.new(File.read("config/database.yml")).result)[ENV["RAILS_ENV"] || "development"]
+      ActiveRecord::Base.establish_connection(cfg)
+      has_schema = ActiveRecord::Base.connection.table_exists?("schema_migrations")
+      has_roles = false
+      if ActiveRecord::Base.connection.table_exists?("roles")
+        has_roles = ActiveRecord::Base.connection.select_value("SELECT COUNT(*) FROM roles").to_i > 0
+      end
+      puts "#{has_schema} #{has_roles}"
+    rescue => e
+      puts "false false"
+    end
+  ' 2>/dev/null || echo "false false"
+}
+
+# 数据库是否已初始化（有 schema_migrations 表）
+_db_initialized() {
+  local status
+  status=$(_db_status)
+  [[ "$(echo "$status" | awk "{print \$1}")" == "true" ]]
+}
+
+# 数据库是否已有业务数据（roles 表有记录）
+_db_has_roles() {
+  local status
+  status=$(_db_status)
+  [[ "$(echo "$status" | awk "{print \$2}")" == "true" ]]
 }
 
 # ── 打印 Banner ──────────────────────────────────────────────────────────────
@@ -475,53 +513,43 @@ step4_generate_secret() {
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║  第 5 步：数据库迁移 (db:migrate)                                          ║
+# ║  - RESET_DB=1 时：强制全量迁移                                              ║
+# ║  - 否则：自动检测，已有表则增量迁移，无表则全量迁移                            ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 step5_db_migrate() {
   log_step "5/9: 数据库迁移"
 
   cd "${REDMINE_HOME}"
 
-  if [[ ! -f "${REDMINE_HOME}/db/schema.rb" ]]; then
-    run_cmd "运行 db:migrate" bundle exec rake db:migrate RAILS_ENV="${RAILS_ENV}"
-  elif [[ "$SKIP_DB_SETUP" == "1" ]]; then
-    log_warn "检测到已有 schema.rb，SKIP_DB_SETUP=1，跳过迁移"
+  if _db_initialized; then
+    log_info "检测到数据库已初始化，运行增量迁移..."
+    run_cmd "增量 db:migrate" bundle exec rake db:migrate RAILS_ENV="${RAILS_ENV}"
   else
-    log_info "检测到已有 schema.rb，运行增量迁移..."
-    run_cmd "运行增量 db:migrate" bundle exec rake db:migrate RAILS_ENV="${RAILS_ENV}"
+    log_info "数据库未初始化，运行完整迁移..."
+    run_cmd "全量 db:migrate" bundle exec rake db:migrate RAILS_ENV="${RAILS_ENV}"
   fi
 }
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║  第 6 步：加载默认数据 (redmine:load_default_data)                          ║
+# ║  - 自动检测 roles 表是否有数据，有则跳过                                      ║
+# ║  - 支持 SQLite / MySQL / PostgreSQL 全部数据库类型                           ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 step6_load_default_data() {
   log_step "6/9: 加载默认数据"
 
   cd "${REDMINE_HOME}"
 
-  # 检查是否已加载过默认数据（通过检查 roles 表）
-  local already_loaded=false
-  case "$DB_ADAPTER" in
-    sqlite3)
-      DB_PATH="${REDMINE_HOME}/db/redmine_${RAILS_ENV}.sqlite3"
-      if [[ -f "$DB_PATH" ]]; then
-        sqlite3 "$DB_PATH" "SELECT count(*) FROM roles;" &>/dev/null && already_loaded=true
-      fi
-      ;;
-    *)
-      # 其他数据库类型，让 redmine:load_default_data 自行判断
-      ;;
-  esac
+  if _db_has_roles; then
+    log_warn "检测到数据库已有数据（roles 表非空），跳过加载默认数据"
+    return 0
+  fi
 
-  if [[ "$already_loaded" == "true" ]]; then
-    log_warn "检测到数据库中已有 roles 数据，跳过加载默认数据"
+  if [[ -n "$REDMINE_LANG" ]]; then
+    run_cmd "加载默认数据 (语言: ${REDMINE_LANG})" bundle exec rake redmine:load_default_data RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}"
   else
-    if [[ -n "$REDMINE_LANG" ]]; then
-      run_cmd "加载默认数据 (语言: ${REDMINE_LANG})" bundle exec rake redmine:load_default_data RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}"
-    else
-      log_info "选择默认数据语言..."
-      bundle exec rake redmine:load_default_data RAILS_ENV="${RAILS_ENV}"
-    fi
+    log_info "选择默认数据语言..."
+    bundle exec rake redmine:load_default_data RAILS_ENV="${RAILS_ENV}"
   fi
 }
 
@@ -546,13 +574,15 @@ step7_precompile_assets() {
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
 # ║  第 8 步：插件迁移 (redmine:plugins:migrate)                                ║
+# ║  - 自动检测插件是否有迁移文件，无则跳过                                       ║
+# ║  - 插件迁移是幂等的，不会影响已有数据                                         ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 step8_plugins_migrate() {
   log_step "8/9: 插件数据库迁移"
 
   cd "${REDMINE_HOME}"
 
-  # 检查是否有插件需要迁移
+  # 检查是否有插件自带的迁移文件
   if ls "${REDMINE_HOME}/plugins/"*/db/migrate/ &>/dev/null 2>&1; then
     run_cmd "插件数据迁移" bundle exec rake redmine:plugins:migrate RAILS_ENV="${RAILS_ENV}"
   else
@@ -712,10 +742,17 @@ tools_cleanup() {
 }
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║  额外工具：重置并重装（危险！）                                              ║
+# ║  额外工具：重置并重装（危险！需要 RESET_DB=1 确认）                            ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 tools_reset() {
   cd "${REDMINE_HOME}"
+
+  if [[ "$RESET_DB" != "1" ]]; then
+    log_error "重置数据库需要设置 RESET_DB=1 进行确认"
+    log_info "示例: RESET_DB=1 bash setup-redmine.sh reset"
+    return 1
+  fi
+
   log_warn "⚠️  这将删除所有数据并重新初始化！"
   if ! confirm_step "确认重置数据库？"; then
     log_info "已取消"
@@ -753,14 +790,42 @@ tools_production() {
 # ╚════════════════════════════════════════════════════════════════════════════╝
 main() {
   print_banner
+
+  # ── RESET_DB 模式：清空数据库重建 ──
+  if [[ "$RESET_DB" == "1" ]]; then
+    log_warn "=============================================="
+    log_warn "  RESET_DB=1 - 将清空数据库并重新初始化"
+    log_warn "=============================================="
+    if ! confirm_step "确认清空数据库并重建？"; then
+      log_info "已取消"
+      exit 0
+    fi
+  fi
+
   step1_check_system
   step2_setup_config
   step3_bundle_install
   step4_generate_secret
-  step5_db_migrate
-  step6_load_default_data
+
+  # ── 数据库操作 ──
+  if [[ "$RESET_DB" == "1" ]]; then
+    # 清空重建模式
+    log_step "DB: 清空并重建数据库"
+    cd "${REDMINE_HOME}"
+    run_cmd "删除旧数据库" bundle exec rake db:drop RAILS_ENV="${RAILS_ENV}" 2>/dev/null || true
+    run_cmd "创建数据库" bundle exec rake db:create RAILS_ENV="${RAILS_ENV}"
+    step5_db_migrate
+    step6_load_default_data
+    step8_plugins_migrate
+  else
+    # 保护数据模式（默认）：自动检测，智能跳过
+    log_info "数据库模式: 保护已有数据 (设置 RESET_DB=1 可清空重建)"
+    step5_db_migrate
+    step6_load_default_data
+    step8_plugins_migrate
+  fi
+
   step7_precompile_assets
-  step8_plugins_migrate
   step9_start_server
 }
 
@@ -786,16 +851,19 @@ usage() {
   echo "    REDMINE_PORT    监听端口                                默认: 3000"
   echo "    REDMINE_BIND    绑定地址                                默认: 0.0.0.0"
   echo "    REDMINE_LANG    默认数据语言 (zh/en/fr/ja ...)          默认: zh"
-  echo "    SKIP_DB_SETUP   跳过数据库设置 (1/0)                    默认: 0"
+  echo "    RESET_DB        清空数据库重建 (1=清空, 0=保留)         默认: 0"
   echo "    AUTO_CONFIRM    自动确认所有提示 (1/0)                  默认: 0"
-  echo "    QUIET_MODE      静默模式 (1/0)                          默认: 0"
+  echo "    QUIET_MODE      静默模式 (1/0)                          默认: 1"
   echo ""
   echo "  示例:"
-  echo "    # 使用 MySQL 启动开发环境"
-  echo "    DB_ADAPTER=mysql2 REDMINE_DB_USER=root REDMINE_DB_PASS=secret bash setup-redmine.sh"
+  echo "    # 使用 PostgreSQL 启动（自动检测并保护已有数据）"
+  echo "    DB_ADAPTER=postgresql bash setup-redmine.sh"
   echo ""
-  echo "    # 无交互自动安装"
-  echo "    AUTO_CONFIRM=1 bash setup-redmine.sh"
+  echo "    # 清空数据库重建"
+  echo "    RESET_DB=1 DB_ADAPTER=postgresql bash setup-redmine.sh"
+  echo ""
+  echo "    # 仅重置数据库（不启动服务）"
+  echo "    RESET_DB=1 bash setup-redmine.sh reset"
   echo ""
   echo "  参考: https://www.redmine.org/projects/redmine/wiki/Guide"
   echo ""

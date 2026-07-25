@@ -1,0 +1,18 @@
+- if Additionals.setting?(:issue_change_status_in_sidebar) && \
+     @issue&.attributes_editable? && \
+     (!@issue.closed? || User.current.allowed_to?(:edit_closed_issues, @project))
+  - statuses = @issue.sidebar_change_status_allowed_to User.current
+  - if statuses.present?
+    h3 = l :label_issue_change_status
+    ul.issue-status-change-sidebar
+      - statuses.each do |s|
+        - unless s == @issue.status
+          li
+            - if s.is_closed?
+              = link_to svg_icon_tag('square-chevron-left-filled', label: s.name),
+                        issue_change_status_path(@issue, new_status_id: s.id),
+                        method: :put, class: "icon icon-flipped-color status-switch status-#{s.id}"
+            - else
+              = link_to svg_icon_tag('square-chevron-left', label: s.name),
+                        issue_change_status_path(@issue, new_status_id: s.id),
+                        method: :put, class: "icon status-switch status-#{s.id}"

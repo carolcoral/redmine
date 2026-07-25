@@ -52,7 +52,8 @@ zh:
 
   # ========== 提示文字 ==========
   text_slug_format: "仅允许小写字母、数字、连字符和下划线"
-  text_provider_type_hint: "兼容 OpenAI 接口的服务商选择 'custom' 类型"
+  text_provider_name_hint: "可从下拉列表选择，也支持输入自定义名称（需符合 OpenAI 兼容格式），标识符必须唯一"
+  text_provider_type_hint: "tdp=TDP 平台，custom=其他 OpenAI 兼容接口"
   text_api_url_hint: "完整 API 地址，如 https://api.openai.com/v1"
   text_available_models_hint: "JSON 数组格式，如 [\"model-a\", \"model-b\"]"
   text_settings_hint: "JSON 对象格式的扩展参数"

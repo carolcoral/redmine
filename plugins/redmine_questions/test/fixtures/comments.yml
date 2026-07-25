@@ -1,0 +1,18 @@
+comment_001:
+  id: 1
+  content: text for comment 001
+  commented_type: Question
+  commented_id: 1
+  author_id: 1
+comment_002:
+  id: 2
+  content: text for comment 002
+  commented_type: Question
+  commented_id: 2
+  author_id: 1
+comment_003:
+  id: 3
+  content: text for comment 003 (comment for answer!)
+  commented_type: Question
+  commented_id: 5
+  author_id: 1

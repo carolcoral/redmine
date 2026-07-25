@@ -1,0 +1,15 @@
+.DS_Store
+.buildpath
+coverage/
+tmp/
+Gemfile.lock
+CLAUDE.md
+.claude/
+.project
+.settings/
+.enable_*
+._*
+*.gem
+/node_modules
+/yarn.lock
+rails_best_practices_output.html

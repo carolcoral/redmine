@@ -1,0 +1,141 @@
+ul.tags {
+  list-style: none;
+  padding: 0;
+}
+
+ul.tags li { margin: 0.25em 0; }
+
+span.additional-tag-label-color {
+  display: inline-block;
+  margin-bottom: 3px !important;
+  border-radius: 0.75rem !important;
+}
+
+td.tags span.additional-tag-label-color {
+  display: inline-block;
+  line-height: normal;
+  white-space: nowrap;
+  margin: 2px !important;
+}
+
+.additional-tag-label-color {
+  padding: 0 5px;
+  line-height: initial;
+  font-size: 0.7rem !important;
+  border: 1px solid rgb(0 0 0 / 20%);
+  border-radius: 0.75rem;
+}
+
+.additional-tag-label-color .tag-count {
+  display: inline-block;
+  background: #fff;
+  color: #1f1f1f;
+  padding-right: 5px;
+  border-top-right-radius: 0.7rem;
+  border-bottom-right-radius: 0.7rem;
+  margin-right: -5px;
+  padding-left: 3px;
+}
+
+.tag-label .tag-count {
+  background: #f1f5fa;
+  border-radius: 5px;
+  padding: 0 5px;
+  color: var(--a-color-dark);
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.additional-tag-label-color .tag-count,
+.tag-label .tag-count,
+.additional-tag-label-color .tag-group-value,
+.tag-label .tag-group-value {
+  font-size: 0.7rem;
+  margin-left: 0.5em;
+}
+
+.additional-tag-label-color .tag-group-value {
+  display: inline-block;
+  background: #eee;
+  color: #1f1f1f;
+  padding-right: 5px;
+  margin-right: -5px;
+  padding-left: 3px;
+}
+
+.additional-tag-label-color .tag-group-value.tag-group-nocount {
+  border-top-right-radius: 0.7rem;
+  border-bottom-right-radius: 0.7rem;
+}
+
+.tag-label .tag-group-value {
+  background: #eee;
+  border-radius: 5px;
+  padding: 0 5px;
+  color: var(--a-color-dark);
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+span.additional-tag-label-color:hover a,
+.tag-label .tag-count:hover a {
+  text-decoration: none !important;
+}
+
+.flyout-menu div.sidebar-tags h3 {
+  margin-left: -8px;
+}
+
+.flyout-menu div.sidebar-tags ul.tags-cloud li a {
+  line-height: 22px;
+  height: 22px;
+}
+
+#edit-tags-form.box { margin: 1px 5px 0 0; }
+
+#edit-tags-form.box label {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+div#tags-data span.contextual {
+  float: none;
+  padding-left: 0;
+}
+
+#edit-tags-link { opacity: 0; }
+
+#tags-data:hover #edit-tags-link { opacity: 1; }
+
+#sidebar ul.tags-cloud li.letter {
+  border-bottom: 1px dotted;
+  margin: 10px 30px 10px 0;
+  font-weight: bold;
+}
+
+.most-used-tag {
+  cursor: pointer;
+  color: var(--a-color-default);
+}
+
+.most-used-tag:hover { text-decoration: underline; }
+
+div.wiki-attributes .attribute {
+  padding-left: 50px;
+  clear: left;
+  min-height: 1.8em;
+}
+
+div.wiki-attributes .attribute .label {
+  width: 45px;
+  margin-left: -50px;
+  font-weight: bold;
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Fix for redmine_checklists: without this, context menu of checklist is behind tag input field */
+#checklist-menu {
+  z-index: 1;
+}

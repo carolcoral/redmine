@@ -1,0 +1,59 @@
+<% ###### Years and Months headers if @rb_chart.zoom == 1 ######
+  ### | 2023 |         2024        |         2025        |
+  ### | Dec  | Jan | Feb ... | Dec | Jan  |  Feb ...|Jul |
+%>
+
+<% ###### Years headers ( 2024 , 2025 )  ###### %>
+  <%
+    left = 0
+    height = header_height
+  %>
+  <% (@rb_chart.date_from.year..@rb_chart.date_to.year).each do |year| %>
+    <%
+      months_in_year = if year == @rb_chart.date_from.year && year == @rb_chart.date_to.year
+                        @rb_chart.date_to.month - @rb_chart.date_from.month + 1
+                      elsif year == @rb_chart.date_from.year
+                        12 - @rb_chart.date_from.month + 1
+                      elsif year == @rb_chart.date_to.year
+                        @rb_chart.date_to.month
+                      else
+                        12
+                      end
+
+      width = months_in_year * zoom - 1
+      style = "left: #{left}px;"
+      style += "width: #{width}px;"
+      style += "height: #{height}px;"
+    %>
+    <%= content_tag(:div, style: style, class: 'gantt_hdr') do %>
+      <%= content_tag(:small, year) %>
+    <% end %>
+    <%
+      left = left + width + 1
+    %>
+  <% end %>
+
+<% ###### Months headers ###### %>
+  <%
+    left = 0
+    top = 19
+    height = g_height + header_height - 1
+    current_date = @rb_chart.date_from.beginning_of_month
+    end_date = @rb_chart.date_to.end_of_month
+  %>
+  <% while current_date <= end_date %>
+    <%
+      width = zoom - 1
+      style = "left:#{left}px;"
+      style += "top:#{top}px;"
+      style += "width:#{width}px;"
+      style += "height:#{height}px;"
+      style += 'font-size:0.8em;'
+      clss = 'gantt_hdr bookings-column'
+    %>
+    <%= content_tag(:div, I18n.l(current_date, format: '%b'), style: style, class: clss) %>
+    <%
+      left = left + width + 1
+      current_date = current_date.next_month
+    %>
+  <% end %>

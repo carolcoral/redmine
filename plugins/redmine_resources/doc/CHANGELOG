@@ -1,0 +1,116 @@
+== Redmine Resources plugin changelog
+
+Redmine Resources plugin - resource allocation and management for Redmine
+Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
+https://www.redmineup.com/
+
+== 2025-07-08 v2.0.6
+
+* Added description field to query form
+* Fixed line_type bug
+* Fixed setting of query session key
+* Fixed checking people plugin version
+
+== 2025-03-11 v2.0.5
+
+* Added svg icons for compatibility with Redmine 6
+
+== 2025-01-27 v2.0.4
+
+* Added compatibility with Redmine 6.0
+* Added `resource_query` filter by people
+* Added the ability to save `resource_query` filters
+* Fixed resource filtering by issues
+* Added booking type selection (percent or hours)
+* Updated zoom functionality in the chart
+
+== 2024-10-30 v2.0.3
+
+* Added query columns to the allocation chart
+* Added weekly and monthly display scales to the allocation table
+* Added holidays display in the allocation chart and table (requires Redmine People Pro plugin)
+* Fixed day offs display in the allocation chart and table (requires Redmine People Pro plugin)
+* Fixed weekly and monthly display scales in the allocation chart
+* Fixed data calculations (percent, hours) in the utilization report
+
+== 2024-06-21 v2.0.2
+
+* Added weekly and monthly display scales to the allocation chart
+
+== 2024-02-08 v2.0.1
+
+* Dropped Redmine 3 support
+* Added People plugin day offs on charts
+* Added utilization report
+* Added totals calculation on edit booking modal
+* Added workload in percents
+* Added bookings sorting by issue priority
+* Fixed issue delete bug
+
+== 2023-08-21 v2.0.0
+
+* Added Issues allocation chart (PRO version)
+* Changed chart names 
+* Fixed collapse/expand icons
+
+== 2023-01-16 v1.0.8
+
+* Added author field tooltip
+* Added REST API
+* Added Hungarian locale (Krisztian Engi, Lilla Basilides)
+* Added German locale (Carsten Stanusch)
+* Fixed diagram version tag position
+* Fixed collapsed/expended marks
+
+== 2022-04-11 v1.0.7
+
+* Fixed empty start date error
+* Redmine 5.0 compatibility
+
+== 2021-10-12 v1.0.6
+
+* Added Spanish locale (Luis Blasco)
+* Fixed projects visibility
+* Fixed button position bug
+
+== 2021-05-21 v1.0.5
+
+* Added Redmine 4.2 compatibility
+* Fixed resource chart bug
+* Fixed disabled projects ghost bookings bug
+* Fixed cross-projects displaying bug
+
+== 2020-08-12 v1.0.4
+
+* Light version added
+
+== 2020-07-20 v1.0.3
+
+* Added Week Plan chart
+* Show notes for project bookings
+* Added Italian locale
+* Chinese locale fixes
+* Fixed global visibility bug
+* Fixed group assigned bug
+
+== 2019-12-19 v1.0.2
+
+* Added Ghost bookings for existed issues
+* Added notification setting
+* Redmine 4.1 compatibility fixes
+* Fixed drag and drop bug
+* Fixed bug with People plugin compatibility
+
+== 2019-05-31 v1.0.1
+
+* Ajax resource diagram editing
+* Issue dates frame validation
+* Booking bar splitting
+
+== 2019-02-14 v1.0.0
+
+* Initial release
+* Resource allocation diagram
+* Global workday length setting
+* Weekends handling
+* My page personal Resources allocation widget

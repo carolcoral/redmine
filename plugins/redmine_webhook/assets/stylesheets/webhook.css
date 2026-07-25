@@ -1,0 +1,126 @@
+/* Webhook Plugin Styles - Scoped to avoid affecting global Redmine styles */
+
+/* Main container - ensure proper box model */
+.webhook-settings {
+  box-sizing: border-box;
+}
+
+.webhook-settings * {
+  box-sizing: border-box;
+}
+
+/* Table styles - scoped */
+.webhook-settings table.list {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.webhook-settings table.list th,
+.webhook-settings table.list td {
+  padding: 8px;
+  vertical-align: middle;
+  border: 1px solid #ddd;
+}
+
+.webhook-settings table.list textarea {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: inherit;
+  resize: vertical;
+}
+
+/* Info text - scoped */
+.webhook-settings .info {
+  color: #666;
+  font-size: 0.9em;
+  font-style: italic;
+  display: block;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* Fieldset and boxes - scoped */
+.webhook-settings fieldset.box {
+  margin: 20px 0 0 0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fcfcfc;
+}
+
+.webhook-settings fieldset.box legend {
+  font-weight: bold;
+  padding: 0 5px;
+}
+
+.webhook-settings .box.tabular p {
+  padding-left: 180px;
+  margin: 10px 0;
+}
+
+.webhook-settings .box.tabular label {
+  margin-left: -180px;
+  width: 175px;
+  font-weight: normal;
+}
+
+/* Fix for role selection grid - override negative margin */
+.webhook-settings #task_reminder_roles_options label,
+.webhook-settings #enabled_statuses_options label,
+.webhook-settings #sub_projects_options label {
+  margin-left: 0;
+  width: auto;
+}
+
+/* Sub-projects grid - scoped */
+.webhook-settings .sub-projects-grid {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  padding: 10px;
+  background: #fff;
+}
+
+/* Button styles for select all - scoped */
+.webhook-settings .button-small {
+  padding: 4px 8px;
+  font-size: 0.9em;
+  margin-right: 5px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.webhook-settings .button-small:hover {
+  background-color: #eee;
+}
+
+/* Ensure no global menu impact - no direct menu styling to avoid conflicts */
+
+/* Fix potential layout issues */
+.webhook-settings .splitcontentleft,
+.webhook-settings .splitcontentright {
+  box-sizing: border-box;
+}
+
+/* Ensure proper overflow handling */
+.webhook-settings .autoscroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Fix potential layout issues */
+.webhook-settings .splitcontentleft,
+.webhook-settings .splitcontentright {
+  box-sizing: border-box;
+}
+
+/* Ensure proper overflow handling */
+.webhook-settings .autoscroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

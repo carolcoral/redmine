@@ -1,0 +1,20 @@
+<%= form_tag({ controller: @query.chart_type == 'issues_chart' ? 'resource_issues' : 'resource_bookings', action: 'index', project_id: @project, months: params[:months] },
+             method: :get, id: 'query_form') do %>
+
+  <%= hidden_field_tag 'set_filter', '1' %>
+  <%= render partial: "query_forms/#{@query.chart_type}_query_form", locals: { query: @query } %>
+<% end %>
+
+<%= error_messages_for 'query' %>
+
+<%= javascript_tag do %>
+  $(function() {
+    $('#group_by').change(function(){
+        if($('#chart_type').val() == 'allocation_table' && $('#group_by').val() == 'project') {
+            $('#workload').hide();
+        } else {
+            $('#workload').show();
+        }
+    });
+});
+<% end %>

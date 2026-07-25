@@ -1,0 +1,71 @@
+== Redmine Drive plugin changelog
+
+Redmine Drive plugin - File storage plugin for redmine
+Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
+http://www.redmineup.com/
+
+== 2025-03-10 v1.2.3
+
+* Fixed displaying SVG icons on "My page" in Redmine 6
+
+== 2025-03-03 v1.2.2
+
+* Added svg icons for compatibility with Redmine 6
+* Fixed different time problem
+
+== 2024-02-14 v1.2.1
+
+* Dropped Redmine 3 support
+* Added Taiwanese(Traditional chinese) translation (Tomy)
+* Fixed expaned icons
+
+== 2023-04-12 v1.2.0
+
+* Added access by password for shared folders and files
+
+== 2023-01-26 v1.1.4
+
+* Added top menu settings
+* Added Hungarian translation (Krisztian Engi, Lilla Basilides)
+* Updated German translation (Carsten Stanusch)
+* Fixed filters icon
+* Fixed bug with file sharing permissions
+* Fixed folder name validation
+* Fixed edit permissions bug
+
+== 2022-04-11 v1.1.3
+
+* Redmine 5.0 compatibility
+
+== 2022-02-20 v1.1.2
+
+* Redmine 5.0 compatibility fixes
+
+== 2021-05-27 v1.1.1
+
+* Added Redmine 4.2 support
+* Fixed subfolder sorting
+* Fixed permission download bug
+* Fixed unauthorized projects visibility
+* Fixed shared files form error
+
+== 2020-12-10 v1.1.0
+
+* File version history
+* Added Spanish locale (Luis Blasco)
+
+== 2020-07-31 v1.0.1
+
+* Light version added
+
+== 2020-07-21 v1.0.0
+
+* Initial release
+* File and folder sharing
+* Drive files to issue attachments
+* Project and global folders
+* Move/Copy files and folders
+* Download folders as zip archive
+* Live search and queries
+* Link shared files issue history
+* File and folder tagging

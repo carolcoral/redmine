@@ -1,0 +1,56 @@
+<h3 class="title"><%= @drive_entry.shared ? l(:label_drive_unshare) : l(:label_drive_share) %></h3>
+
+<%= form_tag drive_entry_path(@drive_entry, project_id: @project, current_folder_id: @current_folder.id), { id: 'share-modal-form', method: :put, remote: true } do %>
+  <%= hidden_field_tag 'drive_entry[shared]', !@drive_entry.shared %>
+  <div class="box tabular">
+    <div class="public-link">
+      <div class="filler">
+        <%= text_field_tag 'public-url', public_url_for(@drive_entry, @expiration_date), class: 'public-url', readonly: 'readonly' %>
+      </div>
+      <div>
+        <a class="button-copy icon icon-copy" tabindex="0" onclick="copyTokenToClipboard('public-url');"><span><%= sprite_icon('copy', l(:button_copy)) %></span></a>
+      </div>
+    </div>
+  </div>
+
+  <p class="buttons">
+    <%= submit_tag @drive_entry.shared ? l(:label_drive_unshare) : l(:label_drive_share), name: nil, onclick: 'hideModal(this);' %>
+    <%= submit_tag l(:button_cancel), name: nil, onclick: 'hideModal(this);', type: 'button' %>
+  </p>
+<% end %>
+
+<%= javascript_tag do %>
+  $(function () {
+    $('#share-modal-form').on('change', 'input[data-enables]', toggleDisabledOnChange);
+    toggleDisabledInit();
+
+    $('#expires').on('change', function (event) {
+      var $expirationDate = $('#expiration_date');
+      $('#expiration_field').toggle();
+      if (!$(event.target).prop('checked') && $expirationDate.val()) {
+        $expirationDate.val('').change()
+      }
+    });
+
+    $('#expiration_date').on('change', function (event) {
+      $.ajax({
+        url: '<%= share_modal_drive_entries_path(project_id: @project, current_folder_id: @current_folder.id, id: @drive_entry) %>',
+        type: 'GET',
+        data: { expiration_date: $('#expiration_date').val() },
+        dataType: 'json',
+        success: function (data) {
+          $('#public-url').val(data.public_url);
+        }
+      })
+    });
+
+    $('#password_required').on('change', function (event) {
+      var $password = $('#password');
+      $('#password_field').toggle();
+      if (!$(event.target).prop('checked')) {
+        $password.val('').change()
+      }
+    });
+
+  });
+<% end %>

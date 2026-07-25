@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module AiAssistant
-  class ProvidersController < ApplicationController
-    before_action :require_admin
+  class ProvidersController < AdminController
     before_action :find_provider, only: [:edit, :update, :destroy, :toggle]
 
     require_sudo_mode for: [:create, :update, :destroy]
+
+    self.main_menu = false
 
     def index
       @providers = AiProvider.ordered
@@ -39,13 +40,8 @@ module AiAssistant
     end
 
     def destroy
-      if @provider.builtin?
-        flash[:error] = l(:error_cannot_delete_builtin_provider)
-      else
-        @provider.destroy
-        flash[:notice] = l(:notice_successful_delete)
-      end
-
+      @provider.destroy
+      flash[:notice] = l(:notice_successful_delete)
       redirect_to action: :index
     end
 
@@ -64,7 +60,7 @@ module AiAssistant
 
     def provider_params
       params.require(:ai_assistant_ai_provider).permit(
-        :name, :slug, :provider_type, :api_url, :api_key,
+        :name, :slug, :api_url, :api_key,
         :default_model, :available_models, :settings, :is_enabled, :position
       )
     end

@@ -1,0 +1,19 @@
+:root {
+  --a-color-dark: #555;
+  --a-color-black: #000;
+  --a-color-white: #fff;
+  --a-color-default: #169;
+  --a-color-even: #f6f7f8;
+  --a-color-odd: #fff;
+  --a-color-list-border: #d0d7de;
+  --a-color-input-border: #ccc;
+  --a-color-info: #777;
+  --a-color-success: green;
+  --a-color-warning: #c45736;
+  --a-color-alert: #cb2525;
+  --a-fixed-width: 95%;
+
+  /* Sticky header scroll margins (for anchor links to not hide behind sticky header) */
+  --sticky-header-scroll-margin: 50px;
+  --sticky-header-scroll-margin-mobile: 114px;
+}

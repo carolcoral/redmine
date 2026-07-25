@@ -1,0 +1,374 @@
+<% settings = @settings || {}
+   # 设置默认值
+   settings['plugin_enabled'] ||= '1'
+   settings['logo_type'] ||= 'text'
+   settings['logo_text'] ||= 'Redmine'
+   settings['logo_text_color'] ||= '#ffffff'
+   settings['logo_text_font_size'] ||= '26px'  # 固定字体大小26px
+   settings['logo_text_font_weight'] ||= '600'
+   settings['logo_position'] ||= 'left'
+   settings['logo_image_base64'] ||= ''
+   settings['logo_image_content_type'] ||= ''
+   settings['logo_margin'] ||= '0'
+   settings['logo_padding'] ||= '8px'
+   settings['custom_head_content'] ||= ''
+%>
+
+<%# 确保表单支持文件上传 %>
+<%= content_for :header_tags do %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.querySelector('form[action*="logo_settings"]');
+      if (form && !form.hasAttribute('enctype')) {
+        form.setAttribute('enctype', 'multipart/form-data');
+      }
+    });
+  </script>
+<% end %>
+
+<fieldset>
+  <legend><%= l(:label_general_settings) %></legend>
+  <p>
+    <label><%= l(:label_plugin_enabled) %>:</label>
+    <%= check_box_tag 'settings[plugin_enabled]', '1', settings['plugin_enabled'] == '1' %>
+    <em class="info"><%= l(:text_plugin_enabled_info) %></em>
+  </p>
+  <p>
+    <label for="custom_system_url"><%= l(:label_custom_system_url) %>:</label>
+    <%= text_field_tag 'settings[custom_system_url]', settings['custom_system_url'], size: 50, placeholder: 'https://redmine.example.com' %>
+    <em class="info"><%= l(:text_custom_system_url_info) %></em>
+  </p>
+</fieldset>
+
+<%# 当checkbox未勾选时，添加一个隐藏的input来确保settings[plugin_enabled]被提交 %>
+<%= hidden_field_tag 'settings[plugin_enabled]', '0', id: 'plugin_enabled_hidden' %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var checkbox = document.querySelector('input[name="settings[plugin_enabled]"][type="checkbox"]');
+    var hiddenInput = document.getElementById('plugin_enabled_hidden');
+    
+    if (checkbox && hiddenInput) {
+      // 根据checkbox状态启用或禁用hidden input
+      function updateHiddenInput() {
+        if (checkbox.checked) {
+          hiddenInput.disabled = true;  // 禁用hidden input，只提交checkbox的值'1'
+        } else {
+          hiddenInput.disabled = false; // 启用hidden input，提交值'0'
+        }
+      }
+      
+      // 初始化
+      updateHiddenInput();
+      
+      // 监听checkbox变化
+      checkbox.addEventListener('change', updateHiddenInput);
+    }
+  });
+</script>
+
+<fieldset>
+  <legend><%= l(:label_logo_type) %></legend>
+  <p>
+    <label><%= l(:label_logo_type_selection) %>:</label>
+    <%= radio_button_tag 'settings[logo_type]', 'text', settings['logo_type'] == 'text', class: 'logo-type-radio' %>
+    <label for="settings_logo_type_text" class="inline"><%= l(:label_text_logo) %></label>
+    <%= radio_button_tag 'settings[logo_type]', 'image', settings['logo_type'] == 'image', class: 'logo-type-radio' %>
+    <label for="settings_logo_type_image" class="inline"><%= l(:label_image_logo) %></label>
+  </p>
+</fieldset>
+
+<div id="text_logo_settings" style="<%= 'display:none;' if settings['logo_type'] == 'image' %>">
+  <fieldset>
+    <legend><%= l(:label_text_logo_settings) %></legend>
+    <p>
+      <label for="logo_text"><%= l(:label_logo_text) %>:</label>
+      <%= text_field_tag 'settings[logo_text]', settings['logo_text'], size: 30, maxlength: 30 %>
+      <em class="info">(最多30个字符)</em>
+    </p>
+    <p>
+      <label for="logo_text_color"><%= l(:label_text_color) %>:</label>
+      <%= color_field_tag 'settings[logo_text_color]', settings['logo_text_color'] %>
+    </p>
+    <p>
+      <label for="logo_first_letter_color"><%= l(:label_first_letter_color) %>:</label>
+      <%= color_field_tag 'settings[logo_first_letter_color]', settings['logo_first_letter_color'] %>
+    </p>
+    <p>
+      <label for="logo_text_font_weight"><%= l(:label_font_weight) %>:</label>
+      <%= select_tag 'settings[logo_text_font_weight]',
+          options_for_select([
+            [l(:label_font_weight_normal), '400'],
+            [l(:label_font_weight_medium), '500'],
+            [l(:label_font_weight_semibold), '600'],
+            [l(:label_font_weight_bold), '700']
+          ], settings['logo_text_font_weight']),
+          class: 'font-weight-select' %>
+    </p>
+  </fieldset>
+</div>
+
+<div id="image_logo_settings" style="<%= 'display:none;' if settings['logo_type'] == 'text' %>">
+  <fieldset>
+    <legend><%= l(:label_image_logo_settings) %></legend>
+    <p>
+      <label for="logo_image_file"><%= l(:label_upload_logo) %>:</label>
+      <%= file_field_tag 'logo_image_file', accept: 'image/*', id: 'logo_image_file_input' %>
+      <button type="button" id="upload_logo_btn" class="button-small" style="margin-left: 10px;">上传图片</button>
+      <em class="info"><%= l(:text_upload_info) %></em>
+    </p>
+    <div id="upload_status" style="display: none; margin: 10px 0; padding: 10px; border-radius: 3px;"></div>
+    <div id="image_preview_container" style="margin-top: 15px;">
+      <% if settings['logo_image_base64'].present? %>
+        <p>
+          <label><%= l(:label_current_logo) %>:</label>
+          <span class="current-logo-preview">
+            <%= image_tag settings['logo_image_base64'], style: "max-width: 200px; max-height: 60px; border: 1px solid #ccc;" %>
+          </span>
+        </p>
+      <% else %>
+        <p id="no_logo_text" style="color: #666; font-style: italic;">暂无上传的Logo图片</p>
+      <% end %>
+    </div>
+    <!-- 保存base64图片数据，确保切换类型时不丢失 -->
+    <%= hidden_field_tag 'settings[logo_image_base64]', settings['logo_image_base64'] %>
+    <%= hidden_field_tag 'settings[logo_image_content_type]', settings['logo_image_content_type'] %>
+  </fieldset>
+</div>
+
+<fieldset>
+  <legend><%= l(:label_logo_display_settings) %></legend>
+  <p>
+    <label for="logo_position"><%= l(:label_logo_position) %>:</label>
+    <%= select_tag 'settings[logo_position]',
+        options_for_select([
+          [l(:label_position_left), 'left'],
+          [l(:label_position_center), 'center']
+        ], settings['logo_position'] || 'left') %>
+  </p>
+  <p>
+    <label for="logo_margin"><%= l(:label_logo_margin) %>:</label>
+    <%= text_field_tag 'settings[logo_margin]', settings['logo_margin'], size: 10 %>
+    <em class="info"><%= l(:text_margin_example) %></em>
+  </p>
+  <p>
+    <label for="logo_padding"><%= l(:label_logo_padding) %>:</label>
+    <%= text_field_tag 'settings[logo_padding]', settings['logo_padding'], size: 10 %>
+    <em class="info"><%= l(:text_padding_example) %></em>
+  </p>
+</fieldset>
+
+<fieldset>
+  <legend><%= l(:label_custom_head_content) %></legend>
+  <p>
+    <label for="custom_head_content"><%= l(:label_custom_head_content_description) %>:</label>
+    <%= text_area_tag 'settings[custom_head_content]', settings['custom_head_content'], 
+          rows: 8, cols: 60, 
+          style: "width: 100%; max-width: 600px; font-family: monospace;",
+          placeholder: "<style>\n  /* 自定义CSS样式 */\n  body { background-color: #f5f5f5; }\n</style>\n\n<script>\n  // 自定义JavaScript\n  console.log('Custom script loaded');\n</script>" %>
+  </p>
+  <p class="info">
+    <%= l(:text_custom_head_content_info) %>
+  </p>
+</fieldset>
+
+<style>
+  .inline { display: inline; margin-left: 5px; }
+  .info { color: #666; font-size: 0.9em; }
+  .font-weight-select { width: 150px; }
+  .current-logo-preview {
+    display: inline-block;
+    margin-left: 10px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const textRadio = document.querySelector('input[name="settings[logo_type]"][value="text"]');
+    const imageRadio = document.querySelector('input[name="settings[logo_type]"][value="image"]');
+    const textSettings = document.getElementById('text_logo_settings');
+    const imageSettings = document.getElementById('image_logo_settings');
+    const fileInput = document.getElementById('logo_image_file_input');
+    const uploadBtn = document.getElementById('upload_logo_btn');
+    const statusDiv = document.getElementById('upload_status');
+    const previewContainer = document.getElementById('image_preview_container');
+    const urlField = document.getElementById('logo_image_url_field');
+
+    function toggleSettings() {
+      if (textRadio.checked) {
+        textSettings.style.display = 'block';
+        imageSettings.style.display = 'none';
+        // 切换到文字Logo时，只隐藏预览，不清除数据（数据会随表单提交）
+        // 注意：不要清除previewContainer，否则切换回图片时会丢失预览
+      } else {
+        textSettings.style.display = 'none';
+        imageSettings.style.display = 'block';
+        // 切换到图片Logo时，如果有base64数据，显示预览
+        const base64Field = document.querySelector('input[name="settings[logo_image_base64]"]');
+        if (base64Field && base64Field.value) {
+          previewContainer.innerHTML = `
+            <p>
+              <label>当前Logo:</label>
+              <span class="current-logo-preview">
+                <img src="${base64Field.value}" style="max-width: 200px; max-height: 60px; border: 1px solid #ccc;">
+              </span>
+            </p>
+          `;
+        }
+      }
+    }
+
+    // 更新页面上显示的Logo
+    function updatePageLogo() {
+      const textWrapper = document.getElementById('redmine_logo-text-logo-wrapper');
+      const imageWrapper = document.getElementById('redmine_logo-image-logo-wrapper');
+      const logoText = document.getElementById('redmine_logo-custom-logo-text');
+      const logoImage = document.getElementById('redmine_logo-custom-logo-image');
+      
+      if (textRadio.checked) {
+        // 切换到文字Logo
+        if (textWrapper) {
+          textWrapper.style.display = 'block';
+          // 触发动画
+          if (logoText) {
+            logoText.style.opacity = '0';
+            logoText.style.transform = 'translateY(10px)';
+            setTimeout(function() {
+              logoText.style.opacity = '1';
+              logoText.style.transform = 'translateY(0)';
+            }, 100);
+          }
+        }
+        if (imageWrapper) {
+          imageWrapper.style.display = 'none';
+        }
+      } else {
+        // 切换到图片Logo
+        if (textWrapper) {
+          textWrapper.style.display = 'none';
+        }
+        if (imageWrapper) {
+          imageWrapper.style.display = 'block';
+          // 触发动画
+          if (logoImage) {
+            logoImage.style.opacity = '0';
+            setTimeout(function() {
+              logoImage.style.opacity = '1';
+            }, 100);
+          }
+        }
+      }
+    }
+
+    textRadio.addEventListener('change', function() {
+      toggleSettings();
+      updatePageLogo();
+    });
+    
+    imageRadio.addEventListener('change', function() {
+      toggleSettings();
+      updatePageLogo();
+    });
+
+    // 上传图片功能
+    if (uploadBtn && fileInput) {
+      uploadBtn.addEventListener('click', function() {
+        const file = fileInput.files[0];
+        if (!file) {
+          alert('请先选择一个图片文件');
+          return;
+        }
+
+        // 显示上传状态
+        statusDiv.style.display = 'block';
+        statusDiv.style.backgroundColor = '#e7f3ff';
+        statusDiv.style.border = '1px solid #b3d9ff';
+        statusDiv.innerHTML = '<span style="color: #0066cc;">正在上传图片...</span>';
+
+        // 创建表单数据
+        const formData = new FormData();
+        formData.append('logo_image_file', file);
+        formData.append('settings[logo_type]', 'image');
+        formData.append('settings[plugin_enabled]', '1');
+        
+        // 获取并保留所有设置字段的值，避免切换类型时丢失数据
+        const allSettings = document.querySelectorAll('input[name^="settings["], select[name^="settings["], textarea[name^="settings["]');
+        allSettings.forEach(input => {
+          // 跳过logo_image_file和logo_type，因为已经单独处理
+          if (input.name === 'logo_image_file' || input.name === 'settings[logo_type]') {
+            return;
+          }
+          
+          // 对于图片上传，保留之前文字logo的设置（但logo_type设为image）
+          // 对于AJAX上传，保留所有设置字段
+          if (input.type === 'radio') {
+            if (input.checked) {
+              formData.append(input.name, input.value);
+            }
+          } else if (input.type === 'checkbox') {
+            formData.append(input.name, input.checked ? '1' : '0');
+          } else {
+            formData.append(input.name, input.value);
+          }
+        });
+
+        // 发送AJAX请求
+        fetch('<%= update_logo_settings_path %>', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+          },
+          body: formData
+        })
+        .then(response => response.json().catch(() => { return {redirected: true}; }))
+        .then(data => {
+          if (data.redirected) {
+            // 如果是重定向，刷新页面
+            window.location.reload();
+          } else if (data.success) {
+            // 显示成功状态
+            statusDiv.style.backgroundColor = '#d4edda';
+            statusDiv.style.border = '1px solid #c3e6cb';
+            statusDiv.innerHTML = '<span style="color: #155724;">图片上传成功！</span>';
+            
+            // 更新预览
+            if (data.image_url) {
+              // 更新预览（这里data.image_url返回的是base64数据）
+              previewContainer.innerHTML = `
+                <p>
+                  <label>当前Logo:</label>
+                  <span class="current-logo-preview">
+                    <img src="${data.image_url}" style="max-width: 200px; max-height: 60px; border: 1px solid #ccc;">
+                  </span>
+                </p>
+              `;
+            }
+            
+            // 3秒后隐藏状态
+            setTimeout(() => {
+              statusDiv.style.display = 'none';
+            }, 3000);
+          } else {
+            // 显示错误状态
+            statusDiv.style.backgroundColor = '#f8d7da';
+            statusDiv.style.border = '1px solid #f5c6cb';
+            statusDiv.innerHTML = `<span style="color: #721c24;">上传失败: ${data.error || '未知错误'}</span>`;
+          }
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+          statusDiv.style.backgroundColor = '#f8d7da';
+          statusDiv.style.border = '1px solid #f5c6cb';
+          statusDiv.innerHTML = `<span style="color: #721c24;">上传错误: ${error.message}</span>`;
+        });
+      });
+
+      // 文件选择后也可以自动上传（可选）
+      fileInput.addEventListener('change', function() {
+        if (fileInput.files[0]) {
+          uploadBtn.style.display = 'inline-block';
+        }
+      });
+    }
+  });
+</script>

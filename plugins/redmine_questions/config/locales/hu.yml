@@ -1,0 +1,174 @@
+# encoding: utf-8
+# Hungrian strings go here for Rails i18n
+hu:
+  label_questions: 'Segítség és Támogatás'
+  label_questions_search: 'Egy adott kérdés vagy téma keresése ...'
+  label_questions_new: Új kérdés
+  label_questions_message: Üzenet
+  label_questions_added_time: "Hozzáadva %{value} ezelőtt"
+  label_questions_related_questions: Kapcsolódó kérdések
+  label_questions_latest_messages: Utóbbi üzenetek
+  label_questions_views: '%{count} megtekintés'
+  label_questions_votes: '%{count} szavazat'
+  label_questions_answers: '%{count} válasz'
+  label_questions_tags: Címkék
+  label_questions_tagged_by: '%{count} %{tag} által megjelölt tétel(ek)'
+  label_questions_sidebar_message: Oldalsáv üzenet
+  label_questions_notice: Értesítés
+  label_questions_most_voted: A legtöbb szavazatot kapott
+
+  button_questions_vote: Szavazás
+  button_questions_unvote: Szavazat visszavonása
+  button_questions_like: Kedvelés
+  button_questions_unlike: Kedvelés visszavonása
+
+  field_questions_tags: Címkék
+
+  label_questions_add_comment: Megjegyzés hozzáadása
+  label_question_comment_successful_added: Megjegyzés sikeresen hozzáadva
+  label_question_successful_update: Kérdés sikeresen frissítve
+  label_answer_successful_update: Válasz sikeresen frissítve
+  label_answer_successful_added: Válasz sikeresen hozzáadva
+  lebel_questions_new_comment: Új megjegyzés
+
+  button_questions_to_issue: Jeggyé alakítás
+  button_questions_issue_to_question: Kérdéssé alakítás
+  label_questions_actions: Tevékenységek
+  label_questions_accept: Elfogadni
+
+  label_questions_section_type_questions: Kérdések
+  label_questions_section_type_solutions: Megoldások
+  label_questions_section_type_ideas: Ötletek
+
+  label_questions_section: 	Részleg
+  label_questions_sections_plural: Részlegek
+  label_questions_section_new: Új részleg
+  label_questions_section_type: Részleg fajtája
+  label_questions_topic: Téma
+  label_questions_featured: Kiemelt
+  label_questions_locked: Zárolt
+
+  project_module_questions: Kérdések
+
+  i18n:
+    transliterate:
+      rule:
+        і: 'i'
+        ґ: 'g'
+        ё: 'yo'
+        №: '#'
+        є: 'e'
+        ї: 'yi'
+        а: 'a'
+        б: 'b'
+        в: 'v'
+        г: 'g'
+        д: 'd'
+        е: 'e'
+        ж: 'zh'
+        з: 'z'
+        и: 'i'
+        й: 'y'
+        к: 'k'
+        л: 'l'
+        м: 'm'
+        н: 'n'
+        о: 'o'
+        п: 'p'
+        р: 'r'
+        с: 's'
+        т: 't'
+        у: 'u'
+        ф: 'f'
+        х: 'h'
+        ц: 'ts'
+        ч: 'ch'
+        ш: 'sh'
+        щ: 'sch'
+        ъ: ''
+        ы: 'y'
+        ь: ''
+        э: 'e'
+        ю: 'yu'
+        я: 'ya'
+        "Ґ": "G"
+        "Ё": "YO"
+        "Є": "E"
+        "Ї": "YI"
+        "І": "I"
+        "А": "A"
+        "Б": "B"
+        "В": "V"
+        "Г": "G"
+        "Д": "D"
+        "Е": "E"
+        "Ж": "ZH"
+        "З": "Z"
+        "И": "I"
+        "Й": "Y"
+        "К": "K"
+        "Л": "L"
+        "М": "M"
+        "Н": "N"
+        "О": "O"
+        "П": "P"
+        "Р": "R"
+        "С": "S"
+        "Т": "T"
+        "У": "U"
+        "Ф": "F"
+        "Х": "H"
+        "Ц": "TS"
+        "Ч": "CH"
+        "Ш": "SH"
+        "Щ": "SCH"
+        "Ъ": "'"
+        "Ы": "Y"
+        "Ь": ""
+        "Э": "E"
+        "Ю": "YU"
+        "Я": "YA"
+  label_questions_comment: Megjegyzés
+  label_questions_your_answer: A válaszod
+  label_questions_answer_plural: Válaszok
+  label_questions_x_votes:
+        one:   "szavazat"
+        other: "szavazatok"
+  label_questions_wasthishelpful: Ez segítségére volt?
+
+  label_question_plural: Kérdések
+  label_questions_related_solutions: Kapcsolódó megoldások
+  label_questions_section_edit: Szakasz szerkesztése
+  label_soluition_plural: Megoldások
+  label_questions_add_tag: '+ címke hozzáadása'
+  label_questions_vote_added: Szavazat hozzáadva
+  label_questions_vote_removed: Szavazat eltávolítva
+  label_questions_vote_own: Szavazat saját kérdésekre
+  label_questions_show_popular: Közkedvelt cikkek megjelenítése a szakaszban
+  label_questions_most_popular: Legkedveltebb
+  label_questions_status_plural: Ötlet állapotok
+  label_questions_status_closed: Zárolt
+  label_questions_status_new: Új állapot
+  label_questions_newest: Legújabb
+  label_questions_active: Működő
+  label_questions_voted: Megszavazott
+  label_questions_unanswered: Megválaszolatlan
+
+  permission_view_questions: Kérdések megtekintése
+  permission_create_tags: Új címkék létrehozása
+  permission_edit_vote_messages: Szavazásra vonatkozó kérdések
+  permission_add_answers: Válaszok hozzáadása
+  permission_delete_answers: Válaszok törlése
+  permission_edit_question_comments: Megjegyzések szerkesztése
+  permission_edit_own_question_comments: Saját megjegyzések szerkesztése
+  permission_comment_question: Megjegyzések hozzáadása 
+  permission_add_questions: Kérdések hozzáadása
+  permission_edit_questions: Kérdések szerkesztése
+  permission_edit_own_questions: Saját kérdések szerkesztése
+  permission_delete_questions: Kérdések törlése
+  permission_vote_questions: Szavazásra vonatkozó kérdések
+  permission_accept_answers: Válaszok elfogadása
+  permission_manage_sections: Szakaszok kezelése
+  label_questions_discard: Elvetni
+  permission_edit_own_answers: Saját válaszok szerkesztése
+  

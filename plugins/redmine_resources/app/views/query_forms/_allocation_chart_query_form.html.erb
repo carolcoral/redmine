@@ -1,0 +1,78 @@
+<div id="query_form_with_buttons" class="hide-when-print">
+  <div id="query_form_content">
+    <fieldset id="filters" class="collapsible">
+      <legend onclick="toggleFieldset(this);" class="icon icon-<%= @query.new_record? ? 'expanded icon-expended' : "collapsed" %>">
+        <%= sprite_icon(@query.new_record? ? "angle-down" : "angle-right") %>
+        <%= l(:label_filter_plural) %>
+      </legend>
+      <div style="<%= @query.new_record? ? '' : 'display: none;' %>">
+        <%= render partial: 'queries/filters', locals: { query: @query } %>
+      </div>
+    </fieldset>
+
+    <fieldset id="options" class="collapsible collapsed">
+      <legend onclick="toggleFieldset(this);" class="icon icon-collapsed">
+        <%= sprite_icon("angle-right") %>
+        <%= l(:label_options) %>
+      </legend>
+      <div style="display: none;">
+        <div id="list-definition">
+          <div class="splitcontent">
+            <div class="splitcontentleft">
+              <p class="resource_option">
+                <%= label_tag :chart_type, l(:label_resources_chart_type) %>
+                <%= select_tag :chart_type,
+                    custom_options_for_select(chart_type_options, @query.chart_type),
+                    onchange: "$('#query_form').attr('action', this.value === 'issues_chart' ? 'resource_issues' : 'resource_bookings' ).submit();"
+                  %>
+              </p>
+              <p class="resource_option" id="workload">
+                <%= label_tag :workload_type, l(:label_resources_workload_type) %>
+                <%= select_tag :workload_type, custom_options_for_select(workload_type_options, @query.workload_type) %>
+              </p>
+              <p class="resource_option" id="zoom">
+                <%= label_tag :zoom, l(:label_resources_scale) %>
+                 
+                <%= select_tag :zoom, custom_options_for_select(zoom_options, 3) %>
+                 
+              </p>
+            </div>
+            <div class="splitcontentright">
+              <p class="resource_option">
+                <%= label_tag :line_title_type, l(:label_resources_line_title) %>
+                <%= select_tag :line_title_type, custom_options_for_select(line_title_type_options, @query.line_title_type) %>
+              </p>
+              <p class="resource_option">
+                <%= label_tag :show_versions, l(:button_show) %>
+                <label for="show_versions">
+                  <%= check_box_with_label('show_versions', :label_version_plural) %>
+                </label>
+                <label for="show_issues">
+                  <%= check_box 'query', 'show_issues', id: 'show_issues' %>
+                  <%= l(:label_issue_plural) %>
+                </label>
+                <label for="show_ghost_bookings">
+                  <%= check_box_with_label('show_ghost_bookings', :label_resources_ghost_bookings) %>
+                </label>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <span class="contextual pagination">
+    <span>
+      <%= link_to_previous_month(@query.date_from.year, @query.date_from.month, :accesskey => accesskey(:previous)) %> | <%= link_to_next_month(@query.date_from.year, @query.date_from.month, :accesskey => accesskey(:next)) %>
+    </span>
+  </span>
+  <p class="buttons">
+    <span>
+      <%= text_field_tag 'months', @query.months, size: 2 %>
+      <%= l(:label_months_from) %>
+    </span>
+    <%= text_field 'query', 'date_from', size: 12, type: 'date' %><%= calendar_for('query_date_from') %>
+    <%= link_to_function sprite_icon('checked', l(:button_apply)), '$("#query_form").submit()', class: 'icon icon-checked' %>
+    <%= link_to_function sprite_icon('reload', l(:button_clear)), { project_id: @project, set_filter: 1 }, class: 'icon icon-reload' %>
+  </p>
+</div>

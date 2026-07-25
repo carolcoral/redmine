@@ -52,7 +52,8 @@ en:
 
   # ========== 提示文字 ==========
   text_slug_format: "Only lowercase letters, digits, hyphens and underscores"
-  text_provider_type_hint: "Use 'custom' for OpenAI-compatible providers"
+  text_provider_name_hint: "Choose from the list or type a custom name (OpenAI-compatible format). The slug must be unique"
+  text_provider_type_hint: "tdp=TDP platform, custom=other OpenAI-compatible API"
   text_api_url_hint: "Full API base URL, e.g. https://api.openai.com/v1"
   text_available_models_hint: "JSON array of model names"
   text_settings_hint: "JSON object for extra parameters"

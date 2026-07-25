@@ -1,0 +1,13 @@
+# This file is used by icons rake task to download SVG icons from Tabler
+# Keys description:
+#   - name: destination icon name
+#     svg: source icon name from Github repository
+#     style: outline (default) or filled
+- name: arrow-up-to-foled
+  svg: corner-left-up
+- name: link-add
+  svg: link-plus
+- name: link
+  svg: link
+- name: upload
+  svg: upload

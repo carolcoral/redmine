@@ -1,0 +1,14 @@
+  <% drive_entry.comments.each do |comment| %>
+    <div class="contextual">
+    <% if User.current.allowed_to?(:comment_drive_entries, drive_entry.project, global: drive_entry.project.nil?) %>
+      <%= link_to sprite_icon('del', l(:button_delete)), { controller: 'drive_entries', action: 'comment_destroy', id: drive_entry, comment_id: comment},
+                    data: { confirm: l(:text_are_you_sure) }, method: :delete,
+                    title: l(:button_delete),
+                    class: 'icon-only icon-del' %>
+    <% end %>
+    </div>
+    <h4><%= avatar(comment.author) %><%= authoring comment.created_on, comment.author %></h4>
+    <div class="wiki">
+    <%= textilizable(comment.comments) %>
+    </div>
+  <% end if drive_entry.comments.any? %>

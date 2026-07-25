@@ -355,6 +355,14 @@
   min-width: 0;
 }
 
+.ai-chat-message-content-wrapper {
+  position: relative;
+}
+
+.ai-chat-message-content-wrapper:hover .ai-chat-copy-btn {
+  opacity: 1;
+}
+
 .ai-chat-message-label {
   font-size: 11px;
   font-weight: 600;
@@ -378,6 +386,37 @@
 .ai-chat-assistant .ai-chat-message-content {
   background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
   border: 1px solid #ede9fe;
+}
+
+/* 复制按钮 */
+.ai-chat-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+
+.ai-chat-copy-btn:hover {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.ai-chat-copy-btn.ai-chat-copied {
+  background: #ecfdf5;
+  opacity: 1;
 }
 
 .ai-chat-error .ai-chat-message-content {
@@ -605,6 +644,25 @@
   font-size: 11px;
   font-weight: 600;
   margin-left: 8px;
+}
+
+/* ---------- 全屏模式 ---------- */
+.ai-chat-window.ai-chat-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border-radius: 0;
+  z-index: 10000;
+}
+
+.ai-chat-window.ai-chat-fullscreen .ai-chat-messages {
+  flex: 1;
 }
 
 /* ---------- 响应式 ---------- */

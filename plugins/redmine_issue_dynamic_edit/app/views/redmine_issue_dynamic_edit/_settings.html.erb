@@ -1,0 +1,48 @@
+<%= stylesheet_link_tag 'excluded_tags.css', plugin: :redmine_issue_dynamic_edit %>
+
+<h3><%= t('settings_title', default: 'Redmine Issue Dynamic Edit - Configuration') %></h3>
+
+<p>
+  <label for="settings_display_edit_icon"><%= t('settings_display_edit_icon') %></label>
+  <%= select_tag 'settings[display_edit_icon]', options_for_select([[t('option_display_edit_icon_single'), 'single'], [t('option_display_edit_icon_multiple'), 'block']], @settings[:display_edit_icon]) %>
+  <em class="info"><%= t('settings_display_edit_icon_explanations') %></em>
+</p>
+
+<p>
+  <label for="settings_listener_type_value"><%= t('settings_listener_type_value') %></label>
+  <%= select_tag 'settings[listener_type_value]', options_for_select([['Click','click'], ['Double click','dblclick'], ['None','none']], @settings[:listener_type_value]) %>
+</p>
+
+<p>
+  <label for="settings_listener_type_icon"><%= t('settings_listener_type_icon') %></label>
+  <%= select_tag 'settings[listener_type_icon]', options_for_select([['Click','click'], ['Double click','dblclick'], ['None','none']], @settings[:listener_type_icon]) %>
+</p>
+
+<p>
+  <label for="settings_listener_target"><%= t('settings_listener_target') %></label>
+  <%= select_tag 'settings[listener_target]', options_for_select([['Value','value'], ['Pencil icon','iconEdit'], ['Label','label'], ['All','all']], @settings[:listener_target]) %>
+  <!--<em class="info"><%= t('settings_listener_target_explanation') %></em>-->
+</p>
+
+<p>
+  <label for="settings_excluded_field_id"><%= t('settings_excluded_field_id') %></label>
+  <%= hidden_field_tag 'settings[excluded_field_id]', @settings[:excluded_field_id], id: 'settings_excluded_field_id' %>
+  <span id="excluded_tags_container" class="excluded-tags"></span>
+  <em class="info"><%= t('settings_excluded_field_id_explanation') %></em>
+</p>
+
+<p>
+  <label for="settings_check_issue_update_conflict"><%= t('settings_check_issue_update_conflict') %></label>
+  <%= hidden_field_tag 'settings[check_issue_update_conflict]', '0' %>
+  <%= check_box_tag 'settings[check_issue_update_conflict]', '1', @settings[:check_issue_update_conflict].to_s == 'true' || @settings[:check_issue_update_conflict].to_s == '1' %>
+  <em class="info"><%= t('settings_check_issue_update_conflict_explanation') %></em>
+</p>
+
+<p>
+  <label for="settings_force_https"><%= t('settings_force_https') %></label>
+  <%= hidden_field_tag 'settings[force_https]', '0' %>
+  <%= check_box_tag 'settings[force_https]', '1', @settings[:force_https].to_s == 'true' || @settings[:force_https].to_s == '1' %>
+  <em class="info"><%= t('settings_force_https_explanation') %></em>
+</p>
+
+<%= javascript_include_tag 'excluded_tags.js', plugin: :redmine_issue_dynamic_edit %>

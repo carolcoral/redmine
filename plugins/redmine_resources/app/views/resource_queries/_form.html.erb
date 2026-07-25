@@ -1,0 +1,72 @@
+<%= error_messages_for 'query' %>
+
+<div class="box">
+  <div class="tabular">
+    <%= hidden_field_tag 'chart_type', @query.chart_type %>
+
+    <p><label for="query_name"><%=l(:field_name)%></label>
+    <%= text_field 'query', 'name', :size => 80 %></p>
+
+    <% if @query.respond_to?(:description) %>
+      <p><label for="query_description"><%=l(:field_description)%></label>
+      <%= text_field 'query', 'description', :size => 80 %></p>
+    <% end %>
+
+    <% if User.current.admin? || User.current.allowed_to?(:manage_public_queries, @query.project) %>
+    <p><label><%=l(:field_visible)%></label>
+      <label class="block"><%= radio_button 'query', 'visibility', Query::VISIBILITY_PRIVATE %> <%= l(:label_visibility_private) %></label>
+      <label class="block"><%= radio_button 'query', 'visibility', Query::VISIBILITY_PUBLIC %> <%= l(:label_visibility_public) %></label>
+      <% unless @query.type == 'ProjectQuery' %>
+        <label class="block"><%= radio_button 'query', 'visibility', Query::VISIBILITY_ROLES %> <%= l(:label_visibility_roles) %>:</label>
+          <% Role.givable.sorted.each do |role| %>
+            <label class="block role-visibility"><%= check_box_tag 'query[role_ids][]', role.id, @query.roles.include?(role), :id => nil %> <%= role.name %></label>
+          <% end %>
+          <%= hidden_field_tag 'query[role_ids][]', '' %>
+      <% end %>
+    </p>
+    <% end %>
+
+    <p><label for="query_is_for_all"><%=l(:field_is_for_all)%></label>
+    <%= check_box_tag 'query_is_for_all', 1, @query.project.nil?, :class => (User.current.admin? ? '' : 'disable-unless-private') %></p>
+
+    <fieldset id="options"><legend><%= l(:label_options) %></legend>
+      <%= render partial: "resource_queries/#{@query.chart_type}_options" %>
+    </fieldset>
+  </div>
+
+  <fieldset id="filters"><legend><%= l(:label_filter_plural) %></legend>
+  <%= render :partial => 'queries/filters', :locals => {:query => query}%>
+  </fieldset>
+
+  <% if query.is_a?(ResourceBookingQuery) && query.allocation_chart? %>
+    <%= content_tag 'fieldset', :id => 'columns' do %>
+      <legend><%= l(:field_column_names) %></legend>
+      <div id="list-definition">
+        <div><%= render_query_columns_selection(query) %></div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<%= javascript_tag do %>
+$(document).ready(function(){
+  $("input[name='query[visibility]']").change(function(){
+    var roles_checked = $('#query_visibility_1').is(':checked');
+    var private_checked = $('#query_visibility_0').is(':checked');
+    $("input[name='query[role_ids][]'][type=checkbox]").attr('disabled', !roles_checked);
+    if (!private_checked) $("input.disable-unless-private").attr('checked', false);
+    $("input.disable-unless-private").attr('disabled', !private_checked);
+  }).trigger('change');
+});
+
+$(function ($) {
+  $('input[name=display_type]').change(function () {
+    var option = $('input[name=display_type]:checked').val();
+    if (option == 'board') {
+      $('fieldset#columns, fieldset#sort, p#group_by').hide();
+    } else {
+      $('fieldset#columns, fieldset#sort, p#group_by').show();
+    }
+  }).change();
+});
+<% end %>

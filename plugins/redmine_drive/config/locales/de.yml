@@ -1,0 +1,58 @@
+# German strings go here for Rails i18n
+de:
+  label_drive: Drive
+  label_redmine_drive: Redmine drive
+  label_drive_new_folder: Neuer Ordner
+  label_drive_edit_folder: Ordner bearbeiten
+  label_drive_edit_file: Datei bearbeiten
+  label_drive_tags: Tags
+  label_drive_upload_files: Dateien hochladen
+  label_drive_new_files: Neue Dateien
+  label_drive_share: Freigeben
+  label_drive_shared: Freigegeben
+  label_drive_unshare: Freigabe aufheben
+  label_drive_expiration_date: Verfallsdatum
+  label_drive_copy_to_folder: In Ordner kopieren
+  label_drive_move_to_folder: In Ordner verschieben
+  label_drive_bulk_edit: Bulk-Bearbeitung
+  label_drive_search_by_name: Nach Namen suchen
+  label_drive_storage_size: Speichergröße
+  label_drive_shared_file: Innerhalb von Drive freigegebene Datei
+  label_drive_shared_files: Freigegebene Dateien
+  label_drive_link_shared_files: Freigegebene Dateien verknüpfen
+  label_drive_file_search: 'Datei suchen:'
+  label_drive_no_uploaded_files: Es sind keine hochgeladenen Dateien vorhanden.
+  label_drive_go_to_the: Gehe zu
+  label_drive_shared_files_destroy_warning: Eine oder mehrere Dateien sind mit Vorgängen verknüpft.
+  label_drive_files_destroy_confirmation: 'Möchten Sie die ausgewählte(n) Datei(en) wirklich löschen?'
+  label_drive_access_by_password: Access password
+
+  label_drive_notice_copying_completed: Kopieren abgeschlossen
+  label_drive_notice_move_completed: Verschieben abgeschlossen
+  label_drive_notice_copying_error: Beim Kopieren ist ein Fehler aufgetreten
+  label_drive_notice_moving_error: Beim Verschieben ist ein Fehler aufgetreten
+  label_drive_notice_update_error: Fehler beim Aktualisieren
+
+  label_drive_file_items:
+    one: '%{count} Eintrag'
+    other: "%{count} Einträge"
+
+  activerecord:
+    errors:
+      messages:
+        error_file_already_exists: 'Eine Datei mit dem Namen «%{name}» existiert bereits'
+
+  label_drive_days_ago: 'Vor %{days} Tagen'
+  label_drive_version_history: Versionsgeschichte
+  label_drive_rollback: Rollback
+  label_drive_upload_version: Version hochladen
+  label_drive_version_name: Version
+  
+  label_drive_show_in_top_menu: Im oberen Menü anzeigen
+  
+  notice_successful_rollback: Version was successfully rollbacked
+
+  error_save_failed: Speichern fehlgeschlagen
+  error_update_failed: Update fehlgeschlagen
+  error_rollback_failed: Rollback der Version fehlgeschlagen
+

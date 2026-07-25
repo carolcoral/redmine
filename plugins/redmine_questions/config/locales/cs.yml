@@ -1,0 +1,173 @@
+# encoding: utf-8
+# Czech strings go here for Rails i18n
+cs:
+  label_questions: 'Pomoc & Podpora'
+  label_questions_search: 'Vyhledejte otázku nebo téma...'
+  label_questions_new: Nová otázka
+  label_questions_message: Zpráva
+  label_questions_added_time: "Přidaná %{value} před"
+  label_questions_related_questions: Související otázka
+  label_questions_latest_messages: Poslední zpráva
+  label_questions_views: '%{count} zhlédnutí'
+  label_questions_votes: '%{count} hodnocení'
+  label_questions_answers: '%{count} odpovědí'
+  label_questions_tags: Tagy
+  label_questions_tagged_by: '%{count} položek označeno s %{tag}'
+  label_questions_sidebar_message: Zpráva na postraním panelu
+  label_questions_notice: Oznámení
+  label_questions_most_voted: Nejvíce hodnotilo
+
+  button_questions_vote: Hodnocení
+  button_questions_unvote: Zrušení hodnocení
+  button_questions_like: Líbí
+  button_questions_unlike: Nelíbí
+
+  field_questions_tags: Tagy
+
+  label_questions_add_comment: Přidat komentář
+  label_question_comment_successful_added: Komentář přidán
+  label_question_successful_update: Otázka opravena
+  label_answer_successful_update: Odpověď opravena
+  label_answer_successful_added: Odpověď přidána
+  lebel_questions_new_comment: Nový komentář
+
+  button_questions_to_issue: Konvertovat do úkolu
+  button_questions_issue_to_question: Konvertovat do otázky
+  label_questions_actions: Akce
+  label_questions_accept: Akceptovat
+
+  label_questions_section_type_questions: Otázky
+  label_questions_section_type_solutions: Řešení
+  label_questions_section_type_ideas: Nápad
+
+  label_questions_section: Sekce
+  label_questions_sections_plural: Sekce
+  label_questions_section_new: Nová sekce
+  label_questions_section_type: Typ sekce
+  label_questions_topic: Téma
+  label_questions_featured: Nejlepší
+  label_questions_locked: Zamknuté
+
+  project_module_questions: Otázky
+
+  i18n:
+    transliterate:
+      rule:
+        і: 'i'
+        ґ: 'g'
+        ё: 'yo'
+        №: '#'
+        є: 'e'
+        ї: 'yi'
+        а: 'a'
+        б: 'b'
+        в: 'v'
+        г: 'g'
+        д: 'd'
+        е: 'e'
+        ж: 'zh'
+        з: 'z'
+        и: 'i'
+        й: 'y'
+        к: 'k'
+        л: 'l'
+        м: 'm'
+        н: 'n'
+        о: 'o'
+        п: 'p'
+        р: 'r'
+        с: 's'
+        т: 't'
+        у: 'u'
+        ф: 'f'
+        х: 'h'
+        ц: 'ts'
+        ч: 'ch'
+        ш: 'sh'
+        щ: 'sch'
+        ъ: ''
+        ы: 'y'
+        ь: ''
+        э: 'e'
+        ю: 'yu'
+        я: 'ya'
+        "Ґ": "G"
+        "Ё": "YO"
+        "Є": "E"
+        "Ї": "YI"
+        "І": "I"
+        "А": "A"
+        "Б": "B"
+        "В": "V"
+        "Г": "G"
+        "Д": "D"
+        "Е": "E"
+        "Ж": "ZH"
+        "З": "Z"
+        "И": "I"
+        "Й": "Y"
+        "К": "K"
+        "Л": "L"
+        "М": "M"
+        "Н": "N"
+        "О": "O"
+        "П": "P"
+        "Р": "R"
+        "С": "S"
+        "Т": "T"
+        "У": "U"
+        "Ф": "F"
+        "Х": "H"
+        "Ц": "TS"
+        "Ч": "CH"
+        "Ш": "SH"
+        "Щ": "SCH"
+        "Ъ": "'"
+        "Ы": "Y"
+        "Ь": ""
+        "Э": "E"
+        "Ю": "YU"
+        "Я": "YA"
+  label_questions_comment: Komentář
+  label_questions_your_answer: Vaše odpověď
+  label_questions_answer_plural: Odpovědi
+  label_questions_x_votes:
+        one:   "hodnocení"
+        other: "hodnocení"
+  label_questions_wasthishelpful: Bylo to užitečné?
+
+  label_question_plural: Otázky
+  label_questions_related_solutions: Související řešení
+  label_questions_section_edit: Oprava sekce
+  label_soluition_plural: Řešení
+  label_questions_add_tag: '+ přidej tag'
+  label_questions_vote_added: Hodnocení přidáno
+  label_questions_vote_removed: Hodnocení odstraněno
+  label_questions_vote_own: Hodnocení vlastních otázek
+  label_questions_show_popular: Zobrazit oblíbené články v sekci
+  label_questions_most_popular: Nejoblíbenější
+  label_questions_status_plural: Stavy nápadů
+  label_questions_status_closed: Uzavřeno
+  label_questions_status_new: Nový stav
+  label_questions_newest: Nejnovější
+  label_questions_active: Aktivní
+  label_questions_voted: Hodnoceno
+  label_questions_unanswered: Neodpovězeno
+
+  permission_view_questions: Zobrazení otázek
+  permission_create_tags: Vytváření nových tagů
+  permission_edit_vote_messages: Hodnocení otázek
+  permission_add_answers: Přidání odpovědi
+  permission_delete_answers: Mazání odpovědí
+  permission_edit_question_comments: Oprava komentářů
+  permission_edit_own_question_comments: Oprava vlastních komentářů
+  permission_comment_question: Přidání komentářů  
+  permission_add_questions: Přidání otázek
+  permission_edit_questions: Oprava otázek
+  permission_edit_own_questions: Oprava vlastních otázek
+  permission_delete_questions: Mazání otázek
+  permission_vote_questions: Hodnocení otázek
+  permission_accept_answers: Přijímat odpověďi
+  permission_manage_sections: Úprava sekcí
+  label_questions_discard: Vyřadit
+  permission_edit_own_answers: Oprava vlastních odpovědí

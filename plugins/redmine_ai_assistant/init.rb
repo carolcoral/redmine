@@ -39,8 +39,9 @@ Redmine::Plugin.register :redmine_ai_assistant do
        :ai_assistant_providers,
        { controller: 'ai_assistant/providers', action: 'index' },
        caption: :label_ai_providers,
-       html: { class: 'icon-ai-assistant' },
-       if: proc { User.current.admin? }
+       icon: 'openai',
+       plugin: 'redmine_ai_assistant',
+       if: proc { User.current.admin? && AiAssistant.enabled? }
 
   # ========== 插件设置 ==========
   settings default: {

@@ -1,0 +1,7 @@
+- if User.current.logged? && \
+     Additionals.setting?(:issue_assign_to_me) && \
+     issue.editable? && \
+     issue.safe_attribute?('assigned_to_id') && \
+     issue.assigned_to_id != User.current.id && \
+     issue.project.assignable_users.detect { |u| u.id == User.current.id }
+    = render_assign_to_me_button issue, label: :button_assign_to_me

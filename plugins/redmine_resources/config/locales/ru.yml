@@ -1,0 +1,122 @@
+ru:
+  label_resources: Ресурсы
+  label_resource_booking_plural: Назначения
+  label_resources_ghost_bookings: Потенциальные назначения
+  label_resource_planning: Планирование ресурсов
+  label_resources_new_booking: Новое назначение
+  label_resources_edit_booking: Редактировать назначение
+  label_resources_leave_comment: Оставить комментарий
+  label_resources_scheduled: Запланировано
+  label_resources_total_scheduled: Всего запланировано
+  label_resources_scheduled_for: на
+  label_resources_workday_length: Продолжительность рабочего дня
+  label_resources_load: Нагрузка
+  label_resources_full_load: Полная нагрузка
+  label_resources_overload: Перегрузка
+  label_resources_underload: Недогрузка
+  label_resources_f_hour_short: "%{value}ч"
+  label_resources_dates: Даты
+  label_resources_assigned_to_user: Назначено пользователю
+  label_resources_not_assigned_to_user: Не назначено пользователю
+  label_resources_closed_issues: Закрытые задачи
+  label_resources_setting_taken_from: Эта настройка взята из
+  label_resources_line_title: Заголовок линии
+  label_resources_issue_subject: Тема задачи
+  label_resources_hours_per_day: Часов в день
+  label_resources_total_hours: Всего часов
+  label_my_resource_bookings: Мои назначения ресурсов
+  label_resources_unbooked_time: Незапланированное время
+  label_resources_capacity: Общая нагрузка
+  label_resources_allocated: Назначено
+  label_resources_spent: Выполнено
+  label_resources_weekends: Выходные
+  label_resources_project_names: Названия проектов
+  label_resources_show_more: Показать больше...
+
+  label_resource_booking_added: Добавлено назначение
+  label_resource_booking_updated: Назначение обновлено
+  label_resource_booking_for_issue_added: '%{author} добавил назначение на задачу %{id}.'
+  label_resource_booking_for_project_added: '%{author} добавил назначение на проект %{id}.'
+  label_resource_booking_for_issue_updated: '%{author} обновил назначение на задачу %{id}.'
+  label_resource_booking_for_project_updated: '%{author} обновил назначение на проект %{id}.'
+
+  project_module_resources: Ресурсы
+  permission_view_resources: Просмотр ресурсов
+  permission_add_booking: Добавление назначений
+  permission_edit_booking: Редактирование назначений
+  permission_save_resource_queries: Сохранение запросов назначений
+  permission_manage_public_resource_queries: Управление общими запросами назначений
+
+  field_end_date: Дата завершения
+  field_booking_type: Назначение
+  field_start_hour: Время начала
+  field_end_hour: Время завершения
+  field_hours_per_day: Часов/День
+  field_hours_per_day_abbreviation: ч/д
+  field_hours_per_week_abbreviation: ч/нед
+  field_hours_per_month_abbreviation: ч/мес
+  field_person: Сотрудник
+
+  notice_could_not_delete: Не удалось удалить
+  error_failed_to_save: Ошибка при сохранении.
+
+  label_resources_x_day_off: "%{count} вх"
+
+  activerecord:
+    errors:
+      messages:
+        greater_than_or_equal_to_start_date: должна быть позднее либо равна дате начала
+        less_than_or_equal_to_issue_due_date: 'должна быть не позднее даты завершения задачи (%{due_date})'
+        total_time_exceeds_estimated_time: Общее время всех назначений на задачу превышает оцененные временные затраты
+
+  label_resource_updated: Ресурс изменен
+  label_resources_chart_type: Тип чарта
+  label_resources_week_start: Начало недели
+  label_resources_group_by: Группировать по
+  label_resources_planned: Запланировано
+
+  label_resources_allocation_chart: График назначения
+  label_resources_allocation_table: Таблица назначения
+  label_resources_issues_chart: График назначения задач
+  label_resources_utilization_report: Отчет об использовании
+  label_resources_edit_issue_dates: Редактировать даты задачи
+
+  label_resources_workload_type: Загрузка
+  label_resources_workload_in_hours: Часы
+  label_resources_workload_in_percent: Проценты
+  label_resources_user_workload: "%{workload} из %{workday_length} ч/д"
+  label_resources_days_count: "для %{days} дня/дней"
+  label_resources_dayoffs_count_hint: "(%{count} выходн.)"
+  label_resources_issue_dates: "Даты задачи: с %{start_date} до %{due_date}"
+
+  # PRO labels
+  label_resources_allocation_table_pro: Таблица назначения (PRO)
+  label_resources_issues_chart_pro: График назначения задач (PRO)
+  label_resources_utilization_report_pro: Отчет об использовании (PRO)
+  label_resources_issue_subject_pro: Issue subject (PRO)
+  label_resources_hours_per_day_pro: Часов в день (PRO)
+  label_version_plural_pro: Версии (PRO)
+  label_resources_ghost_bookings_pro: Потенциальные назначения (PRO)
+
+  label_resources_unassigned_issues_link: Всего задач без исполнителя (%{count})
+  label_resources_dayoff: Выходной
+  label_resources_off: Нет
+  label_resources_versions: Версии...
+  label_resources_allocated_hours: Запланированное время
+  label_resources_capacity_hours: Доступное время
+  label_resources_available_hours: Оставшееся время
+  label_resources_percent_allocated: Процент загрузки
+  label_resources_dayoffs_count: Выходные дни
+
+  label_resources_booking_in_hours: Часов/день
+  label_resources_booking_in_percent: '% в день'
+  label_resources_booking_in_total_hours: Всего часов
+  label_resources_total_hours_hint: ", всего %{total_hours}ч."
+  label_resources_from_date: с
+  label_resources_to_date: до
+  label_resources_booking_value: Значение
+  label_resources_short_time_format: ч
+  label_resources_scale: Масштаб
+  label_resources_3_scale: Дни
+  label_resources_2_scale: Недели
+  label_resources_1_scale: Месяцы

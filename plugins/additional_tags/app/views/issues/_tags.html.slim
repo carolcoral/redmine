@@ -1,0 +1,13 @@
+- if AdditionalTags.setting?(:active_issue_tags) && User.current.allowed_to?(:view_issue_tags, issue.project)
+  = render 'additional_tags/tag_list',
+           entry: issue,
+           show_always: true,
+           editable: issue.editable?(User.current),
+           css_id: 'issue_tag_list_show',
+           update_url: issue_path(issue),
+           use_colors: AdditionalTags.use_colors?
+
+  - if issue.editable? User.current
+    javascript:
+      var eventSelect = $('#issue_tag_list_show');
+      eventSelect.on('select2:close', function(e) { fixScopedTags(e, eventSelect); });

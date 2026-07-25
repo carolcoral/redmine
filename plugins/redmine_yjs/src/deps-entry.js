@@ -1,0 +1,17 @@
+/**
+ * Entry point for bundling Yjs dependencies
+ * This file imports the dependencies and exposes them as globals
+ */
+
+import * as Y from 'yjs';
+import { HocuspocusProvider } from '@hocuspocus/provider';
+
+// Expose as globals for use in yjs-collaboration.js
+window.Y = Y;
+window.HocuspocusProvider = HocuspocusProvider;
+
+// Only log in development/debug mode
+if (window.location.hostname === 'localhost' || window.RedmineYjsConfig && window.RedmineYjsConfig.debug) {
+  console.log('[Yjs Deps] Bundled dependencies loaded');
+}
+
