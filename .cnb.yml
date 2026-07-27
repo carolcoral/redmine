@@ -1,73 +1,25 @@
-# CNB 流水线配置 - GitHub 代码同步
-#
-# 前置准备（二选一）：
-# 方式一（推荐）：在 CNB 项目「设置 → 环境变量」中配置以下变量：
-#   - GITHUB_TOKEN: GitHub Personal Access Token (classic)，需勾选 repo 权限
-#   - GIT_USER_NAME: Git 提交用户名（可选，默认 "CNB Sync Bot"）
-#   - GIT_USER_EMAIL: Git 提交邮箱（可选，默认 "sync@cnb.cool"）
-#
-# 方式二：创建密钥仓库，通过 imports 导入：
-#   1. 创建仓库 xindu.site/secrets，在 main 分支新增 github.yml
-#   2. 内容：
-#      GITHUB_TOKEN: ghp_xxxxxxxxxxxx
-#      GIT_USER_NAME: Your Name
-#      GIT_USER_EMAIL: your@email.com
-#   3. 取消下方 imports 的注释并替换为实际路径
-
+# 手动触发：将代码推送到 GitHub
 $:
-  web_trigger_sync_to_github:
-    - name: sync-to-github
+  web_trigger_push_github:
+    - name: push-to-github
       docker:
-        image: alpine/git:latest
-      # imports:
-      #   - https://cnb.cool/xindu.site/secrets/-/blob/main/github.yml
+        image: docker.io/alpine/git:latest
+      imports:
+        # 密钥仓库需包含 GITHUB_TOKEN（Personal Access Token，需 repo 权限）
+        # 请根据实际密钥仓库路径修改此 URL
+        - https://cnb.cool/xindu.site/secret/-/blob/main/token.yaml
       stages:
-        - name: configure and push to github
+        - name: push to GitHub
           script: |
-            set -e
+            git config --global user.email "cnb-ci@cnb.cool"
+            git config --global user.name "CNB CI"
 
-            echo ">>> 开始同步代码到 GitHub"
-            echo ">>> 当前分支: ${CNB_BRANCH}"
-            echo ">>> 目标仓库: github.com/${GITHUB_REPO}"
+            # 移除 CNB 专属文件，不推送到 GitHub
+            rm -rf .cnb/ .cnb.yml
+            git add -A
+            git commit -m "chore: remove CNB config (auto-generated mirror)" --allow-empty
 
-            # 配置 Git 用户信息
-            git config --global user.name "${GIT_USER_NAME:-CNB Sync Bot}"
-            git config --global user.email "${GIT_USER_EMAIL:-sync@cnb.cool}"
-
-            # 检查必要环境变量
-            if [ -z "$GITHUB_TOKEN" ]; then
-              echo "错误: GITHUB_TOKEN 未设置，请在项目「设置 → 环境变量」中配置"
-              exit 1
-            fi
-
-            if [ -z "$GITHUB_REPO" ]; then
-              echo "错误: GITHUB_REPO 未设置，请在触发时填写目标仓库"
-              exit 1
-            fi
-
-            # 构建 GitHub 远程地址（使用 Token 认证）
-            GITHUB_URL="https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
-
-            # 添加/更新 GitHub 远程仓库
-            git remote add github "${GITHUB_URL}" 2>/dev/null || git remote set-url github "${GITHUB_URL}"
-
-            echo ">>> 正在推送 ${CNB_BRANCH} 分支到 GitHub..."
-            git push github "HEAD:${CNB_BRANCH}" --force
-
-            echo ""
-            echo ">>> 同步成功！代码已推送到 github.com/${GITHUB_REPO} (${CNB_BRANCH})"
-      failStages:
-        - name: sync failed notification
-          script: |
-            echo "========================================="
-            echo "  GitHub 同步失败！"
-            echo "  构建 ID : ${CNB_BUILD_ID}"
-            echo "  分支    : ${CNB_BRANCH}"
-            echo "  目标仓库: github.com/${GITHUB_REPO}"
-            echo "  错误信息: ${CNB_BUILD_FAILED_MSG}"
-            echo "========================================="
-            echo ""
-            echo "常见问题排查："
-            echo "  1. GITHUB_TOKEN 是否有效且具有 repo 权限？"
-            echo "  2. GITHUB_REPO 格式是否正确（如 myuser/myrepo）？"
-            echo "  3. 目标 GitHub 仓库是否存在且有写入权限？"
+            # 推送到 GitHub
+            git remote add github https://x-access-token:${GITHUB_TOKEN}@github.com/carolcoral/redmine.git
+            git push github HEAD:refs/heads/${CNB_BRANCH} --force
+            git push github --tags --force
