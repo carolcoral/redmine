@@ -7,6 +7,9 @@ RedmineApp::Application.routes.draw do
       member do
         put :toggle
       end
+      collection do
+        post :fetch_models
+      end
     end
   end
 

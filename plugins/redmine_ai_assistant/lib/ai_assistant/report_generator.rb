@@ -314,7 +314,7 @@ module AiAssistant
     end
 
     def build_system_prompt
-      GuardPrompt::GUARD_PREFIX + <<~PROMPT
+      prompt = GuardPrompt::GUARD_PREFIX + <<~PROMPT
         You are a professional work report generator for Redmine project management system.
         Generate a well-structured #{report_type} work report based on the provided data.
 
@@ -329,6 +329,19 @@ module AiAssistant
         - Output in Markdown format
         - Use the user's language (Chinese by default unless data indicates otherwise)
       PROMPT
+
+      # 注入管理员自定义系统提示词
+      custom_prompt = load_custom_system_prompt
+      if custom_prompt.present?
+        prompt = "#{custom_prompt.strip}\n\n#{prompt}"
+      end
+
+      prompt
+    end
+
+    # 加载管理员自定义系统提示词
+    def load_custom_system_prompt
+      Setting.plugin_redmine_ai_assistant.try(:[], 'system_prompt').presence
     end
 
     def build_user_prompt(data)

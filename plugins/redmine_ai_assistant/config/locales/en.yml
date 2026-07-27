@@ -24,15 +24,19 @@ en:
 
   label_default_provider: "Default AI Provider"
   label_guard_prompt_enabled: "Enable Read-Only Guard Prompt"
+  label_system_prompt: "Custom System Prompt"
   label_max_history_messages: "Max History Messages"
   label_report_timezone: "Report Timezone"
   label_custom_pet: "Custom Pet Icon"
   label_custom_pet_image_url: "Custom Icon URL"
+  label_custom_pet_image_upload: "Upload Custom Icon"
   label_pet_size: "Icon Size (px)"
   label_preview: "Preview"
 
-  text_custom_pet_image_hint: "Supports PNG/JPG/GIF/APNG/WebP/SVG. Enter an image URL to replace the default 🤖 icon. GIF/APNG animations will auto-play. Leave blank for default."
+  text_custom_pet_image_hint: "Supports PNG/JPG/GIF/APNG/WebP/SVG. Enter an image URL or upload a local image to replace the default 🤖 icon. GIF/APNG animations will auto-play. Leave blank for default."
+  text_custom_pet_image_upload_hint: "Uploaded images are converted to a Data URL and filled into the URL field above. Recommended icon size: up to 120x120, file size up to 1 MB."
   text_pet_size_hint: "Button size in pixels, range 40-120, default 60"
+  error_image_too_large: "Image size must not exceed 1 MB"
 
   label_quick_question_1: "What are my tasks today?"
   label_quick_question_2: "Summarize recent project activity"
@@ -58,6 +62,8 @@ en:
   text_available_models_hint: "JSON array of model names"
   text_settings_hint: "JSON object for extra parameters"
   text_guard_prompt_hint: "When enabled, AI is restricted to read-only mode when discussing business data"
+  text_system_prompt_hint: "Custom system prompt is injected into every AI chat and report generation, used to control AI behavior boundaries. E.g.: \"Only answer questions related to the current system, reply 'Please contact system administrator' for other questions.\""
+  text_system_prompt_placeholder: "E.g.: You can only answer questions related to Redmine project management. If users ask about other topics, reply: \"Sorry, I can only answer questions related to this system. For other inquiries, please contact the administrator.\""
   text_max_history_hint: "Number of previous messages to include in context (1-50)"
   text_report_timezone_hint: "Timezone for report date range calculation"
   text_ai_welcome: "Hello! I'm your AI assistant. Feel free to ask questions about your projects, tasks, or generate work reports."
@@ -65,6 +71,23 @@ en:
 
   # ========== 错误 ==========
   error_cannot_delete_builtin_provider: "Cannot delete built-in providers"
+  error_api_url_key_required: "Please fill in API URL and API Key first"
+  error_unauthorized: "Authentication failed. Please check the API key"
+  error_models_endpoint_not_found: "This provider does not support model listing (GET /models)"
+  error_rate_limited: "Too many requests. Please try again later"
+  error_connection_timeout: "Connection timeout. Please check if the API URL is reachable"
+  error_connection_refused: "Connection refused. Please check the API URL"
+  error_network: "Network error"
+  error_invalid_response: "Provider returned an unparseable response"
+  error_no_models_found: "No available models found"
+  error_fetch_models_failed: "Failed to fetch models"
+
+  # ========== 按钮 ==========
+  button_fetch_models: "Auto Fetch"
+  label_fetching: "Fetching..."
+
+  # ========== 通知 ==========
+  notice_models_fetched: "Models fetched successfully"
 
   # ========== 权限 ==========
   permission_manage_ai_providers: "Manage AI Providers"

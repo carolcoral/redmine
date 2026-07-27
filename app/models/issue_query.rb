@@ -411,7 +411,6 @@ class IssueQuery < Query
     end
 
     scope = base_scope.
-      preload(:priority).
       includes(([:status, :project] + (options[:include] || [])).uniq).
       where(options[:conditions]).
       order(order_option).
@@ -421,7 +420,7 @@ class IssueQuery < Query
 
     scope =
       scope.preload(
-        [:tracker, :author, :assigned_to, :fixed_version,
+        [:priority, :tracker, :author, :assigned_to, :fixed_version,
          :category, :attachments] & columns.map(&:name)
       )
     if has_custom_field_column?

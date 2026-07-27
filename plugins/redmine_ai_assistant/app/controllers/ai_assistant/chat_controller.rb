@@ -131,13 +131,22 @@ module AiAssistant
     end
 
     def build_system_content(message, history)
+      # 基础系统提示
       base = "You are an AI assistant integrated with Redmine.\n" \
              "Current user: #{User.current.name}\n" \
              "Current time: #{Time.current}"
 
-      # 检测是否需要注入 Guard Prompt
-      if GuardPrompt.guard_needed?(message) ||
-         history.any? { |m| m.role == 'user' && GuardPrompt.guard_needed?(m.content) }
+      # 注入管理员自定义系统提示词（优先级最高，放在最前面）
+      custom_prompt = load_custom_system_prompt
+      if custom_prompt.present?
+        base = "#{custom_prompt.strip}\n\n#{base}"
+      end
+
+      # 检测是否需要注入 Guard Prompt（需同时检查 guard_prompt_enabled 开关）
+      guard_enabled = Setting.plugin_redmine_ai_assistant.try(:[], 'guard_prompt_enabled')
+      if guard_enabled != '0' &&
+         (GuardPrompt.guard_needed?(message) ||
+          history.any? { |m| m.role == 'user' && GuardPrompt.guard_needed?(m.content) })
         base = GuardPrompt.inject(base, message)
       end
 
@@ -148,6 +157,11 @@ module AiAssistant
       end
 
       base
+    end
+
+    # 加载管理员自定义系统提示词
+    def load_custom_system_prompt
+      Setting.plugin_redmine_ai_assistant.try(:[], 'system_prompt').presence
     end
 
     # 判断是否为任务/报告类查询
@@ -166,7 +180,7 @@ module AiAssistant
       # 查询指派给当前用户的未关闭任务
       open_issues = Issue.where(assigned_to_id: user.id)
                         .where(status_id: IssueStatus.where(is_closed: false).pluck(:id))
-                        .includes(:project, :tracker, :status, :priority, :author)
+                        .includes(:project, :tracker, :status, :priority)
                         .order(due_date: :asc, created_on: :desc)
                         .limit(50)
 

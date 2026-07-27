@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateAiMessages < ActiveRecord::Migration[7.0]
+class CreateAiMessages < ActiveRecord::Migration[6.1]
   def change
     create_table :ai_messages do |t|
       t.references :user,        null: false

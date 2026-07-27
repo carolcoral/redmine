@@ -5,7 +5,7 @@
   querynext.add_filter "assigned_to_id", "=", current_user_ids
   querynext.add_filter "status_id", "o"
   querynext.add_filter "due_date", ">=", [(Date.today+1).strftime("%Y-%m-%d")]
-  querynext.column_names = settings[:columns].presence || ["project", "tracker", "status", "subject"]
+  querynext.column_names = settings[:columns].presence || ["id"]
   querynext.sort_criteria = settings[:sort].presence || [["due_date", "desc"]]
   issuesnext = querynext.issues()
 
@@ -13,7 +13,7 @@
   queryw.add_filter "assigned_to_id", "=", current_user_ids
   queryw.add_filter "status_id", "o"
   queryw.add_filter "due_date", "!*"
-  queryw.column_names = settings[:columns].presence || ["project", "tracker", "status", "subject"]
+  queryw.column_names = settings[:columns].presence || ["id"]
   queryw.sort_criteria = settings[:sort].presence || [["due_date", "desc"]]
   issuesnext = issuesnext + queryw.issues()
 
@@ -21,7 +21,7 @@
   querydue.add_filter "assigned_to_id", "=", current_user_ids
   querydue.add_filter "status_id", "o"
   querydue.add_filter "due_date", "<=", [(Date.today-1).strftime("%Y-%m-%d")]
-  querydue.column_names = settings[:columns].presence || ["project", "tracker", "status", "subject"]
+  querydue.column_names = settings[:columns].presence || ["id"]
   querydue.sort_criteria = settings[:sort].presence || [["due_date", "desc"]]
   issuesdue = querydue.issues()
 
@@ -29,7 +29,7 @@
   querytoday.add_filter "assigned_to_id", "=", current_user_ids
   querytoday.add_filter "status_id", "o"
   querytoday.add_filter "due_date", "t"
-  querytoday.column_names = settings[:columns].presence || ["project", "tracker", "status", "subject"]
+  querytoday.column_names = settings[:columns].presence || ["id"]
   querytoday.sort_criteria = settings[:sort].presence || [["due_date", "desc"]]
   issuestoday = querytoday.issues()
 

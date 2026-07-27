@@ -1,9 +1,15 @@
 <%
   custom_image = Setting.plugin_redmine_ai_assistant.try(:[], 'custom_pet_image_url').presence
   pet_size     = (Setting.plugin_redmine_ai_assistant.try(:[], 'pet_size') || '60').to_i
+  avatar_html  = custom_image ? "<img src='#{h(custom_image)}' alt='AI' style='width:100%;height:100%;border-radius:50%;object-fit:cover;'>".html_safe : "🤖"
 %>
 <div id="ai-chat-widget"
      data-ai-chat-csrf-value="<%= form_authenticity_token %>"
+     data-custom-avatar="<%= custom_image %>"
+     data-welcome-text="<%= j l(:text_ai_welcome) %>"
+     data-readonly-text="<%= j l(:text_readonly_disclaimer) %>"
+     data-question-1="<%= j l(:label_quick_question_1) %>"
+     data-question-2="<%= j l(:label_quick_question_2) %>"
      aria-hidden="true">
   <!-- 悬浮宠物按钮 -->
   <button id="ai-chat-toggle"
@@ -29,7 +35,7 @@
     <!-- 头部 -->
     <div class="ai-chat-header">
       <div class="ai-chat-header-title">
-        <span class="ai-chat-avatar">🤖</span>
+        <span class="ai-chat-avatar"><%= avatar_html %></span>
         <span><%= l(:label_ai_assistant) %></span>
         <span class="ai-chat-status" data-ai-chat-target="status">🟢</span>
       </div>
@@ -78,25 +84,6 @@
     <div id="ai-chat-messages"
          class="ai-chat-messages"
          data-ai-chat-target="messages">
-      <div class="ai-chat-welcome">
-        <div class="ai-chat-welcome-icon">🤖</div>
-        <p><%= l(:text_ai_welcome) %></p>
-        <div class="ai-chat-suggestions">
-          <button class="ai-suggestion-btn"
-                  data-action="quickAsk"
-                  data-question="<%= l(:label_quick_question_1) %>">
-            <%= l(:label_quick_question_1) %>
-          </button>
-          <button class="ai-suggestion-btn"
-                  data-action="quickAsk"
-                  data-question="<%= l(:label_quick_question_2) %>">
-            <%= l(:label_quick_question_2) %>
-          </button>
-        </div>
-        <p class="ai-chat-disclaimer">
-          ⚠️ <%= l(:text_readonly_disclaimer) %>
-        </p>
-      </div>
     </div>
 
     <!-- 输入区域 -->

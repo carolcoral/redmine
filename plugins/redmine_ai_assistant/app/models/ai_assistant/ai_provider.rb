@@ -92,6 +92,65 @@ module AiAssistant
       "#{api_url}/chat/completions"
     end
 
+    # 模型列表查询端点（OpenAI 兼容）
+    def models_endpoint
+      "#{api_url}/models"
+    end
+
+    # 向服务商 API 发起 GET 请求获取可用模型列表
+    # 返回 [模型ID数组, 错误信息]
+    def fetch_remote_models
+      uri = URI.parse(models_endpoint)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = (uri.scheme == 'https')
+      http.open_timeout = 10
+      http.read_timeout = 30
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request['Authorization'] = "Bearer #{api_key}"
+      request['Content-Type'] = 'application/json'
+
+      response = http.request(request)
+
+      case response.code.to_i
+      when 200
+        data = JSON.parse(response.body)
+        models = if data.is_a?(Hash) && data.key?('data')
+                   # OpenAI 标准格式: {"object":"list","data":[{"id":"gpt-4"},...]}
+                   data['data'].map { |m| m['id'] }.compact
+                 elsif data.is_a?(Array)
+                   # 有些 API 直接返回数组: [{"id":"model-a"},...]
+                   data.map { |m| m.is_a?(Hash) ? m['id'] : m.to_s }.compact
+                 else
+                   []
+                 end
+
+        if models.empty?
+          [[], l(:error_no_models_found)]
+        else
+          [models.sort_by(&:downcase), nil]
+        end
+      when 401
+        [[], l(:error_unauthorized)]
+      when 404
+        [[], l(:error_models_endpoint_not_found)]
+      when 429
+        [[], l(:error_rate_limited)]
+      else
+        [[], "#{l(:error_fetch_models_failed)} (HTTP #{response.code})"]
+      end
+    rescue Net::OpenTimeout, Net::ReadTimeout
+      [[], l(:error_connection_timeout)]
+    rescue Errno::ECONNREFUSED
+      [[], l(:error_connection_refused)]
+    rescue SocketError => e
+      [[], "#{l(:error_network)}: #{e.message}"]
+    rescue JSON::ParserError
+      [[], l(:error_invalid_response)]
+    rescue StandardError => e
+      [[], "#{l(:error_fetch_models_failed)}: #{e.message}"]
+    end
+
     private
 
     def set_default_provider_type

@@ -26,6 +26,16 @@
 </p>
 
 <p>
+  <%= content_tag(:label, l(:label_system_prompt)) %>
+  <%= text_area_tag "settings[system_prompt]",
+        settings['system_prompt'],
+        rows: 6,
+        style: 'width: 99%;',
+        placeholder: l(:text_system_prompt_placeholder) %>
+  <em class="info"><%= l(:text_system_prompt_hint) %></em>
+</p>
+
+<p>
   <%= content_tag(:label, l(:label_max_history_messages)) %>
   <%= number_field_tag "settings[max_history_messages]",
         settings['max_history_messages'].presence || 20,
@@ -48,21 +58,32 @@
     <%= content_tag(:label, l(:label_custom_pet_image_url)) %>
     <%= text_field_tag "settings[custom_pet_image_url]",
           settings['custom_pet_image_url'],
+          id: 'settings_custom_pet_image_url',
           size: 60,
           placeholder: 'https://example.com/pet.gif' %>
     <em class="info"><%= l(:text_custom_pet_image_hint) %></em>
   </p>
 
-  <% if settings['custom_pet_image_url'].present? %>
-    <p>
-      <%= content_tag(:label, l(:label_preview)) %>
-      <span class="ai-pet-preview">
+  <p>
+    <%= content_tag(:label, l(:label_custom_pet_image_upload)) %>
+    <%= file_field_tag 'custom_pet_image_upload',
+          accept: 'image/png,image/jpeg,image/gif,image/webp,image/apng,image/svg+xml',
+          id: 'custom_pet_image_upload' %>
+    <em class="info"><%= l(:text_custom_pet_image_upload_hint) %></em>
+  </p>
+
+  <p>
+    <%= content_tag(:label, l(:label_preview)) %>
+    <span class="ai-pet-preview" id="ai-pet-preview">
+      <% if settings['custom_pet_image_url'].present? %>
         <img src="<%= settings['custom_pet_image_url'] %>"
              alt="<%= l(:label_custom_pet) %>"
              style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea;" />
-      </span>
-    </p>
-  <% end %>
+      <% else %>
+        <span style="font-size: 48px;">🤖</span>
+      <% end %>
+    </span>
+  </p>
 
   <p>
     <%= content_tag(:label, l(:label_pet_size)) %>
@@ -72,3 +93,49 @@
     <em class="info"><%= l(:text_pet_size_hint) %></em>
   </p>
 </fieldset>
+
+<%= javascript_tag do %>
+  (function() {
+    var uploadInput = document.getElementById('custom_pet_image_upload');
+    var urlInput = document.getElementById('settings_custom_pet_image_url');
+    var preview = document.getElementById('ai-pet-preview');
+    var maxSize = 1024 * 1024; // 1 MB
+
+    function updatePreview(src) {
+      preview.innerHTML = '<img src="' + src + '" alt="<%= j l(:label_custom_pet) %>" ' +
+        'style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea;" />';
+    }
+
+    if (uploadInput) {
+      uploadInput.addEventListener('change', function() {
+        var file = uploadInput.files[0];
+        if (!file) return;
+
+        if (file.size > maxSize) {
+          alert('<%= j l(:error_image_too_large) %>');
+          uploadInput.value = '';
+          return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var dataUrl = e.target.result;
+          urlInput.value = dataUrl;
+          updatePreview(dataUrl);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    if (urlInput) {
+      urlInput.addEventListener('input', function() {
+        var value = urlInput.value.trim();
+        if (value) {
+          updatePreview(value);
+        } else {
+          preview.innerHTML = '<span style="font-size: 48px;">🤖</span>';
+        }
+      });
+    }
+  })();
+<% end %>

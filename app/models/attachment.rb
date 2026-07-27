@@ -125,7 +125,6 @@ class Attachment < ApplicationRecord
       ensure
         tmp.close!
       end
-      true
     end
   end
 
@@ -137,6 +136,8 @@ class Attachment < ApplicationRecord
       self.class.cloud_download_tempfile(diskfile, &block)
     elsif File.readable?(diskfile)
       yield diskfile
+    else
+      raise Errno::ENOENT, "No such file or directory - #{diskfile}"
     end
   end
 
@@ -198,6 +199,8 @@ class Attachment < ApplicationRecord
       errors.add(:base, l(:error_attachment_extension_not_allowed, :extension => extension))
     end
   end
+
+  public
 
   def file=(incoming_file)
     unless incoming_file.nil?

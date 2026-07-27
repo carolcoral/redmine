@@ -12,14 +12,14 @@ require 'ai_assistant/hooks'
 
 Redmine::Plugin.register :redmine_ai_assistant do
   name 'Redmine AI Assistant'
-  author 'xindu.site'
+  author 'carolcoral'
   description 'AI-powered intelligent assistant with floating chat widget, ' \
               'work report generation, and multi-provider AI support.'
   version '1.0.0'
   url 'https://cnb.cool/xindu.site/redmine'
   author_url 'https://xindu.site'
 
-  requires_redmine version_or_higher: '7.0.0'
+  requires_redmine version_or_higher: '6.1.0'
 
   # ========== 权限 ==========
   permission :manage_ai_providers, {
@@ -48,6 +48,7 @@ Redmine::Plugin.register :redmine_ai_assistant do
     'enabled' => '0',
     'default_provider_id' => '',
     'guard_prompt_enabled' => '1',
+    'system_prompt' => '',
     'max_history_messages' => '20',
     'report_timezone' => '',
     'custom_pet_image_url' => '',

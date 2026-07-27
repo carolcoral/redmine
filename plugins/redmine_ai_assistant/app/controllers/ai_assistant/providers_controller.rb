@@ -50,6 +50,28 @@ module AiAssistant
       redirect_to action: :index
     end
 
+    # POST /ai_providers/fetch_models
+    # 根据前端传来的 api_url / api_key 获取可用模型列表
+    def fetch_models
+      api_url  = params[:api_url].to_s.strip
+      api_key  = params[:api_key].to_s.strip
+
+      if api_url.blank? || api_key.blank?
+        render json: { error: l(:error_api_url_key_required) }, status: :bad_request
+        return
+      end
+
+      # 用临时 provider 实例请求模型列表
+      temp_provider = AiProvider.new(api_url: api_url, api_key: api_key)
+      models, err = temp_provider.fetch_remote_models
+
+      if err
+        render json: { error: err }, status: :unprocessable_entity
+      else
+        render json: { models: models }
+      end
+    end
+
     private
 
     def find_provider

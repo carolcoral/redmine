@@ -37,6 +37,11 @@
 
       this.csrfToken = container.dataset.aiChatCsrfValue ||
         document.querySelector('meta[name="csrf-token"]')?.content || "";
+      this.customAvatar = container.dataset.customAvatar || "";
+      this.welcomeText = container.dataset.welcomeText || "Hello! I'm your AI assistant.";
+      this.readonlyText = container.dataset.readonlyText || "";
+      this.question1 = container.dataset.question1 || "";
+      this.question2 = container.dataset.question2 || "";
 
       this.elements = {
         container: container,
@@ -161,13 +166,17 @@
         });
       }
 
-      const quickBtns = win?.querySelectorAll("[data-action*='quickAsk']");
-      quickBtns.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          const question = btn.dataset.question;
-          if (question) { input.value = question; this.sendMessage(); }
+      // 快捷问题按钮 — 事件委托在消息容器上（动态创建的欢迎页也生效）
+      const { messages: messagesEl } = this.elements;
+      if (messagesEl) {
+        messagesEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-action='quickAsk']");
+          if (btn) {
+            const question = btn.dataset.question;
+            if (question) { input.value = question; this.sendMessage(); }
+          }
         });
-      });
+      }
     }
 
     // ========== Toggle ==========
@@ -380,7 +389,7 @@
       div.className = "ai-chat-message ai-chat-" + msg.role + (msg.isError ? " ai-chat-error" : "");
       div.dataset.msgIndex = index;
 
-      const avatar = msg.role === "user" ? "👤" : "🤖";
+      const avatar = msg.role === "user" ? "👤" : this.avatarHtml();
       const label  = msg.role === "user" ? "You" : "AI";
       const rendered = msg.isError ? this.escapeHtml(msg.content) : this.renderMarkdown(msg.content);
 
@@ -652,14 +661,43 @@
         .replace(/'/g, "&#039;");
     }
 
+    avatarHtml(fallback) {
+      fallback = fallback || "🤖";
+      if (this.customAvatar) {
+        return '<img src="' + this.escapeHtml(this.customAvatar) + '" alt="AI">';
+      }
+      return fallback;
+    }
+
     showWelcomeMessage() {
       const { messages } = this.elements;
+      const existing = messages.querySelector(".ai-chat-welcome");
+      if (existing) return;
+
       const div = document.createElement("div");
       div.className = "ai-chat-welcome";
+
+      let suggestionsHtml = "";
+      if (this.question1 || this.question2) {
+        suggestionsHtml = '<div class="ai-chat-suggestions">';
+        if (this.question1) {
+          suggestionsHtml +=
+            '<button class="ai-suggestion-btn" data-action="quickAsk" data-question="' +
+            this.escapeHtml(this.question1) + '">' + this.escapeHtml(this.question1) + "</button>";
+        }
+        if (this.question2) {
+          suggestionsHtml +=
+            '<button class="ai-suggestion-btn" data-action="quickAsk" data-question="' +
+            this.escapeHtml(this.question2) + '">' + this.escapeHtml(this.question2) + "</button>";
+        }
+        suggestionsHtml += "</div>";
+      }
+
       div.innerHTML =
-        '<div class="ai-chat-welcome-icon">🤖</div>' +
-        "<p>你好！我是 AI 助手。有什么可以帮你的？</p>" +
-        '<p class="ai-chat-disclaimer">⚠️ 涉及业务数据时，我处于只读模式</p>';
+        '<div class="ai-chat-welcome-icon">' + this.avatarHtml() + "</div>" +
+        "<p>" + this.escapeHtml(this.welcomeText) + "</p>" +
+        suggestionsHtml +
+        (this.readonlyText ? '<p class="ai-chat-disclaimer">⚠️ ' + this.escapeHtml(this.readonlyText) + "</p>" : "");
       messages.appendChild(div);
     }
 

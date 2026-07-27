@@ -57,3 +57,21 @@
 .ai-provider-table .status-disabled {
   color: #c62828;
 }
+
+/* Auto-fetch models button */
+#fetch-models-btn {
+  margin-left: 8px;
+  vertical-align: top;
+}
+
+#fetch-models-status {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+#fetch-models-status .flash {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0;
+}
