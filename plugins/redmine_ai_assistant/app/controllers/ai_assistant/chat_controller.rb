@@ -111,6 +111,7 @@ module AiAssistant
       今天 今日 today 本周 本月 week month
       状态 status 优先级 priority 进度 progress
       报告 report reports 汇总 summary
+      版本 version versions 截止 逾期 overdue 预计 计划
     ].freeze
 
     def resolve_provider
@@ -132,9 +133,10 @@ module AiAssistant
 
     def build_system_content(message, history)
       # 基础系统提示
-      base = "You are an AI assistant integrated with Redmine.\n" \
+      base = "You are an AI assistant integrated with #{system_app_name}.\n" \
              "Current user: #{User.current.name}\n" \
-             "Current time: #{Time.current}"
+             "Current time: #{Time.current}\n" \
+             "When referencing issues/tasks by ID, always use Markdown link format `[#ID](URL)` so users can click to open them."
 
       # 注入管理员自定义系统提示词（优先级最高，放在最前面）
       custom_prompt = load_custom_system_prompt
@@ -164,6 +166,21 @@ module AiAssistant
       Setting.plugin_redmine_ai_assistant.try(:[], 'system_prompt').presence
     end
 
+    # 获取当前系统名称（优先使用 Setting.app_title，fallback 到 Redmine）
+    def system_app_name
+      Setting.app_title.presence || 'Redmine'
+    end
+
+    # 生成 issue 的完整 URL 链接
+    def issue_url(issue_id)
+      "#{Setting.protocol}://#{Setting.host_name}/issues/#{issue_id}"
+    end
+
+    # 生成 Markdown 格式的 issue 链接: [#ID](url)
+    def issue_link(issue_id)
+      "[##{issue_id}](#{issue_url(issue_id)})"
+    end
+
     # 判断是否为任务/报告类查询
     def task_query?(message)
       return false if message.blank?
@@ -180,7 +197,7 @@ module AiAssistant
       # 查询指派给当前用户的未关闭任务
       open_issues = Issue.where(assigned_to_id: user.id)
                         .where(status_id: IssueStatus.where(is_closed: false).pluck(:id))
-                        .includes(:project, :tracker, :status, :priority)
+                        .includes(:project, :tracker, :status, :priority, :fixed_version)
                         .order(due_date: :asc, created_on: :desc)
                         .limit(50)
 
@@ -188,21 +205,27 @@ module AiAssistant
       today_updated = Issue.where(assigned_to_id: user.id)
                           .where.not(status_id: IssueStatus.where(is_closed: false).pluck(:id))
                           .where(updated_on: Time.current.beginning_of_day..Time.current.end_of_day)
-                          .includes(:project, :tracker, :status, :priority)
+                          .includes(:project, :tracker, :status, :priority, :fixed_version)
                           .order(updated_on: :desc)
                           .limit(10)
 
+      # 逾期任务统计
+      overdue_count = open_issues.count { |i| i.due_date.present? && i.due_date < Date.current }
+
       lines = []
 
-      lines << "## REAL REDMINE DATA - Assigned Issues/Tasks for #{user.name}\n"
+      lines << "## Real #{system_app_name.upcase} Data - Assigned Issues/Tasks for #{user.name}\n"
 
       if open_issues.empty?
         lines << "**No open issues/tasks assigned to #{user.name}.**"
       else
-        lines << "### Open Issues Assigned to You (#{open_issues.count} total):"
+        lines << "### Open Issues Assigned to You (#{open_issues.count} total, #{overdue_count} overdue):"
         open_issues.each do |i|
           due = i.due_date ? "Due: #{i.due_date}" : "No due date"
-          lines << "  - ##{i.id} [#{i.tracker&.name}] [#{i.status&.name}] [#{i.priority&.name}] #{i.subject} (Project: #{i.project&.name}, #{due})"
+          ver = i.fixed_version ? "Version: #{i.fixed_version.name}" : nil
+          extra = [due, "Progress: #{i.done_ratio}%", ver].compact.join(", ")
+          overdue = (i.due_date && i.due_date < Date.current) ? " ⚠️OVERDUE" : ""
+          lines << "  - #{issue_link(i.id)} [#{i.tracker&.name}] [#{i.status&.name}] [#{i.priority&.name}] #{i.subject}#{overdue} (Project: #{i.project&.name}, #{extra})"
         end
       end
 
@@ -210,7 +233,9 @@ module AiAssistant
         lines << ""
         lines << "### Recently Resolved/Updated Today (assigned to you, #{today_updated.count} total):"
         today_updated.each do |i|
-          lines << "  - ##{i.id} [#{i.status&.name}] #{i.subject} (Project: #{i.project&.name})"
+          ver = i.fixed_version ? "Version: #{i.fixed_version.name}" : nil
+          extra = ["Progress: #{i.done_ratio}%", ver].compact.join(", ")
+          lines << "  - #{issue_link(i.id)} [#{i.status&.name}] #{i.subject} (Project: #{i.project&.name}, #{extra})"
         end
       end
 

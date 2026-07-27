@@ -63,7 +63,7 @@ en:
   text_settings_hint: "JSON object for extra parameters"
   text_guard_prompt_hint: "When enabled, AI is restricted to read-only mode when discussing business data"
   text_system_prompt_hint: "Custom system prompt is injected into every AI chat and report generation, used to control AI behavior boundaries. E.g.: \"Only answer questions related to the current system, reply 'Please contact system administrator' for other questions.\""
-  text_system_prompt_placeholder: "E.g.: You can only answer questions related to Redmine project management. If users ask about other topics, reply: \"Sorry, I can only answer questions related to this system. For other inquiries, please contact the administrator.\""
+  text_system_prompt_placeholder: "E.g.: You can only answer questions related to the current system. If users ask about other topics, reply: \"Sorry, I can only answer questions related to this system. For other inquiries, please contact the administrator.\""
   text_max_history_hint: "Number of previous messages to include in context (1-50)"
   text_report_timezone_hint: "Timezone for report date range calculation"
   text_ai_welcome: "Hello! I'm your AI assistant. Feel free to ask questions about your projects, tasks, or generate work reports."

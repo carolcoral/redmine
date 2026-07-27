@@ -19,6 +19,16 @@ module AiAssistant
       raise ArgumentError, "Invalid report type: #{report_type}" unless REPORT_TYPES.include?(@report_type)
     end
 
+    # 生成 issue 的完整 URL 链接
+    def issue_url(issue_id)
+      "#{Setting.protocol}://#{Setting.host_name}/issues/#{issue_id}"
+    end
+
+    # 生成 Markdown 格式的 issue 链接: [#ID](url)
+    def issue_link(issue_id)
+      "[##{issue_id}](#{issue_url(issue_id)})"
+    end
+
     # 收集用户行为数据（所有 issue 相关数据仅包含指派给当前用户的任务）
     def collect_data
       range = time_range
@@ -34,7 +44,9 @@ module AiAssistant
         issues_closed:       fetch_issues_closed(range),
         comments:            fetch_comments(range),
         wiki_updates:        fetch_wiki_updates(range),
-        projects:            user_projects
+        projects:            user_projects,
+        status_summary:      fetch_status_summary,
+        overdue_issues:      fetch_overdue_issues
       }
     end
 
@@ -130,7 +142,7 @@ module AiAssistant
     def fetch_issues_assigned(range)
       Issue.where(assigned_to_id: user.id)
            .where(created_on: range)
-           .includes(:project, :tracker, :status, :priority)
+           .includes(:project, :tracker, :status, :priority, :fixed_version)
            .order(created_on: :desc)
            .map do |issue|
         {
@@ -140,6 +152,9 @@ module AiAssistant
           tracker:  issue.tracker&.name,
           status:   issue.status&.name,
           priority: issue.priority&.name,
+          done_ratio: issue.done_ratio,
+          due_date: issue.due_date&.to_s,
+          fixed_version: issue.fixed_version&.name,
           created:  issue.created_on.to_s
         }
       end
@@ -182,6 +197,9 @@ module AiAssistant
           tracker:     issue&.tracker&.name,
           status:      issue&.status&.name,
           priority:    issue&.priority&.name,
+          done_ratio:  issue&.done_ratio,
+          due_date:    issue&.due_date&.to_s,
+          fixed_version: issue&.fixed_version&.name,
           created_on:  issue&.created_on&.to_s,
           timeline:    jls.map { |j| format_journal_entry(j) }
         }
@@ -225,14 +243,49 @@ module AiAssistant
 
     def format_detail(detail)
       label = DETAIL_LABELS[detail.prop_key] || detail.prop_key
-      old_v = detail.old_value.presence || '(空)'
-      new_v = detail.value.presence || '(空)'
+      old_v = resolve_detail_value(detail.prop_key, detail.old_value)
+      new_v = resolve_detail_value(detail.prop_key, detail.value)
+
+      old_v = old_v.presence || '(空)'
+      new_v = new_v.presence || '(空)'
+
+      # 完成度追加百分号
+      if detail.prop_key == 'done_ratio'
+        old_v = "#{old_v}%" unless old_v == '(空)'
+        new_v = "#{new_v}%" unless new_v == '(空)'
+      end
 
       # 截断长文本
       old_v = old_v.truncate(50) if old_v.length > 50
       new_v = new_v.truncate(50) if new_v.length > 50
 
       "#{label}: #{old_v} → #{new_v}"
+    end
+
+    # 将 detail 中的 ID 值解析为可读名称
+    def resolve_detail_value(prop_key, value)
+      return value if value.blank?
+
+      case prop_key
+      when 'fixed_version_id'
+        Version.find_by(id: value)&.name || value
+      when 'status_id'
+        IssueStatus.find_by(id: value)&.name || value
+      when 'priority_id'
+        IssuePriority.find_by(id: value)&.name || value
+      when 'assigned_to_id'
+        User.find_by(id: value)&.name || value
+      when 'tracker_id'
+        Tracker.find_by(id: value)&.name || value
+      when 'project_id'
+        Project.find_by(id: value)&.name || value
+      when 'category_id'
+        IssueCategory.find_by(id: value)&.name || value
+      when 'author_id'
+        User.find_by(id: value)&.name || value
+      else
+        value
+      end
     end
 
     def fetch_issues_closed(range)
@@ -288,6 +341,40 @@ module AiAssistant
       user.projects.active.pluck(:name)
     end
 
+    # 查询指派给当前用户的 issue 按状态分布统计
+    def fetch_status_summary
+      Issue.where(assigned_to_id: user.id)
+           .where(status_id: IssueStatus.where(is_closed: false).pluck(:id))
+           .group(:status_id)
+           .count
+           .transform_keys { |sid| IssueStatus.find_by(id: sid)&.name || "Status##{sid}" }
+    rescue StandardError
+      {}
+    end
+
+    # 查询指派给当前用户已过截止日期但未关闭的 issue
+    def fetch_overdue_issues
+      Issue.where(assigned_to_id: user.id)
+           .where(status_id: IssueStatus.where(is_closed: false).pluck(:id))
+           .where('due_date IS NOT NULL AND due_date < ?', Date.current)
+           .includes(:project, :tracker, :status, :priority, :fixed_version)
+           .order(due_date: :asc)
+           .map do |issue|
+        {
+          id:       issue.id,
+          subject:  issue.subject,
+          project:  issue.project&.name,
+          status:   issue.status&.name,
+          priority: issue.priority&.name,
+          done_ratio: issue.done_ratio,
+          due_date: issue.due_date&.to_s,
+          fixed_version: issue.fixed_version&.name
+        }
+      end
+    rescue StandardError
+      []
+    end
+
     def extract_journal_details(journal)
       {
         issue:     journal.issue&.subject,
@@ -314,8 +401,9 @@ module AiAssistant
     end
 
     def build_system_prompt
-      prompt = GuardPrompt::GUARD_PREFIX + <<~PROMPT
-        You are a professional work report generator for Redmine project management system.
+      app_name = Setting.app_title.presence || 'Redmine'
+      prompt = GuardPrompt.guard_prefix_for(app_name) + <<~PROMPT
+        You are a professional work report generator for #{app_name} project management system.
         Generate a well-structured #{report_type} work report based on the provided data.
 
         Report format guidelines:
@@ -326,6 +414,10 @@ module AiAssistant
         - Summarize key accomplishments and blockers
         - Total time entries hours
         - Highlight important issues
+        - **Analyze issues by version (版本) grouping**: group overdue and in-progress issues by their version to give version-level progress insights
+        - **Status & Progress**: Report on status distribution, average progress % per version, and highlight overdue items
+        - **Due Date Analysis**: Pay attention to upcoming deadlines and overdue items, suggest priority adjustments
+        - **Issue Links**: When referencing any issue/task by its ID, ALWAYS preserve the Markdown link format `[#ID](URL)` provided in the raw data. Do NOT convert issue links to plain `#ID` text.
         - Output in Markdown format
         - Use the user's language (Chinese by default unless data indicates otherwise)
       PROMPT
@@ -369,6 +461,12 @@ module AiAssistant
         ### Issues Closed by You (#{data[:issues_closed].length} records)
         #{format_issues(data[:issues_closed])}
 
+        ### Current Open Issue Status Summary
+        #{format_status_summary(data[:status_summary])}
+
+        ### Overdue Issues (past due date, not yet closed)
+        #{format_overdue_issues(data[:overdue_issues])}
+
         ### Comments Made (#{data[:comments].length} records)
         #{format_comments(data[:comments])}
 
@@ -376,6 +474,8 @@ module AiAssistant
         #{data[:projects].join(', ')}
 
         Generate the report now with rich details from the change history timeline.
+        **IMPORTANT**: Pay special attention to the status summary and overdue issues -- if there are overdue items across multiple versions,
+        analyze them by version grouping and highlight the most critical blockers.
       PROMPT
     end
 
@@ -407,9 +507,9 @@ module AiAssistant
 
         lines << ""
         lines << "---"
-        lines << "**[##{data[:issue_id]}] #{data[:subject]}**"
+        lines << "**#{issue_link(data[:issue_id])} #{data[:subject]}**"
         lines << "  项目: #{data[:project]} | 类型: #{data[:tracker]} | 当前状态: #{data[:status]} | 优先级: #{data[:priority]}"
-        lines << "  创建于: #{data[:created_on]}"
+        lines << "  进度: #{data[:done_ratio]}% | 截止日期: #{data[:due_date] || '无'} | 版本: #{data[:fixed_version] || '无'} | 创建于: #{data[:created_on]}"
 
         data[:timeline].each do |entry|
           time_str = entry[:time]
@@ -441,7 +541,9 @@ module AiAssistant
       return '(无)' if issues.empty?
 
       issues.map do |i|
-        "- ##{i[:id]} #{i[:subject]} [#{i[:tracker]}] [#{i[:status]}] [#{i[:priority]}] (#{i[:project]})"
+        due_str = i[:due_date] ? " 截止:#{i[:due_date]}" : ""
+        ver_str = i[:fixed_version] ? " 版本:#{i[:fixed_version]}" : ""
+        "- #{issue_link(i[:id])} #{i[:subject]} [#{i[:tracker]}] [#{i[:status]}] [#{i[:priority]}] 进度:#{i[:done_ratio]}%#{due_str}#{ver_str} (#{i[:project]})"
       end.join("\n")
     end
 
@@ -450,6 +552,27 @@ module AiAssistant
 
       comments.first(20).map do |c|
         "- #{c[:created]}: #{c[:content].truncate(200)} (#{c[:target]})"
+      end.join("\n")
+    end
+
+    def format_status_summary(status_summary)
+      return '(无)' if status_summary.blank?
+
+      total = status_summary.values.sum
+      lines = ["总未关闭任务数: #{total}"]
+      status_summary.each do |status_name, count|
+        pct = total > 0 ? (count.to_f / total * 100).round(1) : 0
+        lines << "  - #{status_name}: #{count} (#{pct}%)"
+      end
+      lines.join("\n")
+    end
+
+    def format_overdue_issues(issues)
+      return '(无逾期任务)' if issues.blank?
+
+      issues.map do |i|
+        ver_str = i[:fixed_version] ? " 版本:#{i[:fixed_version]}" : ""
+        "- #{issue_link(i[:id])} #{i[:subject]} [#{i[:status]}] 进度:#{i[:done_ratio]}% 截止:#{i[:due_date]}#{ver_str} (#{i[:project]})"
       end.join("\n")
     end
   end

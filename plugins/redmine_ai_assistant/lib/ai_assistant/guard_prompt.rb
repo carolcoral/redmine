@@ -3,10 +3,10 @@
 module AiAssistant
   # Guard Prompt -- 当对话涉及业务数据时，自动注入只读约束
   class GuardPrompt
-    GUARD_PREFIX = <<~PROMPT.freeze
+    GUARD_PREFIX_TEMPLATE = <<~PROMPT.freeze
       ## SYSTEM INSTRUCTION (IMPORTANT - READ CAREFULLY)
 
-      You are a **read-only assistant** integrated with Redmine project management system.
+      You are a **read-only assistant** integrated with %{app_name} project management system.
       The conversation below contains references to real system business data (such as
       issues, projects, time entries, users, wiki pages, etc.).
 
@@ -15,7 +15,7 @@ module AiAssistant
       1. **READ-ONLY MODE**: You can analyze, summarize, explain, and provide insights
          about the referenced business data, but you MUST NOT generate any commands,
          code snippets, or suggestions that would modify, create, or delete any data
-         in the Redmine system.
+         in the %{app_name} system.
 
       2. **NO DESTRUCTIVE OPERATIONS**: Do NOT suggest:
          - SQL queries (INSERT/UPDATE/DELETE/DROP)
@@ -39,11 +39,22 @@ module AiAssistant
 
     PROMPT
 
+    # 获取当前系统名称
+    def self.app_name
+      Setting.app_title.presence || 'Redmine'
+    end
+
+    # 生成带系统名称的 Guard 前缀
+    def self.guard_prefix_for(name = nil)
+      name ||= app_name
+      GUARD_PREFIX_TEMPLATE % { app_name: name }
+    end
+
     class << self
       def inject(system_prompt, content)
         return content unless guard_needed?(content)
 
-        [GUARD_PREFIX, system_prompt, content].compact.join("\n")
+        [guard_prefix_for, system_prompt, content].compact.join("\n")
       end
 
       def guard_needed?(content)

@@ -72,7 +72,7 @@ module AiAssistant
         usage  = data['usage'] || {}
 
         {
-          content:      choice['content'],
+          content:      linkify_issue_ids(choice['content']),
           role:         choice['role'],
           model:        data['model'],
           tokens_used:  usage['total_tokens'] || 0,
@@ -89,6 +89,21 @@ module AiAssistant
         data = JSON.parse(response.body) rescue {}
         { error: data['error']&.[]('message') || "AI 服务返回异常 (#{response.code})" }
       end
+    end
+
+    # 将内容中独立的 #ID 文本转换为可点击的 Markdown 链接
+    # 已存在 [#ID](url) 格式的链接不会被重复处理
+    def linkify_issue_ids(content)
+      return content if content.blank?
+
+      content.gsub(/(?<!\[)#(\d+)(?!\d)(?!\]\()/) do |match|
+        issue_id = Regexp.last_match(1)
+        "[#{match}](#{issue_url(issue_id)})"
+      end
+    end
+
+    def issue_url(issue_id)
+      "#{Setting.protocol}://#{Setting.host_name}/issues/#{issue_id}"
     end
   end
 end

@@ -55,6 +55,7 @@
         periodPicker: document.getElementById("ai-chat-period-picker"),
       };
       this.isFullscreen = false;
+      this.eventListeners = []; // 用于 destroy 时统一解绑
 
       this.bindEvents();
       container.setAttribute("aria-hidden", "false");
@@ -113,70 +114,81 @@
 
     bindEvents() {
       const { toggle, input, sendBtn, window: win } = this.elements;
+      const self = this;
 
-      toggle.addEventListener("click", () => this.toggle());
-      sendBtn.addEventListener("click", () => this.sendMessage());
-      input.addEventListener("keydown", (e) => this.handleKeydown(e));
-      input.addEventListener("input", () => this.autoResize());
+      const addListener = function(element, type, handler, options) {
+        element.addEventListener(type, handler, options || false);
+        self.eventListeners.push({ element: element, type: type, handler: handler });
+      };
+
+      addListener(toggle, "click", function() { self.toggle(); });
+      addListener(sendBtn, "click", function() { self.sendMessage(); });
+      addListener(input, "keydown", function(e) { self.handleKeydown(e); });
+      addListener(input, "input", function() { self.autoResize(); });
 
       const closeBtn = win?.querySelector("[data-action*='toggle']");
-      if (closeBtn) closeBtn.addEventListener("click", () => this.toggle());
+      if (closeBtn) addListener(closeBtn, "click", function() { self.toggle(); });
 
       const newConvBtn = win?.querySelector("[data-action*='newConversation']");
-      if (newConvBtn) newConvBtn.addEventListener("click", () => this.newConversation());
+      if (newConvBtn) addListener(newConvBtn, "click", function() { self.newConversation(); });
 
       // 全屏切换按钮
       const fullscreenBtn = win?.querySelector("[data-action*='fullscreen']");
-      if (fullscreenBtn) fullscreenBtn.addEventListener("click", () => this.toggleFullscreen());
+      if (fullscreenBtn) addListener(fullscreenBtn, "click", function() { self.toggleFullscreen(); });
 
-      // 复制按钮 — 事件委托在消息容器上
-      const { messages: messagesEl } = this.elements;
+      // 复制按钮 + 快捷问题按钮 — 事件委托在消息容器上
+      const messagesEl = this.elements.messages;
       if (messagesEl) {
-        messagesEl.addEventListener("click", (e) => {
-          const btn = e.target.closest(".ai-chat-copy-btn");
-          if (btn) this.copyMessageContent(btn);
+        addListener(messagesEl, "click", function(e) {
+          const copyBtn = e.target.closest(".ai-chat-copy-btn");
+          if (copyBtn) { self.copyMessageContent(copyBtn); return; }
+
+          const quickBtn = e.target.closest("[data-action='quickAsk']");
+          if (quickBtn) {
+            const question = quickBtn.dataset.question;
+            if (question) { input.value = question; self.sendMessage(); }
+          }
         });
       }
 
       // ESC 退出全屏
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && this.isFullscreen) {
-          this.toggleFullscreen();
+      const escHandler = function(e) {
+        if (e.key === "Escape" && self.isFullscreen) {
+          self.toggleFullscreen();
         }
-      });
+      };
+      addListener(document, "keydown", escHandler);
 
       // 报告按钮 — 点击后显示周期选择器
       const reportBtns = win?.querySelectorAll("[data-action*='pickPeriod']");
-      reportBtns.forEach((btn) => {
-        btn.addEventListener("click", (e) => this.pickPeriod(e));
-      });
+      if (reportBtns) {
+        reportBtns.forEach(function(btn) {
+          addListener(btn, "click", function(e) { self.pickPeriod(e); });
+        });
+      }
 
-      // 周期选项按钮
-      const { periodPicker } = this.elements;
+      // 周期选项按钮 + 点击外部关闭选择器
+      const periodPicker = this.elements.periodPicker;
       if (periodPicker) {
-        periodPicker.querySelectorAll("[data-period-offset]").forEach((opt) => {
-          opt.addEventListener("click", (e) => this.doGenerateReport(e));
+        periodPicker.querySelectorAll("[data-period-offset]").forEach(function(opt) {
+          addListener(opt, "click", function(e) { self.doGenerateReport(e); });
         });
-        // 点击外部关闭选择器
-        document.addEventListener("click", (e) => {
-          if (this.pendingReportType && !periodPicker.contains(e.target) &&
-              !e.target.closest("[data-action*='pickPeriod']")) {
-            this.hidePeriodPicker();
-          }
-        });
-      }
 
-      // 快捷问题按钮 — 事件委托在消息容器上（动态创建的欢迎页也生效）
-      const { messages: messagesEl } = this.elements;
-      if (messagesEl) {
-        messagesEl.addEventListener("click", (e) => {
-          const btn = e.target.closest("[data-action='quickAsk']");
-          if (btn) {
-            const question = btn.dataset.question;
-            if (question) { input.value = question; this.sendMessage(); }
+        const documentClickHandler = function(e) {
+          if (self.pendingReportType && !periodPicker.contains(e.target) &&
+              !e.target.closest("[data-action*='pickPeriod']")) {
+            self.hidePeriodPicker();
           }
-        });
+        };
+        addListener(document, "click", documentClickHandler);
       }
+    }
+
+    destroy() {
+      this.eventListeners.forEach(function(item) {
+        item.element.removeEventListener(item.type, item.handler);
+      });
+      this.eventListeners = [];
     }
 
     // ========== Toggle ==========
@@ -729,13 +741,27 @@
   }
 
   // ========== 初始化 ==========
-  document.addEventListener("DOMContentLoaded", function () {
-    window.aiChatWidget = new AIChatWidget();
-  });
+  let initScheduled = false;
+  function initWidget() {
+    if (!document.getElementById("ai-chat-widget")) return;
 
-  document.addEventListener("turbo:load", function () {
-    if (!window.aiChatWidget || !document.getElementById("ai-chat-widget")) {
-      window.aiChatWidget = new AIChatWidget();
+    // 防止多个页面加载事件（DOMContentLoaded/turbo:load/turbolinks:load/page:load）
+    // 在同一次导航中重复触发，使用 microtask 级别的去重
+    if (initScheduled) return;
+    initScheduled = true;
+    // 下一个 microtask 重置标记，允许真正的页面切换后重新初始化
+    Promise.resolve().then(function() { initScheduled = false; });
+
+    // 页面切换（Turbo/Turbolinks）后 DOM 可能被替换，需要重新初始化
+    // 以确保事件监听器绑定到当前文档中的元素上
+    if (window.aiChatWidget) {
+      try { window.aiChatWidget.destroy(); } catch (e) { /* ignore */ }
     }
-  });
+    window.aiChatWidget = new AIChatWidget();
+  }
+
+  document.addEventListener("DOMContentLoaded", initWidget);
+  document.addEventListener("turbo:load", initWidget);
+  document.addEventListener("turbolinks:load", initWidget);
+  document.addEventListener("page:load", initWidget);
 })();

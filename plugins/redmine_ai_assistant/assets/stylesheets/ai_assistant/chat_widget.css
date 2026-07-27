@@ -35,9 +35,8 @@
 }
 
 .ai-chat-toggle.ai-chat-active {
-  transform: scale(0.8);
-  opacity: 0;
-  pointer-events: none;
+  transform: scale(0.85);
+  opacity: 0.5;
 }
 
 /* --- 默认 emoji 模式 --- */
