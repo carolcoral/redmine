@@ -104,13 +104,13 @@ module AiAssistant
 
     private
 
-    # 任务/问题查询关键词（中英文），匹配 >= 2 个才触发数据注入
+    # 任务/问题查询关键词（中英文）
     TASK_QUERY_KEYWORDS = %w[
       任务 我的任务 task tasks 指派 assign 我 待办 代办 todo
       问题 issue issues
       今天 今日 today 本周 本月 week month
       状态 status 优先级 priority 进度 progress
-      报告 report reports 汇总 summary
+      报告 report reports 汇总 summary 总结 概括 详情 详细
       版本 version versions 截止 逾期 overdue 预计 计划
     ].freeze
 
@@ -136,6 +136,11 @@ module AiAssistant
       base = "You are an AI assistant integrated with #{system_app_name}.\n" \
              "Current user: #{User.current.name}\n" \
              "Current time: #{Time.current}\n" \
+             "You are in READ-ONLY mode. You MUST NOT generate any instructions, suggestions, or messages that imply you can modify, update, create, delete, or execute any action on data in the system. " \
+             "NEVER proactively tell the user to reply with commands such as '进度改为100%', '状态改为已关闭', or '添加备注：...' as if you can perform those operations. " \
+             "If the user explicitly asks to change data, explain that you are read-only and cannot execute actions; do not provide step-by-step command instructions. " \
+             "When task or issue data is provided in the context above, you MUST answer the user's question based ONLY on that data. " \
+             "Do not fall back to generic greetings or introductions when specific data is available. " \
              "When referencing issues/tasks by ID, always use Markdown link format `[#ID](URL)` so users can click to open them."
 
       # 注入管理员自定义系统提示词（优先级最高，放在最前面）
@@ -154,8 +159,11 @@ module AiAssistant
 
       # 检测任务/报告类查询，注入真实 Redmine 数据
       if task_query?(message)
-        task_context = build_task_context
-        base = "#{base}\n\n#{task_context}"
+        task_context = build_task_context(message)
+        base = "#{task_context}\n\n#{base}"
+      else
+        hint = task_keywords_hint
+        base = "#{hint}\n\n#{base}"
       end
 
       base
@@ -181,19 +189,80 @@ module AiAssistant
       "[##{issue_id}](#{issue_url(issue_id)})"
     end
 
-    # 判断是否为任务/报告类查询
+    # 判断是否为任务/报告类查询：命中关键词 或 包含 #ID
     def task_query?(message)
       return false if message.blank?
 
       lower = message.downcase
-      matched = TASK_QUERY_KEYWORDS.count { |kw| lower.include?(kw) }
-      matched >= 2
+      keyword_matched = TASK_QUERY_KEYWORDS.any? { |kw| lower.include?(kw) }
+      keyword_matched || extract_issue_ids(message).any?
+    end
+
+    # 生成任务关键词提示，在用户未触发任务查询时注入系统提示
+    def task_keywords_hint
+      <<~HINT
+        ## Friendly Task Query Guidance
+        The user's message did not trigger task data lookup. Help them understand how to access real system data:
+        - Reference specific tasks by ID using `#ID` format (e.g., "#123", "#456"). The system will then fetch those tasks for you.
+        - Use task-related keywords: 任务/task, 我的任务/my tasks, 待办/todo, 指派/assigned
+        - Use report keywords: 报告/report, 汇总/summary, 总结/summarize, 日报/daily report, 周报/weekly report, 月报/monthly report
+        - Use time keywords: 今天/today, 本周/this week, 本月/this month
+        - Use status keywords: 状态/status, 优先级/priority, 进度/progress, 逾期/overdue, 截止/due
+        Respond in a friendly, encouraging tone. Do NOT just say "I don't have data" — instead, guide the user on what they can type to get actionable task information.
+      HINT
+    end
+
+    # 从消息中提取 #ID 任务编号（忽略已存在的 Markdown 链接 [#ID](url)）
+    def extract_issue_ids(message)
+      return [] if message.blank?
+
+      message.scan(/(?:^|[\s])#(\d+)\b(?!\]\()/).flatten.map(&:to_i).uniq
+    end
+
+    # 构建任务上下文数据
+    # 若消息中包含 #ID，优先返回这些特定任务；否则返回当前用户的任务列表
+    def build_task_context(message)
+      user = User.current
+      specific_ids = extract_issue_ids(message)
+
+      if specific_ids.any?
+        build_specific_issue_context(specific_ids, user)
+      else
+        build_user_assigned_context(user)
+      end
+    end
+
+    # 构建特定任务编号的上下文
+    def build_specific_issue_context(issue_ids, user)
+      issues = Issue.where(id: issue_ids)
+                    .includes(:project, :tracker, :status, :priority, :fixed_version, :author, :assigned_to)
+                    .order(updated_on: :desc)
+                    .limit(20)
+
+      lines = []
+      lines << "## Real #{system_app_name.upcase} Data - Referenced Issues/Tasks\n"
+
+      if issues.empty?
+        lines << "**The referenced issue(s) #{issue_ids.map { |id| issue_link(id) }.join(', ')} were not found.**"
+      else
+        lines << "### Referenced Issues/Tasks:"
+        issues.each do |i|
+          due = i.due_date ? "Due: #{i.due_date}" : "No due date"
+          ver = i.fixed_version ? "Version: #{i.fixed_version.name}" : nil
+          assignee = i.assigned_to ? "Assignee: #{i.assigned_to.name}" : "Unassigned"
+          extra = [due, "Progress: #{i.done_ratio}%", ver, assignee].compact.join(", ")
+          overdue = (i.due_date && i.due_date < Date.current) ? " ⚠️OVERDUE" : ""
+          lines << "  - #{issue_link(i.id)} [#{i.tracker&.name}] [#{i.status&.name}] [#{i.priority&.name}] #{i.subject}#{overdue} (Project: #{i.project&.name}, Author: #{i.author&.name}, #{extra})"
+        end
+      end
+
+      lines << ""
+      lines << "**CRITICAL RULE: Only reference the tasks listed above. If the referenced issue does not exist or is not listed, tell the user. NEVER invent, guess, or fabricate tasks that are not explicitly listed above.**"
+      lines.join("\n")
     end
 
     # 构建当前用户的任务上下文数据
-    def build_task_context
-      user = User.current
-
+    def build_user_assigned_context(user)
       # 查询指派给当前用户的未关闭任务
       open_issues = Issue.where(assigned_to_id: user.id)
                         .where(status_id: IssueStatus.where(is_closed: false).pluck(:id))
@@ -239,9 +308,9 @@ module AiAssistant
         end
       end
 
-      context = lines.join("\n")
-
-      "#{context}\n\n**CRITICAL RULE: Only reference the tasks listed above. If the list shows no tasks, tell the user they currently have no assigned tasks. NEVER invent, guess, or fabricate tasks that are not explicitly listed above.**"
+      lines << ""
+      lines << "**CRITICAL RULE: Only reference the tasks listed above. If the list shows no tasks, tell the user they currently have no assigned tasks. NEVER invent, guess, or fabricate tasks that are not explicitly listed above.**"
+      lines.join("\n")
     end
 
     def build_messages(system_content, history, current_message)

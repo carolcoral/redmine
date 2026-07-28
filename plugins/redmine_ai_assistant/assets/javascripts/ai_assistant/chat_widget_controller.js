@@ -32,10 +32,10 @@
     }
 
     init() {
-      const container = document.getElementById("ai-chat-widget");
+      const container = document.getElementById("redmine-ai-assistant-widget");
       if (!container) return;
 
-      this.csrfToken = container.dataset.aiChatCsrfValue ||
+      this.csrfToken = container.dataset.chatCsrfValue ||
         document.querySelector('meta[name="csrf-token"]')?.content || "";
       this.customAvatar = container.dataset.customAvatar || "";
       this.welcomeText = container.dataset.welcomeText || "Hello! I'm your AI assistant.";
@@ -45,14 +45,14 @@
 
       this.elements = {
         container: container,
-        toggle: document.getElementById("ai-chat-toggle"),
-        window: document.getElementById("ai-chat-window"),
-        messages: document.getElementById("ai-chat-messages"),
-        input: document.getElementById("ai-chat-input"),
-        sendBtn: document.getElementById("ai-chat-send"),
-        status: container.querySelector("[data-ai-chat-target='status']"),
-        statusBar: container.querySelector("[data-ai-chat-target='statusBar']"),
-        periodPicker: document.getElementById("ai-chat-period-picker"),
+        toggle: document.getElementById("redmine-ai-assistant-chat-toggle"),
+        window: document.getElementById("redmine-ai-assistant-chat-window"),
+        messages: document.getElementById("redmine-ai-assistant-chat-messages"),
+        input: document.getElementById("redmine-ai-assistant-chat-input"),
+        sendBtn: document.getElementById("redmine-ai-assistant-chat-send"),
+        status: container.querySelector("[data-redmine-ai-assistant-chat-target='status']"),
+        statusBar: container.querySelector("[data-redmine-ai-assistant-chat-target='statusBar']"),
+        periodPicker: document.getElementById("redmine-ai-assistant-chat-period-picker"),
       };
       this.isFullscreen = false;
       this.eventListeners = []; // 用于 destroy 时统一解绑
@@ -140,7 +140,7 @@
       const messagesEl = this.elements.messages;
       if (messagesEl) {
         addListener(messagesEl, "click", function(e) {
-          const copyBtn = e.target.closest(".ai-chat-copy-btn");
+          const copyBtn = e.target.closest(".redmine-ai-assistant-chat-copy-btn");
           if (copyBtn) { self.copyMessageContent(copyBtn); return; }
 
           const quickBtn = e.target.closest("[data-action='quickAsk']");
@@ -195,17 +195,17 @@
 
     toggle() {
       const { toggle, window: win } = this.elements;
-      const isOpen = !win.classList.contains("ai-chat-hidden");
+      const isOpen = !win.classList.contains("redmine-ai-assistant-chat-hidden");
 
       if (isOpen) {
-        win.classList.add("ai-chat-hidden");
+        win.classList.add("redmine-ai-assistant-chat-hidden");
         win.style.display = "none";
-        toggle.classList.remove("ai-chat-active");
+        toggle.classList.remove("redmine-ai-assistant-chat-active");
         this.hidePeriodPicker();
       } else {
-        win.classList.remove("ai-chat-hidden");
+        win.classList.remove("redmine-ai-assistant-chat-hidden");
         win.style.display = "";
-        toggle.classList.add("ai-chat-active");
+        toggle.classList.add("redmine-ai-assistant-chat-active");
         setTimeout(() => this.elements.input?.focus(), 300);
       }
     }
@@ -276,8 +276,8 @@
 
       // 高亮当前选中的按钮
       const allReportBtns = document.querySelectorAll("[data-action*='pickPeriod']");
-      allReportBtns.forEach((b) => b.classList.remove("ai-chat-report-btn--active"));
-      btn.classList.add("ai-chat-report-btn--active");
+      allReportBtns.forEach((b) => b.classList.remove("redmine-ai-assistant-chat-report-btn--active"));
+      btn.classList.add("redmine-ai-assistant-chat-report-btn--active");
 
       periodPicker.style.display = "flex";
     }
@@ -288,8 +288,8 @@
       if (periodPicker) periodPicker.style.display = "none";
 
       // 取消高亮
-      document.querySelectorAll(".ai-chat-report-btn--active")
-        .forEach((b) => b.classList.remove("ai-chat-report-btn--active"));
+      document.querySelectorAll(".redmine-ai-assistant-chat-report-btn--active")
+        .forEach((b) => b.classList.remove("redmine-ai-assistant-chat-report-btn--active"));
     }
 
     /**
@@ -368,7 +368,7 @@
       isError = isError || false;
       const { messages } = this.elements;
 
-      const welcome = messages.querySelector(".ai-chat-welcome");
+      const welcome = messages.querySelector(".redmine-ai-assistant-chat-welcome");
       if (welcome) welcome.remove();
 
       this.messagesData.push({ role: role, content: content, isError: isError });
@@ -381,7 +381,7 @@
       const { messages } = this.elements;
       messages.innerHTML = "";
 
-      const oldWelcome = messages.querySelector(".ai-chat-welcome");
+      const oldWelcome = messages.querySelector(".redmine-ai-assistant-chat-welcome");
       if (oldWelcome) oldWelcome.remove();
 
       if (this.messagesData.length === 0) {
@@ -398,7 +398,7 @@
     renderSingleMessage(msg, index) {
       const { messages } = this.elements;
       const div = document.createElement("div");
-      div.className = "ai-chat-message ai-chat-" + msg.role + (msg.isError ? " ai-chat-error" : "");
+      div.className = "redmine-ai-assistant-chat-message redmine-ai-assistant-chat-" + msg.role + (msg.isError ? " redmine-ai-assistant-chat-error" : "");
       div.dataset.msgIndex = index;
 
       const avatar = msg.role === "user" ? "👤" : this.avatarHtml();
@@ -408,15 +408,15 @@
       // 为 AI 助手消息添加复制按钮
       let copyBtnHtml = "";
       if (msg.role === "assistant" && !msg.isError) {
-        copyBtnHtml = '<button class="ai-chat-copy-btn" title="复制内容">📋</button>';
+        copyBtnHtml = '<button class="redmine-ai-assistant-chat-copy-btn" title="复制内容">📋</button>';
       }
 
       div.innerHTML =
-        '<div class="ai-chat-message-avatar">' + avatar + "</div>" +
-        '<div class="ai-chat-message-body">' +
-          '<div class="ai-chat-message-label">' + label + "</div>" +
-          '<div class="ai-chat-message-content-wrapper">' +
-            '<div class="ai-chat-message-content">' + rendered + "</div>" +
+        '<div class="redmine-ai-assistant-chat-message-avatar">' + avatar + "</div>" +
+        '<div class="redmine-ai-assistant-chat-message-body">' +
+          '<div class="redmine-ai-assistant-chat-message-label">' + label + "</div>" +
+          '<div class="redmine-ai-assistant-chat-message-content-wrapper">' +
+            '<div class="redmine-ai-assistant-chat-message-content">' + rendered + "</div>" +
             copyBtnHtml +
           "</div>" +
         "</div>";
@@ -494,6 +494,27 @@
         return "<ol>\n" + match.trim() + "\n</ol>";
       });
 
+      // 行内格式与链接（在 <br> 转换前处理，避免跨行 Markdown 语法失效）
+      processed = processed.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+      processed = processed.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      processed = processed.replace(/\*(.+?)\*/g, "<em>$1</em>");
+      processed = processed.replace(/~~(.+?)~~/g, "<del>$1</del>");
+      processed = processed.replace(/\[([^\]]+)\]\s*\(([^)\n]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,
+        '<img src="$2" alt="$1" style="max-width:100%">');
+
+      // 自动链接剩余的纯 URL（先保护已有的 <a> 标签避免重复处理）
+      const anchorBlocks = [];
+      processed = processed.replace(/<a[^>]*>[\s\S]*?<\/a>/gi, (tag) => {
+        const idx = anchorBlocks.length;
+        anchorBlocks.push(tag);
+        return "\x00ANCHOR" + idx + "\x00";
+      });
+      processed = processed.replace(/(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+      processed = processed.replace(/\x00ANCHOR(\d+)\x00/g, (_, idx) => anchorBlocks[parseInt(idx)] || "");
+
       processed = processed.replace(/\n\n+/g, "</p><p>");
       processed = processed.replace(/\n/g, "<br>");
       processed = "<p>" + processed + "</p>";
@@ -501,15 +522,6 @@
       processed = processed.replace(/<p>\s*<\/p>/g, "");
       processed = processed.replace(/<p>(<(?:ul|ol|blockquote|h[1-6]|hr|table)>)/g, "$1");
       processed = processed.replace(/(<\/(?:ul|ol|blockquote|h[1-6]|table)>)\s*<\/p>/g, "$1");
-
-      processed = processed.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
-      processed = processed.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      processed = processed.replace(/\*(.+?)\*/g, "<em>$1</em>");
-      processed = processed.replace(/~~(.+?)~~/g, "<del>$1</del>");
-      processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-      processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,
-        '<img src="$2" alt="$1" style="max-width:100%">');
 
       processed = processed.replace(/\x00FENCE(\d+)\x00/g, (_, idx) => {
         const item = codeBlocks[parseInt(idx)];
@@ -604,11 +616,11 @@
       this.isFullscreen = !this.isFullscreen;
 
       if (this.isFullscreen) {
-        win.classList.add("ai-chat-fullscreen");
+        win.classList.add("redmine-ai-assistant-chat-fullscreen");
         if (btn) btn.textContent = "⤓";
         if (btn) btn.title = "退出全屏";
       } else {
-        win.classList.remove("ai-chat-fullscreen");
+        win.classList.remove("redmine-ai-assistant-chat-fullscreen");
         if (btn) btn.textContent = "⤢";
         if (btn) btn.title = "全屏展示";
       }
@@ -617,7 +629,7 @@
     // ========== Copy ==========
 
     copyMessageContent(btn) {
-      const messageEl = btn.closest(".ai-chat-message");
+      const messageEl = btn.closest(".redmine-ai-assistant-chat-message");
       if (!messageEl) return;
 
       const index = parseInt(messageEl.dataset.msgIndex, 10);
@@ -655,10 +667,10 @@
     showCopyFeedback(btn) {
       const orig = btn.textContent;
       btn.textContent = "✅";
-      btn.classList.add("ai-chat-copied");
+      btn.classList.add("redmine-ai-assistant-chat-copied");
       setTimeout(() => {
         btn.textContent = orig;
-        btn.classList.remove("ai-chat-copied");
+        btn.classList.remove("redmine-ai-assistant-chat-copied");
       }, 1500);
     }
 
@@ -683,15 +695,15 @@
 
     showWelcomeMessage() {
       const { messages } = this.elements;
-      const existing = messages.querySelector(".ai-chat-welcome");
+      const existing = messages.querySelector(".redmine-ai-assistant-chat-welcome");
       if (existing) return;
 
       const div = document.createElement("div");
-      div.className = "ai-chat-welcome";
+      div.className = "redmine-ai-assistant-chat-welcome";
 
       let suggestionsHtml = "";
       if (this.question1 || this.question2) {
-        suggestionsHtml = '<div class="ai-chat-suggestions">';
+        suggestionsHtml = '<div class="redmine-ai-assistant-chat-suggestions">';
         if (this.question1) {
           suggestionsHtml +=
             '<button class="ai-suggestion-btn" data-action="quickAsk" data-question="' +
@@ -706,10 +718,10 @@
       }
 
       div.innerHTML =
-        '<div class="ai-chat-welcome-icon">' + this.avatarHtml() + "</div>" +
+        '<div class="redmine-ai-assistant-chat-welcome-icon">' + this.avatarHtml() + "</div>" +
         "<p>" + this.escapeHtml(this.welcomeText) + "</p>" +
         suggestionsHtml +
-        (this.readonlyText ? '<p class="ai-chat-disclaimer">⚠️ ' + this.escapeHtml(this.readonlyText) + "</p>" : "");
+        (this.readonlyText ? '<p class="redmine-ai-assistant-chat-disclaimer">⚠️ ' + this.escapeHtml(this.readonlyText) + "</p>" : "");
       messages.appendChild(div);
     }
 
@@ -743,7 +755,7 @@
   // ========== 初始化 ==========
   let initScheduled = false;
   function initWidget() {
-    if (!document.getElementById("ai-chat-widget")) return;
+    if (!document.getElementById("redmine-ai-assistant-widget")) return;
 
     // 防止多个页面加载事件（DOMContentLoaded/turbo:load/turbolinks:load/page:load）
     // 在同一次导航中重复触发，使用 microtask 级别的去重

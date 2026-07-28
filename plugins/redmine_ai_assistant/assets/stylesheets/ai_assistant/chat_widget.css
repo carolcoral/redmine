@@ -3,7 +3,7 @@
    ============================================================ */
 
 /* ---------- 悬浮宠物按钮 ---------- */
-#ai-chat-widget {
+#redmine-ai-assistant-widget {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -11,7 +11,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.ai-chat-toggle {
+.redmine-ai-assistant-chat-toggle {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -29,34 +29,34 @@
   overflow: hidden;
 }
 
-.ai-chat-toggle:hover {
+.redmine-ai-assistant-chat-toggle:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
 }
 
-.ai-chat-toggle.ai-chat-active {
+.redmine-ai-assistant-chat-toggle.redmine-ai-assistant-chat-active {
   transform: scale(0.85);
   opacity: 0.5;
 }
 
 /* --- 默认 emoji 模式 --- */
-.ai-pet {
+.redmine-ai-assistant-pet {
   font-size: 32px;
   animation: pet-bounce 2s ease-in-out infinite;
   user-select: none;
 }
 
 /* --- 自定义图片模式 --- */
-.ai-chat-toggle--custom {
+.redmine-ai-assistant-chat-toggle--custom {
   background: transparent;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-.ai-chat-toggle--custom:hover {
+.redmine-ai-assistant-chat-toggle--custom:hover {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
 }
 
-.ai-pet-image {
+.redmine-ai-assistant-pet-image {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +64,7 @@
   user-select: none;
 }
 
-.ai-pet-image img {
+.redmine-ai-assistant-pet-image img {
   display: block;
   border-radius: 50%;
   object-fit: cover;
@@ -73,12 +73,12 @@
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.ai-chat-toggle--custom:hover .ai-pet-image img {
+.redmine-ai-assistant-chat-toggle--custom:hover .redmine-ai-assistant-pet-image img {
   border-color: rgba(102, 126, 234, 0.8);
   box-shadow: 0 4px 18px rgba(102, 126, 234, 0.45);
 }
 
-.ai-pet-shadow {
+.redmine-ai-assistant-pet-shadow {
   position: absolute;
   bottom: -4px;
   left: 50%;
@@ -90,7 +90,7 @@
   animation: shadow-pulse 2s ease-in-out infinite;
 }
 
-.ai-chat-toggle--custom .ai-pet-shadow {
+.redmine-ai-assistant-chat-toggle--custom .redmine-ai-assistant-pet-shadow {
   bottom: -6px;
   background: rgba(0, 0, 0, 0.08);
 }
@@ -106,7 +106,7 @@
 }
 
 /* ---------- 聊天窗口 ---------- */
-.ai-chat-window {
+.redmine-ai-assistant-chat-window {
   position: absolute;
   bottom: 80px;
   right: 0;
@@ -124,14 +124,14 @@
   transform-origin: bottom right;
 }
 
-.ai-chat-hidden {
+.redmine-ai-assistant-chat-hidden {
   transform: scale(0);
   opacity: 0;
   pointer-events: none;
 }
 
 /* ---------- 头部 ---------- */
-.ai-chat-header {
+.redmine-ai-assistant-chat-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 14px 16px;
@@ -141,7 +141,7 @@
   user-select: none;
 }
 
-.ai-chat-header-title {
+.redmine-ai-assistant-chat-header-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -149,7 +149,7 @@
   font-weight: 600;
 }
 
-.ai-chat-avatar {
+.redmine-ai-assistant-chat-avatar {
   width: 28px;
   height: 28px;
   display: flex;
@@ -158,21 +158,21 @@
   font-size: 24px;
 }
 
-.ai-chat-avatar img {
+.redmine-ai-assistant-chat-avatar img {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.ai-chat-status { font-size: 10px; margin-left: 4px; }
+.redmine-ai-assistant-chat-status { font-size: 10px; margin-left: 4px; }
 
-.ai-chat-header-actions {
+.redmine-ai-assistant-chat-header-actions {
   display: flex;
   gap: 8px;
 }
 
-.ai-chat-action-btn {
+.redmine-ai-assistant-chat-action-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -187,10 +187,10 @@
   justify-content: center;
 }
 
-.ai-chat-action-btn:hover { background: rgba(255, 255, 255, 0.35); }
+.redmine-ai-assistant-chat-action-btn:hover { background: rgba(255, 255, 255, 0.35); }
 
 /* ---------- 报告快捷操作栏 ---------- */
-.ai-chat-report-bar {
+.redmine-ai-assistant-chat-report-bar {
   display: flex;
   gap: 6px;
   padding: 10px 16px;
@@ -199,7 +199,7 @@
   overflow-x: auto;
 }
 
-.ai-chat-report-btn {
+.redmine-ai-assistant-chat-report-btn {
   background: white;
   border: 1px solid #dee2e6;
   border-radius: 20px;
@@ -210,20 +210,20 @@
   transition: all 0.2s;
 }
 
-.ai-chat-report-btn:hover {
+.redmine-ai-assistant-chat-report-btn:hover {
   background: #667eea;
   color: white;
   border-color: #667eea;
 }
 
-.ai-chat-report-btn--active {
+.redmine-ai-assistant-chat-report-btn--active {
   background: #667eea;
   color: white;
   border-color: #667eea;
 }
 
 /* ---------- 时间周期选择器 ---------- */
-.ai-chat-period-picker {
+.redmine-ai-assistant-chat-period-picker {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -239,13 +239,13 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.ai-chat-period-label {
+.redmine-ai-assistant-chat-period-label {
   color: #4b5563;
   white-space: nowrap;
   font-weight: 500;
 }
 
-.ai-chat-period-option {
+.redmine-ai-assistant-chat-period-option {
   background: white;
   border: 1px solid #c7d2fe;
   border-radius: 6px;
@@ -257,13 +257,13 @@
   white-space: nowrap;
 }
 
-.ai-chat-period-option:hover {
+.redmine-ai-assistant-chat-period-option:hover {
   background: #667eea;
   color: white;
   border-color: #667eea;
 }
 
-.ai-chat-period-option.ai-chat-period-active {
+.redmine-ai-assistant-chat-period-option.redmine-ai-assistant-chat-period-active {
   background: #667eea;
   color: white;
   border-color: #667eea;
@@ -271,7 +271,7 @@
 }
 
 /* ---------- 消息列表 ---------- */
-.ai-chat-messages {
+.redmine-ai-assistant-chat-messages {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
@@ -281,23 +281,23 @@
   background: #fafbfc;
 }
 
-.ai-chat-messages::-webkit-scrollbar {
+.redmine-ai-assistant-chat-messages::-webkit-scrollbar {
   width: 4px;
 }
 
-.ai-chat-messages::-webkit-scrollbar-thumb {
+.redmine-ai-assistant-chat-messages::-webkit-scrollbar-thumb {
   background: #d0d5dd;
   border-radius: 2px;
 }
 
 /* 欢迎界面 */
-.ai-chat-welcome {
+.redmine-ai-assistant-chat-welcome {
   text-align: center;
   padding: 30px 16px;
   color: #6b7280;
 }
 
-.ai-chat-welcome-icon {
+.redmine-ai-assistant-chat-welcome-icon {
   width: 64px;
   height: 64px;
   margin: 0 auto 12px;
@@ -307,16 +307,16 @@
   font-size: 48px;
 }
 
-.ai-chat-welcome-icon img {
+.redmine-ai-assistant-chat-welcome-icon img {
   width: 64px;
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.ai-chat-welcome p { margin: 8px 0; font-size: 14px; line-height: 1.5; }
+.redmine-ai-assistant-chat-welcome p { margin: 8px 0; font-size: 14px; line-height: 1.5; }
 
-.ai-chat-suggestions {
+.redmine-ai-assistant-chat-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -341,14 +341,14 @@
   border-color: #667eea;
 }
 
-.ai-chat-disclaimer {
+.redmine-ai-assistant-chat-disclaimer {
   font-size: 12px;
   color: #9ca3af;
   margin-top: 12px;
 }
 
 /* 消息气泡 */
-.ai-chat-message {
+.redmine-ai-assistant-chat-message {
   display: flex;
   gap: 10px;
   animation: message-in 0.3s ease;
@@ -359,7 +359,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.ai-chat-message-avatar {
+.redmine-ai-assistant-chat-message-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -371,35 +371,35 @@
   overflow: hidden;
 }
 
-.ai-chat-message-avatar img {
+.redmine-ai-assistant-chat-message-avatar img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.ai-chat-user .ai-chat-message-avatar {
+.redmine-ai-assistant-chat-user .redmine-ai-assistant-chat-message-avatar {
   background: #e0e7ff;
 }
 
-.ai-chat-assistant .ai-chat-message-avatar {
+.redmine-ai-assistant-chat-assistant .redmine-ai-assistant-chat-message-avatar {
   background: #f3e8ff;
 }
 
-.ai-chat-message-body {
+.redmine-ai-assistant-chat-message-body {
   flex: 1;
   min-width: 0;
 }
 
-.ai-chat-message-content-wrapper {
+.redmine-ai-assistant-chat-message-content-wrapper {
   position: relative;
 }
 
-.ai-chat-message-content-wrapper:hover .ai-chat-copy-btn {
+.redmine-ai-assistant-chat-message-content-wrapper:hover .redmine-ai-assistant-chat-copy-btn {
   opacity: 1;
 }
 
-.ai-chat-message-label {
+.redmine-ai-assistant-chat-message-label {
   font-size: 11px;
   font-weight: 600;
   color: #9ca3af;
@@ -408,7 +408,7 @@
   letter-spacing: 0.5px;
 }
 
-.ai-chat-message-content {
+.redmine-ai-assistant-chat-message-content {
   font-size: 14px;
   line-height: 1.6;
   color: #1f2937;
@@ -419,13 +419,13 @@
   overflow-wrap: break-word;
 }
 
-.ai-chat-assistant .ai-chat-message-content {
+.redmine-ai-assistant-chat-assistant .redmine-ai-assistant-chat-message-content {
   background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
   border: 1px solid #ede9fe;
 }
 
 /* 复制按钮 */
-.ai-chat-copy-btn {
+.redmine-ai-assistant-chat-copy-btn {
   position: absolute;
   top: 6px;
   right: 6px;
@@ -445,51 +445,51 @@
   z-index: 1;
 }
 
-.ai-chat-copy-btn:hover {
+.redmine-ai-assistant-chat-copy-btn:hover {
   background: #fff;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-.ai-chat-copy-btn.ai-chat-copied {
+.redmine-ai-assistant-chat-copy-btn.redmine-ai-assistant-chat-copied {
   background: #ecfdf5;
   opacity: 1;
 }
 
-.ai-chat-error .ai-chat-message-content {
+.redmine-ai-assistant-chat-error .redmine-ai-assistant-chat-message-content {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
 }
 
-.ai-chat-message-content h1,
-.ai-chat-message-content h2,
-.ai-chat-message-content h3,
-.ai-chat-message-content h4,
-.ai-chat-message-content h5,
-.ai-chat-message-content h6 {
+.redmine-ai-assistant-chat-message-content h1,
+.redmine-ai-assistant-chat-message-content h2,
+.redmine-ai-assistant-chat-message-content h3,
+.redmine-ai-assistant-chat-message-content h4,
+.redmine-ai-assistant-chat-message-content h5,
+.redmine-ai-assistant-chat-message-content h6 {
   margin: 14px 0 8px;
   font-weight: 600;
   color: #111827;
   line-height: 1.3;
 }
 
-.ai-chat-message-content h1 { font-size: 1.35em; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; }
-.ai-chat-message-content h2 { font-size: 1.2em; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
-.ai-chat-message-content h3 { font-size: 1.08em; }
-.ai-chat-message-content h4 { font-size: 1.02em; color: #374151; }
-.ai-chat-message-content h5 { font-size: 0.95em; color: #4b5563; }
-.ai-chat-message-content h6 { font-size: 0.88em; color: #6b7280; }
+.redmine-ai-assistant-chat-message-content h1 { font-size: 1.35em; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; }
+.redmine-ai-assistant-chat-message-content h2 { font-size: 1.2em; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
+.redmine-ai-assistant-chat-message-content h3 { font-size: 1.08em; }
+.redmine-ai-assistant-chat-message-content h4 { font-size: 1.02em; color: #374151; }
+.redmine-ai-assistant-chat-message-content h5 { font-size: 0.95em; color: #4b5563; }
+.redmine-ai-assistant-chat-message-content h6 { font-size: 0.88em; color: #6b7280; }
 
-.ai-chat-message-content p { margin: 6px 0; }
+.redmine-ai-assistant-chat-message-content p { margin: 6px 0; }
 
-.ai-chat-message-content ul, .ai-chat-message-content ol {
+.redmine-ai-assistant-chat-message-content ul, .redmine-ai-assistant-chat-message-content ol {
   margin: 8px 0;
   padding-left: 24px;
 }
 
-.ai-chat-message-content li { margin: 2px 0; }
+.redmine-ai-assistant-chat-message-content li { margin: 2px 0; }
 
-.ai-chat-message-content code {
+.redmine-ai-assistant-chat-message-content code {
   background: #f1f5f9;
   padding: 2px 6px;
   border-radius: 4px;
@@ -497,7 +497,7 @@
   color: #7c3aed;
 }
 
-.ai-chat-message-content pre {
+.redmine-ai-assistant-chat-message-content pre {
   background: #1e293b;
   color: #e2e8f0;
   padding: 14px;
@@ -508,32 +508,32 @@
   line-height: 1.5;
 }
 
-.ai-chat-message-content pre code {
+.redmine-ai-assistant-chat-message-content pre code {
   background: none;
   color: inherit;
   padding: 0;
 }
 
-.ai-chat-message-content table {
+.redmine-ai-assistant-chat-message-content table {
   width: 100%;
   border-collapse: collapse;
   margin: 12px 0;
   font-size: 13px;
 }
 
-.ai-chat-message-content tr { border-bottom: 1px solid #e5e7eb; }
-.ai-chat-message-content td, .ai-chat-message-content th {
+.redmine-ai-assistant-chat-message-content tr { border-bottom: 1px solid #e5e7eb; }
+.redmine-ai-assistant-chat-message-content td, .redmine-ai-assistant-chat-message-content th {
   padding: 6px 10px;
   text-align: left;
 }
 
-.ai-chat-message-content th {
+.redmine-ai-assistant-chat-message-content th {
   background: #f8fafc;
   font-weight: 600;
 }
 
 /* 新增 Markdown 元素样式 */
-.ai-chat-message-content blockquote {
+.redmine-ai-assistant-chat-message-content blockquote {
   margin: 10px 0;
   padding: 8px 16px;
   border-left: 4px solid #667eea;
@@ -542,39 +542,39 @@
   border-radius: 0 6px 6px 0;
 }
 
-.ai-chat-message-content blockquote p {
+.redmine-ai-assistant-chat-message-content blockquote p {
   margin: 4px 0;
 }
 
-.ai-chat-message-content a {
+.redmine-ai-assistant-chat-message-content a {
   color: #6366f1;
   text-decoration: underline;
   word-break: break-all;
 }
 
-.ai-chat-message-content a:hover {
+.redmine-ai-assistant-chat-message-content a:hover {
   color: #4f46e5;
 }
 
-.ai-chat-message-content img {
+.redmine-ai-assistant-chat-message-content img {
   max-width: 100%;
   border-radius: 6px;
   margin: 8px 0;
 }
 
-.ai-chat-message-content del {
+.redmine-ai-assistant-chat-message-content del {
   text-decoration: line-through;
   color: #9ca3af;
 }
 
-.ai-chat-message-content hr {
+.redmine-ai-assistant-chat-message-content hr {
   border: none;
   border-top: 2px solid #e5e7eb;
   margin: 16px 0;
 }
 
 /* ---------- 输入区域 ---------- */
-.ai-chat-input-area {
+.redmine-ai-assistant-chat-input-area {
   display: flex;
   padding: 12px 16px;
   gap: 8px;
@@ -583,7 +583,7 @@
   align-items: flex-end;
 }
 
-.ai-chat-input {
+.redmine-ai-assistant-chat-input {
   flex: 1;
   border: 1px solid #d1d5db;
   border-radius: 12px;
@@ -597,12 +597,12 @@
   transition: border-color 0.2s;
 }
 
-.ai-chat-input:focus {
+.redmine-ai-assistant-chat-input:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.ai-chat-send-btn {
+.redmine-ai-assistant-chat-send-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -618,18 +618,18 @@
   justify-content: center;
 }
 
-.ai-chat-send-btn:hover:not(:disabled) {
+.redmine-ai-assistant-chat-send-btn:hover:not(:disabled) {
   transform: scale(1.05);
   box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);
 }
 
-.ai-chat-send-btn:disabled {
+.redmine-ai-assistant-chat-send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* ---------- 打字指示器 ---------- */
-.ai-chat-statusbar {
+.redmine-ai-assistant-chat-statusbar {
   padding: 8px 16px;
   background: #fafbfc;
   border-top: 1px solid #e5e7eb;
@@ -662,7 +662,7 @@
 }
 
 /* ---------- 管理页面 ---------- */
-.ai-providers .url-cell {
+.redmine-ai-assistant-providers .url-cell {
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -683,7 +683,7 @@
 }
 
 /* ---------- 全屏模式 ---------- */
-.ai-chat-window.ai-chat-fullscreen {
+.redmine-ai-assistant-chat-window.redmine-ai-assistant-chat-fullscreen {
   position: fixed;
   top: 0;
   left: 0;
@@ -697,27 +697,27 @@
   z-index: 10000;
 }
 
-.ai-chat-window.ai-chat-fullscreen .ai-chat-messages {
+.redmine-ai-assistant-chat-window.redmine-ai-assistant-chat-fullscreen .redmine-ai-assistant-chat-messages {
   flex: 1;
 }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 480px) {
-  .ai-chat-window {
+  .redmine-ai-assistant-chat-window {
     width: calc(100vw - 32px);
     right: 16px;
     height: 500px;
   }
 
-  #ai-chat-widget {
+  #redmine-ai-assistant-widget {
     bottom: 16px;
     right: 16px;
   }
 
-  .ai-chat-toggle {
+  .redmine-ai-assistant-chat-toggle {
     width: 50px;
     height: 50px;
   }
 
-  .ai-pet { font-size: 26px; }
+  .redmine-ai-assistant-pet { font-size: 26px; }
 }

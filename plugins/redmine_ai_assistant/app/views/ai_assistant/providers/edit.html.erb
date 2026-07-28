@@ -7,7 +7,7 @@
 <%= labelled_form_for @provider,
                       url: ai_assistant_provider_path(@provider),
                       method: :put,
-                      html: { id: 'ai-provider-form', multipart: false } do |f| %>
+                      html: { id: 'redmine-ai-assistant-provider-form', multipart: false } do |f| %>
   <%= render partial: 'form', locals: { f: f, provider: @provider } %>
   <%= submit_tag l(:button_save) %>
 <% end %>

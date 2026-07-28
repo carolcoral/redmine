@@ -1,6 +1,6 @@
 <%= error_messages_for 'provider' %>
 
-<div class="box tabular ai-provider-form">
+<div class="box tabular redmine-ai-assistant-provider-form">
   <p>
     <%= f.text_field :name, required: true, size: 30, list: 'provider_name_list', label: l(:field_name) %>
     <datalist id="provider_name_list">
@@ -35,10 +35,10 @@
     <%= f.text_area :available_models, rows: 4, cols: 50,
                     placeholder: "[\"model-a\", \"model-b\"]",
                     label: l(:field_available_models) %>
-    <button type="button" id="fetch-models-btn" class="icon icon-reload" onclick="fetchProviderModels()">
+    <button type="button" id="redmine-ai-assistant-fetch-models-btn" class="icon icon-reload" onclick="fetchProviderModels()">
       <%= l(:button_fetch_models) %>
     </button>
-    <span id="fetch-models-status"></span>
+    <span id="redmine-ai-assistant-fetch-models-status"></span>
     <em class="info"><%= l(:text_available_models_hint) %></em>
   </p>
 
@@ -60,11 +60,11 @@
 
 <%= javascript_tag do %>
   function fetchProviderModels() {
-    var form = document.getElementById('ai-provider-form');
+    var form = document.getElementById('redmine-ai-assistant-provider-form');
     var apiUrl = form.querySelector('[name*="[api_url]"]').value.trim();
     var apiKey = form.querySelector('[name*="[api_key]"]').value.trim();
-    var btn = document.getElementById('fetch-models-btn');
-    var status = document.getElementById('fetch-models-status');
+    var btn = document.getElementById('redmine-ai-assistant-fetch-models-btn');
+    var status = document.getElementById('redmine-ai-assistant-fetch-models-status');
     var textarea = form.querySelector('[name*="[available_models]"]');
     var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 

@@ -74,7 +74,7 @@
 
   <p>
     <%= content_tag(:label, l(:label_preview)) %>
-    <span class="ai-pet-preview" id="ai-pet-preview">
+    <span class="redmine-ai-assistant-pet-preview" id="redmine-ai-assistant-pet-preview">
       <% if settings['custom_pet_image_url'].present? %>
         <img src="<%= settings['custom_pet_image_url'] %>"
              alt="<%= l(:label_custom_pet) %>"
@@ -98,7 +98,7 @@
   (function() {
     var uploadInput = document.getElementById('custom_pet_image_upload');
     var urlInput = document.getElementById('settings_custom_pet_image_url');
-    var preview = document.getElementById('ai-pet-preview');
+    var preview = document.getElementById('redmine-ai-assistant-pet-preview');
     var maxSize = 1024 * 1024; // 1 MB
 
     function updatePreview(src) {
