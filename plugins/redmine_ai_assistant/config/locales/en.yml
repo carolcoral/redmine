@@ -96,3 +96,18 @@ en:
 
   # ========== 项目设置 ==========
   project_module_ai_assistant: "AI Assistant"
+
+  # ========== Usage Statistics ==========
+  label_ai_usage_stats: "AI Usage Statistics"
+  label_ai_stats_total: "Total"
+  label_ai_stats_today: "Today"
+  label_ai_stats_this_week: "This Week"
+  label_ai_stats_this_month: "This Month"
+  label_ai_stats_user_detail: "User Usage Details"
+  label_ai_stats_last_used: "Last Used"
+  label_ai_stats_period_info: "Statistics Period"
+  label_user_unknown: "Unknown User"
+  field_ai_calls: "Calls"
+  field_user: "User"
+  label_export: "Export"
+  permission_view_ai_stats: "View AI Usage Statistics"

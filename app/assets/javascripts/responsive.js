@@ -53,9 +53,9 @@ function setupFlyout() {
       if(!mobileInit) {
 
         $('#main-menu > ul').detach().appendTo('.js-project-menu');
-        $('#top-menu .general-menu .top-menu__links > ul').detach().appendTo('.js-general-menu');
+        $('#top-menu > ul').detach().appendTo('.js-general-menu');
         $('#sidebar > *').detach().appendTo('.js-sidebar');
-        $('#account ul').detach().appendTo('.js-profile-menu');
+        $('#account > ul').detach().appendTo('.js-profile-menu');
 
         mobileInit = true;
         desktopInit = false;
@@ -65,15 +65,10 @@ function setupFlyout() {
     var _initDesktopMenu = function() {
       if(!desktopInit) {
 
-        $('.js-project-menu > ul').detach().prependTo('#main-menu');
-        $('.js-general-menu > ul').detach().prependTo('#top-menu .general-menu .top-menu__links');
+        $('.js-project-menu > ul').detach().appendTo('#main-menu');
+        $('.js-general-menu > ul').detach().appendTo('#top-menu');
         $('.js-sidebar > *').detach().appendTo('#sidebar');
-
-        var accountMenuParent = $('#account .dropdown-content');
-        if (accountMenuParent.length === 0) {
-          accountMenuParent = $('#account');
-        }
-        $('.js-profile-menu > ul').detach().appendTo(accountMenuParent);
+        $('.js-profile-menu > ul').detach().appendTo('#account');
 
         desktopInit = true;
         mobileInit = false;

@@ -1,24 +1,24 @@
-# Redmine
+# Redmine++
 
 > 灵活的项目管理与问题跟踪系统 · Flexible project management & issue tracking
 
-[![Redmine](https://img.shields.io/badge/Redmine-7.0.0-cc0000)](https://www.redmine.org/)
+[![Redmine++](https://img.shields.io/badge/Redmine++-7.0.0-cc0000)](https://github.com/redmine-plus-plus/redmine-plus-plus)
 [![Ruby](https://img.shields.io/badge/Ruby-%3E%3D%203.2-cc0000)](https://www.ruby-lang.org/)
 [![Rails](https://img.shields.io/badge/Rails-8.1.3-cc0000)](https://rubyonrails.org/)
 [![Plugins](https://img.shields.io/badge/Plugins-21-blue)](plugins/)
-[![License](https://img.shields.io/badge/License-GPLv3-6f9d33)](LICENSE.txt)
+[![License](https://img.shields.io/badge/License-MIT-6f9d33)](LICENSE.txt)
 
 ---
 
 ## 概览 / Overview
 
-Redmine 是一款基于 **Ruby on Rails** 构建的开源项目管理和问题跟踪工具。
-本仓库为 **Redmine 7.0.0** 发行版，并集成了 21 个社区/自研插件，覆盖了
+Redmine++ 是基于 **Ruby on Rails** 构建的开源项目管理和问题跟踪工具，
+基于上游 Redmine 7.0.0 增强分发。本仓库集成了 21 个社区/自研插件，覆盖了
 看板、协同编辑、AI 助手、Webhook、网盘、清单等扩展能力。
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                      Redmine 7.0.0                           │
+│                      Redmine++ 7.0.0                         │
 │  Issues · Projects · Wiki · Gantt · Calendar · Boards · API │
 ├─────────────────────────────────────────────────────────────┤
 │  21 Plugins  │  AI · Dashboard · Drive · Checklists · Yjs …  │
@@ -34,7 +34,7 @@ Redmine 是一款基于 **Ruby on Rails** 构建的开源项目管理和问题�
 ```mermaid
 flowchart TB
     Client[Browser / REST API Client]
-    subgraph App[Redmine 7.0.0 · Rails 8.1.3]
+    subgraph App[Redmine++ 7.0.0 · Rails 8.1.3]
         Core[Core: Issues, Projects, Wiki, Gantt, Calendar]
         Plugins[Plugin Layer: 21 plugins]
     end
@@ -64,7 +64,7 @@ flowchart TB
 | 富文本      | CommonMark / Textile（Loofah 过滤）              |
 | 前端        | Stimulus · Propshaft · Tabler Icons · Chart.js    |
 | 测试        | Minitest · System Tests                           |
-| 许可        | GNU GPL v3                                        |
+| 许可        | MIT                                                |
 
 ---
 
@@ -215,5 +215,6 @@ redmine/
 
 ## 许可证 / License
 
-Redmine 及本发行版遵循 **GNU General Public License v3**。
+Redmine++ 遵循 **MIT License**。
+原 Redmine 代码版权 © 2006- Jean-Philippe Lang。
 第三方组件许可见 `doc/licenses`。

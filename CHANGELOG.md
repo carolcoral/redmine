@@ -1,9 +1,9 @@
 # Changelog
 
-> Redmine 7.0.0 发行说明 · Release Notes
+> Redmine++ 7.0.0 发行说明 · Release Notes
 > 历史完整变更明细见 [`doc/CHANGELOG`](doc/CHANGELOG)。
 
-[![Redmine](https://img.shields.io/badge/Redmine-7.0.0-cc0000)](https://www.redmine.org/)
+[![Redmine++](https://img.shields.io/badge/Redmine++-7.0.0-cc0000)](https://github.com/redmine-plus-plus/redmine-plus-plus)
 [![Released](https://img.shields.io/badge/Released-2026--06--30-blue)](doc/CHANGELOG)
 [![Modules](https://img.shields.io/badge/Modules-32-6f9d33)](doc/CHANGELOG)
 

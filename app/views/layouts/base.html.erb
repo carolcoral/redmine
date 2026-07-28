@@ -56,35 +56,13 @@
 
 </div>
 
-<nav class="top-menu" id="top-menu">
-  <div class="general-menu">
-    <div class="top-menu__links">
-        <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
-    </div>
-  </div>
-
-  <div class="profile-menu">
-    <% if User.current.logged? %>
-    <div id="account" class="dropdown" data-controller="dropdown">
-      <a href="#" class="dropdown-trigger" data-action="click->dropdown#toggle">
-        <%= avatar(User.current, :size => "22") %>
-      </a>
-      <div class="dropdown-content hidden" data-dropdown-target="content">
-        <div class="user-info">
-          <span class="user-name"><%= User.current.name %></span>
-          <span class="user-login"><%= "@#{User.current.login}" %></span>
-        </div>
-        <div class="dropdown-divider"></div>
-        <%= render_menu :account_menu -%>
-      </div>
-    </div>
-    <% else %>
-    <div id="account" class="top-menu__links">
+<div id="top-menu">
+    <div id="account">
         <%= render_menu :account_menu -%>
     </div>
-    <% end %>
-  </div>
-</nav>
+    <%= content_tag('div', "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe, :id => 'loggedas') if User.current.logged? %>
+    <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
+</div>
 
 <div id="header">
 
@@ -151,7 +129,7 @@
     </div>
 </div>
 <div id="footer">
-    Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url, :target => '_blank', :rel => 'noopener' %> &copy; 2006-2026 Jean-Philippe Lang
+    Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url, :target => '_blank', :rel => 'noopener' %> &copy; 2006-2026 Jean-Philippe Lang & CarolCoral
 </div>
 
 <div id="ajax-indicator" style="display:none;">

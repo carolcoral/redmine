@@ -24,5 +24,9 @@ RedmineApp::Application.routes.draw do
     get  'reports/weekly',   to: 'reports#weekly'
     get  'reports/monthly',  to: 'reports#monthly'
     post 'reports/generate', to: 'reports#generate'
+
+    # 用量统计（仅管理员）
+    get  'stats',   to: 'stats#index'
+    get  'stats/export', to: 'stats#export'
   end
 end

@@ -1,15 +1,15 @@
-= Redmine 7.0.0
+= Redmine++ 7.0.0
 
 灵活的项目管理与问题跟踪系统 · Flexible project management & issue tracking
 
 == 概览 / Overview
 
-Redmine 是基于 Ruby on Rails 构建的开源项目管理和问题跟踪工具。
-本仓库为 Redmine 7.0.0 发行版，并集成了 21 个社区 / 自研插件，覆盖看板、
+Redmine++ 是基于 Ruby on Rails 构建的开源项目管理和问题跟踪工具，
+基于上游 Redmine 7.0.0 增强分发。本仓库集成了 21 个社区 / 自研插件，覆盖看板、
 协同编辑、AI 助手、Webhook、网盘、清单等扩展能力。
 
   ┌─────────────────────────────────────────────────────────┐
-  │                   Redmine 7.0.0                          │
+  │                   Redmine++ 7.0.0                        │
   │  Issues · Projects · Wiki · Gantt · Calendar · API      │
   ├─────────────────────────────────────────────────────────┤
   │  21 Plugins │ AI · Dashboard · Drive · Checklists · Yjs  │
@@ -24,7 +24,7 @@ Redmine 是基于 Ruby on Rails 构建的开源项目管理和问题跟踪工具
 * 数据库：SQLite +≥ 2.9.4+ · MySQL +≥ 0.5.0+ · PostgreSQL +≥ 1.6.2+
 * 富文本：CommonMark / Textile（Loofah 过滤）
 * 前端：Stimulus · Propshaft · Tabler Icons · Chart.js
-* 许可：GNU GPL v3
+* 许可：MIT
 
 == 核心特性 / Highlights (v7.0.0)
 
@@ -145,7 +145,7 @@ Redmine 是基于 Ruby on Rails 构建的开源项目管理和问题跟踪工具
   redmine/
   ├── app/          # 核心 MVC、视图、资源
   ├── plugins/      # 21 个插件（详见上方矩阵）
-  ├── lib/          # 核心库（含 Redmine 引擎）
+  ├── lib/          # 核心库（含 Redmine++ 引擎）
   ├── config/       # 路由、数据库、环境配置
   ├── db/           # 数据迁移与结构
   ├── public/       # 静态资源
@@ -153,7 +153,8 @@ Redmine 是基于 Ruby on Rails 构建的开源项目管理和问题跟踪工具
 
 == 许可证 / License
 
-Redmine 及本发行版遵循 GNU General Public License v3。
+Redmine++ 遵循 MIT License。
+原 Redmine 代码版权 (c) 2006- Jean-Philippe Lang。
 第三方组件许可见 doc/licenses。
 
-更多细节见 doc 目录或官方网站 https://www.redmine.org
+更多细节见 doc 目录或上游网站 https://www.redmine.org

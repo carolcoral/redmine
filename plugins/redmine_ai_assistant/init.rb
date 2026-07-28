@@ -34,12 +34,24 @@ Redmine::Plugin.register :redmine_ai_assistant do
     ai_assistant_reports: [:daily, :weekly, :monthly, :generate]
   }, require: :loggedin
 
+  permission :view_ai_stats, {
+    ai_assistant_stats: [:index]
+  }, require: :admin
+
   # ========== 管理菜单 ==========
   menu :admin_menu,
        :ai_assistant_providers,
        { controller: 'ai_assistant/providers', action: 'index' },
        caption: :label_ai_providers,
        icon: 'openai',
+       plugin: 'redmine_ai_assistant',
+       if: proc { User.current.admin? && AiAssistant.enabled? }
+
+  menu :admin_menu,
+       :ai_assistant_stats,
+       { controller: 'ai_assistant/stats', action: 'index' },
+       caption: :label_ai_usage_stats,
+       icon: 'stats',
        plugin: 'redmine_ai_assistant',
        if: proc { User.current.admin? && AiAssistant.enabled? }
 

@@ -10,6 +10,10 @@
      data-readonly-text="<%= j l(:text_readonly_disclaimer) %>"
      data-question-1="<%= j l(:label_quick_question_1) %>"
      data-question-2="<%= j l(:label_quick_question_2) %>"
+     data-current-user-name="<%= j User.current.name %>"
+     data-current-user-login="<%= j User.current.login %>"
+     data-logout-url="<%= j main_app.signout_path %>"
+     data-my-account-url="<%= j main_app.url_for(controller: '/my', action: 'account', only_path: true) %>"
      aria-hidden="true">
   <!-- 悬浮宠物按钮 -->
   <button id="ai-chat-toggle"
