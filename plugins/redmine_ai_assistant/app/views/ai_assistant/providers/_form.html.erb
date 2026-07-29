@@ -35,7 +35,7 @@
     <%= f.text_area :available_models, rows: 4, cols: 50,
                     placeholder: "[\"model-a\", \"model-b\"]",
                     label: l(:field_available_models) %>
-    <button type="button" id="redmine-ai-assistant-fetch-models-btn" class="icon icon-reload" onclick="fetchProviderModels()">
+    <button type="button" id="redmine-ai-assistant-fetch-models-btn" class="icon icon-reload">
       <%= l(:button_fetch_models) %>
     </button>
     <span id="redmine-ai-assistant-fetch-models-status"></span>
@@ -59,59 +59,77 @@
 </div>
 
 <%= javascript_tag do %>
-  function fetchProviderModels() {
+  document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('redmine-ai-assistant-provider-form');
-    var apiUrl = form.querySelector('[name*="[api_url]"]').value.trim();
-    var apiKey = form.querySelector('[name*="[api_key]"]').value.trim();
     var btn = document.getElementById('redmine-ai-assistant-fetch-models-btn');
-    var status = document.getElementById('redmine-ai-assistant-fetch-models-status');
-    var textarea = form.querySelector('[name*="[available_models]"]');
-    var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-    if (!apiUrl || !apiKey) {
-      status.innerHTML = '<span class="flash error"><%= j l(:error_api_url_key_required) %></span>';
+    if (!form || !btn) {
+      console.warn('[AI Assistant] provider form or fetch button not found');
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = '<%= j l(:label_fetching) %>';
-    status.innerHTML = '';
+    btn.addEventListener('click', function() {
+      var apiUrlInput = form.querySelector('[name*="[api_url]"]');
+      var apiKeyInput = form.querySelector('[name*="[api_key]"]');
+      var textarea = form.querySelector('[name*="[available_models]"]');
+      var status = document.getElementById('redmine-ai-assistant-fetch-models-status');
+      var csrfMeta = document.querySelector('meta[name="csrf-token"]');
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '<%= j fetch_models_ai_assistant_providers_path %>', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('X-CSRF-Token', csrfToken);
-    xhr.setRequestHeader('Accept', 'application/json');
+      var apiUrl = apiUrlInput ? apiUrlInput.value.trim() : '';
+      var apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+      var csrfToken = csrfMeta ? csrfMeta.content : '';
 
-    xhr.onload = function() {
-      btn.disabled = false;
-      btn.textContent = '<%= j l(:button_fetch_models) %>';
-
-      if (xhr.status === 200) {
-        try {
-          var data = JSON.parse(xhr.responseText);
-          var models = data.models || [];
-          textarea.value = JSON.stringify(models, null, 2);
-          status.innerHTML = '<span class="flash notice"><%= j l(:notice_models_fetched) %> (' + models.length + ')</span>';
-        } catch(e) {
-          status.innerHTML = '<span class="flash error"><%= j l(:error_invalid_response) %></span>';
-        }
-      } else {
-        try {
-          var errData = JSON.parse(xhr.responseText);
-          status.innerHTML = '<span class="flash error">' + errData.error + '</span>';
-        } catch(e) {
-          status.innerHTML = '<span class="flash error"><%= j l(:error_fetch_models_failed) %></span>';
-        }
+      if (!apiUrl || !apiKey) {
+        status.innerHTML = '<span class="flash error"><%= j l(:error_api_url_key_required) %></span>';
+        return;
       }
-    };
 
-    xhr.onerror = function() {
-      btn.disabled = false;
-      btn.textContent = '<%= j l(:button_fetch_models) %>';
-      status.innerHTML = '<span class="flash error"><%= j l(:error_network) %></span>';
-    };
+      if (!textarea) {
+        console.error('[AI Assistant] available_models textarea not found');
+        return;
+      }
 
-    xhr.send(JSON.stringify({ api_url: apiUrl, api_key: apiKey }));
-  }
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = '<%= j l(:label_fetching) %>';
+      status.innerHTML = '';
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '<%= j fetch_models_ai_assistant_providers_path %>', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+      xhr.setRequestHeader('Accept', 'application/json');
+
+      xhr.onload = function() {
+        btn.disabled = false;
+        btn.textContent = originalText;
+
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            var models = data.models || [];
+            textarea.value = JSON.stringify(models, null, 2);
+            status.innerHTML = '<span class="flash notice"><%= j l(:notice_models_fetched) %> (' + models.length + ')</span>';
+          } catch(e) {
+            console.error('[AI Assistant] parse models response error:', e, xhr.responseText);
+            status.innerHTML = '<span class="flash error"><%= j l(:error_invalid_response) %></span>';
+          }
+        } else {
+          try {
+            var errData = JSON.parse(xhr.responseText);
+            status.innerHTML = '<span class="flash error">' + errData.error + '</span>';
+          } catch(e) {
+            status.innerHTML = '<span class="flash error"><%= j l(:error_fetch_models_failed) %></span>';
+          }
+        }
+      };
+
+      xhr.onerror = function() {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        status.innerHTML = '<span class="flash error"><%= j l(:error_network) %></span>';
+      };
+
+      xhr.send(JSON.stringify({ api_url: apiUrl, api_key: apiKey }));
+    });
+  });
 <% end %>

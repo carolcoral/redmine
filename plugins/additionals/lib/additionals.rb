@@ -150,8 +150,8 @@ module Additionals
         end
       end
 
-      # Clients - load filters for Redmine 6.1 stable, scrubbers for Redmine Master
-      if Redmine::VERSION::BRANCH == 'devel'
+      # Clients - load filters for Redmine 6.1 stable, scrubbers for Redmine 7+
+      if Redmine::VERSION::MAJOR >= 7
         # Redmine Master (7.0+) - Load Scrubbers
         loader.require_files File.join('wiki_formatting', 'common_mark', '**/*_scrubber.rb')
       else

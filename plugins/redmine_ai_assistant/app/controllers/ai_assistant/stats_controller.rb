@@ -3,8 +3,10 @@
 require 'csv'
 
 module AiAssistant
-  class StatsController < ApplicationController
-    before_action :require_admin
+  class StatsController < AdminController
+    helper :sort
+    include SortHelper
+
     before_action :compute_stats, only: [:index, :export]
 
     def index
@@ -90,7 +92,34 @@ module AiAssistant
         }
       end
 
-      @user_stats.sort_by! { |s| -s[:total_calls] }
+      sort_init 'total_calls', 'desc'
+      sort_update %w(user total_calls total_tokens daily_calls daily_tokens weekly_calls weekly_tokens monthly_calls monthly_tokens last_used_at)
+
+      sort_key  = @sort_criteria.first_key
+      sort_asc  = @sort_criteria.first_asc?
+
+      @user_stats = case sort_key
+                    when 'user'
+                      @user_stats.sort_by { |s| s[:user]&.name.to_s.downcase }
+                    when 'last_used_at'
+                      @user_stats.sort do |a, b|
+                        va = a[:last_used_at]
+                        vb = b[:last_used_at]
+                        if va.nil? && vb.nil?
+                          0
+                        elsif va.nil?
+                          1
+                        elsif vb.nil?
+                          -1
+                        else
+                          va <=> vb
+                        end
+                      end
+                    else
+                      @user_stats.sort_by { |s| s[sort_key.to_sym].to_i }
+                    end
+
+      @user_stats.reverse! unless sort_asc
     end
 
     def generate_csv
@@ -226,10 +255,5 @@ module AiAssistant
       pdf.output
     end
 
-    def require_admin
-      return if User.current.admin?
-
-      render_403
-    end
   end
 end

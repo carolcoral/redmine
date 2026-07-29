@@ -13,11 +13,11 @@ module Additionals
         def to_html(*_args)
           return super unless Additionals.setting?(:legacy_smiley_support) || Additionals.setting?(:emoji_support)
 
-          if Redmine::VERSION::BRANCH == 'devel'
-            # Redmine Master (7.0+) - Use Loofah Scrubbers
+          if Redmine::VERSION::MAJOR >= 7
+            # Redmine 7.0+ - Use Loofah Scrubbers
             to_html_with_scrubbers
           else
-            # Redmine 6.1 stable - Use HTML::Pipeline Filters
+            # Redmine 6.x stable - Use HTML::Pipeline Filters
             to_html_with_pipeline
           end
         end

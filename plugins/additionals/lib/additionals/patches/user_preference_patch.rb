@@ -11,7 +11,7 @@ module Additionals
         safe_attributes 'recently_used_dashboards'
 
         # TODO: Remove when Redmine 6.x support is dropped (Redmine 7 has issue_assigned_to_me in core)
-        UserPreference::AUTO_WATCH_ON_OPTIONS << 'issue_assigned' unless Redmine::VERSION::BRANCH == 'devel'
+        UserPreference::AUTO_WATCH_ON_OPTIONS << 'issue_assigned' unless Redmine::VERSION::MAJOR >= 7
       end
 
       module InstanceMethods

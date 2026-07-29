@@ -51,16 +51,16 @@
   <table class="list redmine-ai-assistant-stats-table">
     <thead>
       <tr>
-        <th><%= l(:field_user) %></th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_total) %> <%= l(:field_ai_calls) %></th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_total) %> tokens</th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_today) %> <%= l(:field_ai_calls) %></th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_today) %> tokens</th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_this_week) %> <%= l(:field_ai_calls) %></th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_this_week) %> tokens</th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_this_month) %> <%= l(:field_ai_calls) %></th>
-        <th class="redmine-ai-assistant-stats-col--num"><%= l(:label_ai_stats_this_month) %> tokens</th>
-        <th><%= l(:label_ai_stats_last_used) %></th>
+        <%= sort_header_tag 'user', caption: l(:field_user) %>
+        <%= sort_header_tag 'total_calls', caption: "#{l(:label_ai_stats_total)} #{l(:field_ai_calls)}", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'total_tokens', caption: "#{l(:label_ai_stats_total)} tokens", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'daily_calls', caption: "#{l(:label_ai_stats_today)} #{l(:field_ai_calls)}", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'daily_tokens', caption: "#{l(:label_ai_stats_today)} tokens", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'weekly_calls', caption: "#{l(:label_ai_stats_this_week)} #{l(:field_ai_calls)}", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'weekly_tokens', caption: "#{l(:label_ai_stats_this_week)} tokens", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'monthly_calls', caption: "#{l(:label_ai_stats_this_month)} #{l(:field_ai_calls)}", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'monthly_tokens', caption: "#{l(:label_ai_stats_this_month)} tokens", class: 'redmine-ai-assistant-stats-col--num' %>
+        <%= sort_header_tag 'last_used_at', caption: l(:label_ai_stats_last_used), class: 'redmine-ai-assistant-stats-col--date' %>
       </tr>
     </thead>
     <tbody>

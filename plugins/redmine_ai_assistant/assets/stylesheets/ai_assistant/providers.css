@@ -19,13 +19,24 @@
   line-height: 24px;
 }
 
-/* Hint/info text alignment under the input */
+.redmine-ai-assistant-provider-form.box.tabular p > textarea,
+#redmine-ai-assistant-provider-form.box.tabular p > textarea {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  min-width: 300px;
+  max-width: 600px;
+  resize: vertical;
+}
+
+/* Hint/info text inline after the input */
 .redmine-ai-assistant-provider-form.box.tabular p > .info,
 #redmine-ai-assistant-provider-form.box.tabular p > .info {
-  display: block;
-  margin-left: 180px;
+  display: inline;
+  margin-left: 8px;
   font-size: 0.9em;
   color: #666;
+  vertical-align: middle;
 }
 
 /* Submit button spacing */
