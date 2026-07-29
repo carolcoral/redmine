@@ -302,10 +302,9 @@
 
       if (!reportType || this.isProcessing) return;
 
-      const labels = { daily: "日报", weekly: "周报", monthly: "月报" };
-      const periodNames = { "0": "当前", "-1": "上一" };
+      const reportLabel = (PERIOD_OPTIONS[reportType] || {})[periodOffset] || "报告";
       this.setProcessing(true);
-      this.appendMessage("user", "📝 生成" + (periodNames[periodOffset] || "") + (labels[reportType] || "报告") + "...");
+      this.appendMessage("user", "📝 生成" + reportLabel + "...");
 
       try {
         const formData = new FormData();

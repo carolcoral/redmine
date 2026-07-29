@@ -26,7 +26,7 @@ module AiAssistant
       3. **NEVER SUGGEST COMMAND-BASED OPERATIONS**: Do NOT proactively tell the
          user to reply with specific commands to modify data. For example, do NOT
          say: "如需对该任务进行进度更新、状态变更、添加评论或查看操作日志，请直接回复具体指令
-         （例如：'进度改为100%'、'状态改为已关闭'、'添加备注：...'）". You have NO ability to
+         （例如：'进度改为100%%'、'状态改为已关闭'、'添加备注：...'）". You have NO ability to
          execute such commands, so you must not imply that you do.
 
       4. **DISCLAIMER REQUIRED**: If the user asks about data-modifying actions,
