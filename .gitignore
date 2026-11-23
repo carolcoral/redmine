@@ -6,13 +6,12 @@
 /.rvmrc
 /.ruby-version
 /.byebug_history
+# 配置文件已脱敏入库（凭据走环境变量），仅本机私有的文件继续忽略
 /config/additional_environment.rb
-/config/configuration.yml
-/config/database.yml
 /config/email.yml
-/config/secrets.yml
 /config/initializers/session_store.rb
-/config/initializers/secret_token.rb
+# secret_token.rb 未设 SECRET_KEY_BASE 时自动生成的本机密钥
+/config/.secret_key_base
 /coverage
 /db/*.db
 /db/*.sqlite3*
@@ -23,13 +22,10 @@
 /lib/redmine/scm/adapters/mercurial/redminehelper.pyo
 /log/*.log*
 /log/mongrel_debug
-/plugins/*
-!/plugins/README
+# 插件与主题全部入库，便于在 CNB 环境按仓库重建
 /public/assets/*
 /public/dispatch.*
 /public/plugin_assets/*
-/themes/*
-!/themes/README
 /tmp/*
 /tmp/cache/*
 /tmp/pdf/*
@@ -38,12 +34,24 @@
 /tmp/test/*
 /tmp/thumbnails/*
 /vendor/cache
+/vendor/bundle
 /vendor/javascript/mermaid.min.js
 *.rbc
 
 /.bundle
 /Gemfile.lock
 /Gemfile.local
+
+# CodeBuddy 持久化数据目录（个人数据 + 缓存，不入库）
+/.codebuddy-home/
+
+# CodeBuddy 全部入库（云原生环境重建后用于恢复记忆、规则与配置）
+.ide
+
+# 系统 / 编辑器垃圾文件
+**/.DS_Store
+**/.idea/
+**/*.map
 
 /node_modules
 yarn-error.log

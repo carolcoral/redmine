@@ -1,0 +1,29 @@
+# PostgreSQL 配置（已脱敏：密码等凭据通过环境变量注入，不要写回本文件）
+#
+# 可用的环境变量：
+#   REDMINE_DB_HOST / REDMINE_DB_PORT / REDMINE_DB_USER / REDMINE_DB_PASSWORD
+#   REDMINE_DB_NAME（development/production 库名，默认 redmine_dev）
+#   REDMINE_DB_NAME_TEST（测试库名，默认 redmine_dev_test）
+#
+# 本机开发：把变量写进 config/additional_environment.rb（已 gitignore）
+# CNB 环境：在仓库/流水线的环境变量中配置
+
+default: &default
+  adapter: postgresql
+  host: <%= ENV.fetch('REDMINE_DB_HOST', '172.24.108.92') %>
+  port: <%= ENV.fetch('REDMINE_DB_PORT', '5432') %>
+  username: <%= ENV.fetch('REDMINE_DB_USER', 'redmine_dev') %>
+  password: <%= ENV.fetch('REDMINE_DB_PASSWORD', '') %>
+  encoding: utf8
+
+development:
+  <<: *default
+  database: <%= ENV.fetch('REDMINE_DB_NAME', 'redmine_dev') %>
+
+production:
+  <<: *default
+  database: <%= ENV.fetch('REDMINE_DB_NAME', 'redmine_dev') %>
+
+test:
+  <<: *default
+  database: <%= ENV.fetch('REDMINE_DB_NAME_TEST', 'redmine_dev_test') %>
